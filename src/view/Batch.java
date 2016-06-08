@@ -1,31 +1,56 @@
 package view;
 
 import org.lwjgl.opengl.GL11;
+import utility.Matrix4;
+import utility.OrthographicCamera;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Batch {
 
-    private static ShaderProgram createShader() {
+    private static ShaderProgram createShader(VertexAttrib[] attribs) {
         String vertexSource = "#version 110\n" +
                 "attribute vec2 position;\n" +
                 "attribute float tid;\n" +
                 "attribute vec4 color;\n" +
                 "attribute vec2 texCoords;\n" +
+                "" +
+                "uniform mat4 projectionMatrix;\n" +
+                "" +
+                "varying vec4 v_color;\n" +
+                "varying float v_tid;\n" +
+                "" +
                 "void main() {\n" +
-                "gl_Position = vec4(position.xy, 0.0, 1.0);\n" +
+                "v_color = color;\n" +
+                "v_tid = tid;\n" +
+                "gl_Position = vec4(position.xy, 0.0, 1.0) * projectionMatrix;\n" +
                 "}\n";
 
         String fragmentSource = "#version 110\n" +
+                "" +
+                "varying vec4 v_color;\n" +
+                "varying float v_tid;\n" +
+                "" +
                 "void main() {\n" +
-                "gl_FragColor = vec4(0, 1, 0, 1);\n" +
+                "gl_FragColor = v_color;\n" +
                 "}\n";
 
-        return new ShaderProgram(vertexSource, fragmentSource);
+        Map<Integer, String> map = new HashMap<>();
+
+        for (VertexAttrib attrib : attribs) {
+            map.put(attrib.location, attrib.name);
+        }
+
+        return new ShaderProgram(vertexSource, fragmentSource, map);
     }
 
     private static final int VERTICES_PER_SPRITE = 54;
 
     private ShaderProgram shader;
     private VertexData buffer;
+
+    private Matrix4 projectionMatrix = new Matrix4();
 
     private int idx = 0;
     private int maxIdx;
@@ -37,8 +62,6 @@ public class Batch {
     }
 
     public Batch(int size) {
-        this.shader = createShader();
-
         VertexAttrib[] attribs = new VertexAttrib[] {
             new VertexAttrib(0, "position", 2),
                 new VertexAttrib(1, "tid", 1),
@@ -47,7 +70,17 @@ public class Batch {
         };
         this.buffer = new VertexBuffer(size * VERTICES_PER_SPRITE, attribs);
 
+        this.shader = createShader(attribs);
+
         maxIdx = buffer.getVertexCount();
+    }
+
+    public void resize(int w, int h) {
+        float left = 0;
+        float right = w;
+        float bottom = h;
+        float top = 0;
+        this.projectionMatrix = OrthographicCamera.getOrtho(left, right, bottom, top, 0, 1);
     }
 
     public void begin() {
@@ -57,6 +90,7 @@ public class Batch {
         renderCalls = 0;
 
         shader.use();
+        shader.setUniformMatrix(shader.getUniformLocation("projectionMatrix"), false, this.projectionMatrix);
     }
 
     public void flush() {

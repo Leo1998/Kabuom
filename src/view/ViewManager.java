@@ -23,24 +23,28 @@ public class ViewManager {
             System.exit(0);
         }
 
+        //GL11.glDisable(GL11.GL_DEPTH_TEST);
+
         this.batch = new Batch();
+        batch.resize(Display.getWidth(), Display.getHeight());
     }
 
     public void render(float deltaTime) {
         if (Display.wasResized()) {
             GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
+            batch.resize(Display.getWidth(), Display.getHeight());
         }
 
-        GL11.glClearColor(1f, 0f, 0f, 1f);
+        GL11.glClearColor(0f, 0f, 0f, 1f);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
 
-        float xStep = 0.1f;
-        float yStep = 0.1f;
-        for (float x = -1f; x < 1f; x += xStep) {
-            for (float y = -1f; y < 1f; y += yStep) {
-                batch.draw(x, y, xStep - (xStep / 5f), yStep - (yStep / 5f), 0.0f, 0.0f, 0.0f, 1.0f, 0.8f, 0.2f, 1.0f);
+        float xStep = Display.getWidth() / 50;
+        float yStep = Display.getHeight() / 50;
+        for (float x = 0f; x < Display.getWidth(); x += xStep) {
+            for (float y = 0f; y < Display.getHeight(); y += yStep) {
+                batch.draw(x, y, xStep - (xStep / 5f), yStep - (yStep / 5f), 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f);
             }
         }
 
