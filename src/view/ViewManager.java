@@ -7,19 +7,7 @@ import org.lwjgl.opengl.GL11;
 
 public class ViewManager {
 
-    private static ShaderProgram createShader() {
-        String vertexSource = "void main() {" +
-                "gl_Position = gl_Vertex;" +
-                "}";
-
-        String fragmentSource = "void main() {" +
-                "gl_FragColor = vec4(0, 1, 0, 1);" +
-                "}";
-
-        return new ShaderProgram(vertexSource, fragmentSource);
-    }
-
-    private ShaderProgram shader;
+    private Batch batch;
 
     public ViewManager() {
         try {
@@ -35,7 +23,7 @@ public class ViewManager {
             System.exit(0);
         }
 
-        shader = createShader();
+        this.batch = new Batch();
     }
 
     public void render(float deltaTime) {
@@ -46,13 +34,17 @@ public class ViewManager {
         GL11.glClearColor(1f, 0f, 0f, 1f);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
-        shader.use();
+        batch.begin();
 
-        GL11.glBegin(GL11.GL_TRIANGLES);
-        GL11.glVertex2f(0.0f,0.0f);
-        GL11.glVertex2f(0.5f, 1.0f);
-        GL11.glVertex2f(1.0f,0.0f);
-        GL11.glEnd();
+        float xStep = 0.1f;
+        float yStep = 0.1f;
+        for (float x = -1f; x < 1f; x += xStep) {
+            for (float y = -1f; y < 1f; y += yStep) {
+                batch.draw(x, y, xStep - (xStep / 5f), yStep - (yStep / 5f), 0.0f, 0.0f, 0.0f, 1.0f, 0.8f, 0.2f, 1.0f);
+            }
+        }
+
+        batch.end();
 
         Display.update();
     }
