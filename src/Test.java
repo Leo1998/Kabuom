@@ -19,14 +19,20 @@ public class Test {
 
         double deltaTime;
         long startTime = System.currentTimeMillis();
-
+        long totalTime = startTime;
+        int frames = 0;
         while (!Display.isCloseRequested()) {
             long currentTime = System.currentTimeMillis();
             deltaTime = (double) ((currentTime - startTime) / 1000D);
             startTime = currentTime;
+            frames++;
+            if (currentTime - totalTime > 1000) {
+                System.out.println("fps: " + frames);
+                frames = 0;
 
-            System.out.println("Delta: " + deltaTime);
-
+                totalTime = currentTime;
+            }
+            
             GL11.glClearColor(1f, 0f, 0f, 1f);
             GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
