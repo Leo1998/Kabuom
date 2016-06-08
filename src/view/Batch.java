@@ -45,7 +45,7 @@ public class Batch {
         return new ShaderProgram(vertexSource, fragmentSource, map);
     }
 
-    private static final int VERTICES_PER_SPRITE = 54;
+    private static final int VERTICES_PER_SPRITE = 6;
 
     private ShaderProgram shader;
     private VertexData buffer;
@@ -58,7 +58,7 @@ public class Batch {
     private boolean drawing = false;
 
     public Batch() {
-        this(1000);
+        this(5000);
     }
 
     public Batch(int size) {
@@ -119,8 +119,6 @@ public class Batch {
     }
 
     private void vertex(float x, float y, float tid, float r, float g, float b, float a, float u, float v) {
-        checkFlush();
-
         buffer.put(x).put(y).put(tid).put(r).put(g).put(b).put(a).put(u).put(v);
         idx += 9;
     }

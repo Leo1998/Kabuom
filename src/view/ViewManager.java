@@ -40,8 +40,8 @@ public class ViewManager {
 
         batch.begin();
 
-        float xStep = Display.getWidth() / 50;
-        float yStep = Display.getHeight() / 50;
+        float xStep = Display.getWidth() / 120;
+        float yStep = Display.getHeight() / 120;
         for (float x = 0f; x < Display.getWidth(); x += xStep) {
             for (float y = 0f; y < Display.getHeight(); y += yStep) {
                 batch.draw(x, y, xStep - (xStep / 5f), yStep - (yStep / 5f), 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f);
