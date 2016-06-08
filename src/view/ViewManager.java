@@ -7,19 +7,7 @@ import org.lwjgl.opengl.GL11;
 
 public class ViewManager {
 
-    private static ShaderProgram createShader() {
-        String vertexSource = "void main() {" +
-                "gl_Position = gl_Vertex;" +
-                "}";
-
-        String fragmentSource = "void main() {" +
-                "gl_FragColor = vec4(0, 1, 0, 1);" +
-                "}";
-
-        return new ShaderProgram(vertexSource, fragmentSource);
-    }
-
-    private ShaderProgram shader;
+    private Batch batch;
 
     public ViewManager() {
         try {
@@ -35,24 +23,32 @@ public class ViewManager {
             System.exit(0);
         }
 
-        shader = createShader();
+        //GL11.glDisable(GL11.GL_DEPTH_TEST);
+
+        this.batch = new Batch();
+        batch.resize(Display.getWidth(), Display.getHeight());
     }
 
     public void render(float deltaTime) {
         if (Display.wasResized()) {
             GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
+            batch.resize(Display.getWidth(), Display.getHeight());
         }
 
-        GL11.glClearColor(1f, 0f, 0f, 1f);
+        GL11.glClearColor(0f, 0f, 0f, 1f);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
-        shader.use();
+        batch.begin();
 
-        GL11.glBegin(GL11.GL_TRIANGLES);
-        GL11.glVertex2f(0.0f,0.0f);
-        GL11.glVertex2f(0.5f, 1.0f);
-        GL11.glVertex2f(1.0f,0.0f);
-        GL11.glEnd();
+        float xStep = Display.getWidth() / 100;
+        float yStep = Display.getHeight() / 100;
+        for (float x = 0f; x < Display.getWidth(); x += xStep) {
+            for (float y = 0f; y < Display.getHeight(); y += yStep) {
+                batch.draw(x, y, xStep - (xStep / 5f), yStep - (yStep / 5f), 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f);
+            }
+        }
+
+        batch.end();
 
         Display.update();
     }

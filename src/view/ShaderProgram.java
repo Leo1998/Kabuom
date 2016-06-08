@@ -3,6 +3,7 @@ package view;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import utility.Matrix4;
 
 import java.nio.FloatBuffer;
 import java.util.Map;
@@ -94,7 +95,7 @@ public class ShaderProgram {
         GL20.glUniform1i(loc, i);
     }
 
-    /**public void setUniformMatrix(int loc, boolean transposed, Matrix4f mat) {
+    public void setUniformMatrix(int loc, boolean transposed, Matrix4 mat) {
         if (loc==-1) return;
         if (buf16Pool == null)
             buf16Pool = BufferUtils.createFloatBuffer(16);
@@ -102,6 +103,6 @@ public class ShaderProgram {
         mat.store(buf16Pool);
         buf16Pool.flip();
         GL20.glUniformMatrix4(loc, transposed, buf16Pool);
-    }*/
+    }
 
 }
