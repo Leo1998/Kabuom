@@ -10,6 +10,10 @@ public class Vector2 {
         koords[2] = y2-y1;
     }
 
+    public float getLength(){
+        return (float) Math.sqrt((koords[1]*koords[1])+(koords[2]*koords[2]));
+    }
+
     public float[] getKoords() {
         return koords;
     }

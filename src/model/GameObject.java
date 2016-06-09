@@ -6,15 +6,17 @@ package model;
 public class GameObject {
     private int hp,maxHp,level;
     private String name;
-    private float x,y;
+    private float x,y,radius;
 
-    public GameObject(int maxHp, int level, String name, float x, float y) {
+    public GameObject(int maxHp, int level, String name, float x, float y, float radius) {
         this.maxHp = maxHp;
         this.level = level;
         this.name = name;
         this.x = x;
         this.y = y;
+        this.radius = radius;
         hp = maxHp;
+
     }
 
     public int getHp() {

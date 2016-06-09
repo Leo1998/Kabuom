@@ -10,8 +10,8 @@ public class Tower extends GameObject{
     private ProjectileType projectile;
     private int attackRadius;
 
-    public Tower(int maxHp, int level, String name, float x, float y, ProjectileType projectile, int attackRadius) {
-        super(maxHp, level, name, x, y);
+    public Tower(int maxHp, int level, String name, float x, float y, float radius, ProjectileType projectile, int attackRadius) {
+        super(maxHp, level, name, x, y,radius);
         this.projectile = projectile;
         this.attackRadius = attackRadius;
     }

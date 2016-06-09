@@ -11,8 +11,8 @@ public class Enemy extends GameObject{
     private List<Vertex> path;
     private float attackCooldown;
 
-    public Enemy(int maxHp, int level, String name, float x, float y, int attackSpeed, int speed, float attackCooldown) {
-        super(maxHp, level, name, x, y);
+    public Enemy(int maxHp, int level, String name, float x, float y,float radius, int attackSpeed, int speed, float attackCooldown) {
+        super(maxHp, level, name, x, y,radius);
         this.attackSpeed = attackSpeed;
         this.speed = speed;
         this.attackCooldown = attackCooldown;

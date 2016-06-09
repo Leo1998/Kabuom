@@ -9,7 +9,7 @@ import tower.Tower;
 public class EnemyHandler {
     private Graph graph,adoptedGraph;
 
-    public void handelEnemies(float dt,List<Enemy> enemies,List<Tower> towers){
+    public void handleEnemies(float dt,List<Enemy> enemies,List<Tower> towers){
 
     }
 
