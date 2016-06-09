@@ -27,6 +27,8 @@ public class ViewManager {
 
         this.batch = new Batch();
         batch.resize(Display.getWidth(), Display.getHeight());
+
+        Texture tex = new Texture(getClass().getResource("/textures/test.png"));
     }
 
     public void render(float deltaTime) {
