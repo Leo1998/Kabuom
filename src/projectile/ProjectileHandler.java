@@ -7,8 +7,6 @@ import utility.Vector2;
 public class ProjectileHandler {
     public void handleProjectiles(float dt,List<Projectile> projectiles,List<Enemy> enemies){
 
-
-
     }
 
     public boolean isColliding(Projectile p, Enemy e){
