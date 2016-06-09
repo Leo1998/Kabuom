@@ -18,6 +18,7 @@ public class ViewManager {
             Display.setDisplayMode(new DisplayMode(800, 600));
             Display.setResizable(true);
             Display.setTitle("Kabuom! Tower Defense");
+            Display.setVSyncEnabled(true);
 
             Display.create();
 
@@ -72,6 +73,7 @@ public class ViewManager {
         batch.end();
 
         Display.update();
+        Display.sync(60);
     }
 
     public void dispose() {
