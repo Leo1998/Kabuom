@@ -18,6 +18,7 @@ public class GameObject {
         hp = maxHp;
 
     }
+    public float getRadius(){return radius; }
 
     public int getHp() {
         return hp;
