@@ -9,6 +9,10 @@ public class ViewManager {
 
     private Batch batch;
 
+    private Texture test0;
+    private Texture test1;
+    private Texture test2;
+
     public ViewManager() {
         try {
             Display.setDisplayMode(new DisplayMode(800, 600));
@@ -28,7 +32,9 @@ public class ViewManager {
         this.batch = new Batch();
         batch.resize(Display.getWidth(), Display.getHeight());
 
-        Texture tex = new Texture(getClass().getResource("/textures/test.png"));
+        this.test0 = new Texture(getClass().getResource("/textures/test0.png"));
+        this.test1 = new Texture(getClass().getResource("/textures/test1.png"));
+        this.test2 = new Texture(getClass().getResource("/textures/test2.png"));
     }
 
     public void render(float deltaTime) {
@@ -42,13 +48,26 @@ public class ViewManager {
 
         batch.begin();
 
-        float xStep = Display.getWidth() / 100;
-        float yStep = Display.getHeight() / 100;
+        /*float xStep = Display.getWidth() / 5;
+        float yStep = Display.getHeight() / 5;
         for (float x = 0f; x < Display.getWidth(); x += xStep) {
             for (float y = 0f; y < Display.getHeight(); y += yStep) {
-                batch.draw(x, y, xStep - (xStep / 5f), yStep - (yStep / 5f), 0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f, 1.0f);
+                Texture tex = null;
+                int i = (int) x % 3;
+                if (i == 0)
+                    tex = test0;
+                else if (i == 1)
+                    tex = test1;
+                else if (i == 2)
+                    tex = test2;
+
+                batch.draw(tex, x, y, xStep - (xStep / 5f), yStep - (yStep / 5f));
             }
-        }
+        }*/
+
+        batch.draw(test0, 0, 0, 200, 200);
+        batch.draw(test1, 200, 0, 200, 200);
+        batch.draw(test2, 400, 0, 200, 200);
 
         batch.end();
 
