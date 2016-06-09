@@ -1,10 +1,13 @@
 package view;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL13;
 import utility.Matrix4;
 import utility.OrthographicCamera;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Batch {
@@ -20,10 +23,12 @@ public class Batch {
                 "" +
                 "varying vec4 v_color;\n" +
                 "varying float v_tid;\n" +
+                "varying vec2 v_texCoords;\n" +
                 "" +
                 "void main() {\n" +
                 "v_color = color;\n" +
                 "v_tid = tid;\n" +
+                "v_texCoords = texCoords;\n" +
                 "gl_Position = vec4(position.xy, 0.0, 1.0) * projectionMatrix;\n" +
                 "}\n";
 
@@ -31,9 +36,17 @@ public class Batch {
                 "" +
                 "varying vec4 v_color;\n" +
                 "varying float v_tid;\n" +
+                "varying vec2 v_texCoords;\n" +
+                "" +
+                "uniform sampler2D textures[16];\n" +
                 "" +
                 "void main() {\n" +
-                "gl_FragColor = v_color;\n" +
+                "vec4 color = v_color;\n" +
+                "int tid = int(v_tid);\n" +
+                "if (tid >= 0) {\n" +
+                "color *= texture2D(textures[tid], v_texCoords);\n" +
+                "}\n" +
+                "gl_FragColor = color;\n" +
                 "}\n";
 
         Map<Integer, String> map = new HashMap<>();
@@ -52,6 +65,9 @@ public class Batch {
 
     private Matrix4 projectionMatrix = new Matrix4();
 
+    private int texIdx = 0;
+    private final int maxTextureIdx = 16;
+    private List<Texture> textures = new ArrayList<Texture>();
     private int idx = 0;
     private int maxIdx;
     private int renderCalls;
@@ -87,6 +103,7 @@ public class Batch {
         drawing = true;
 
         idx = 0;
+        texIdx = 0;
         renderCalls = 0;
 
         shader.use();
@@ -98,6 +115,8 @@ public class Batch {
             buffer.flip();
             render();
             idx = 0;
+            texIdx = 0;
+            textures.clear();
             buffer.clear();
         }
 
@@ -110,8 +129,13 @@ public class Batch {
     }
 
     private void render() {
-        //if (texture != null)
-        //    texture.bind();
+        for (int i = 0; i < textures.size(); i++) {
+            Texture tex = textures.get(i);
+
+            GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
+            tex.bind();
+            shader.setUniformi(shader.getUniformLocation("textures[" + i + "]"), i);
+        }
         buffer.bind();
         buffer.draw(GL11.GL_TRIANGLES, 0, idx);
         buffer.unbind();
@@ -128,12 +152,37 @@ public class Batch {
             flush();
     }
 
-    public void draw(float x, float y, float width, float height, float originX, float originY, float rotationRadians, float r, float g, float b, float a) {
-        draw(x, y, width, height, originX, originY, rotationRadians, r, g, b, a, 0, 0, 1, 1);
+    private int checkTexture(Texture tex) {
+        if (tex == null) return -1;
+
+        if (textures.contains(tex)) {
+            return textures.indexOf(tex);
+        } else {
+            if (texIdx >= maxTextureIdx) {
+                flush();
+            }
+            textures.add(tex);
+            texIdx++;
+
+            return texIdx - 1;
+        }
     }
 
-    public void draw(float x, float y, float width, float height, float originX, float originY, float rotationRadians, float r, float g, float b, float a, float u, float v, float u2, float v2) {
+    public void draw(Texture tex, float x, float y, float width, float height) {
+        draw(tex, x, y, width, height, 0, 0, 0, 1f, 1f, 1f, 1f);
+    }
+
+    public void draw(Texture tex, float x, float y, float width, float height, float originX, float originY, float rotationRadians, float r, float g, float b, float a) {
+        draw(tex, x, y, width, height, originX, originY, rotationRadians, r, g, b, a, 0, 0, 1, 1);
+    }
+
+    public void draw(Texture tex, float x, float y, float width, float height, float originX, float originY, float rotationRadians, float r, float g, float b, float a, float u, float v, float u2, float v2) {
         checkFlush();
+
+        int tid = -1;
+        if (tex != null) {
+            tid = checkTexture(tex);
+        }
 
         float x1,y1, x2,y2, x3,y3, x4,y4;
 
@@ -179,14 +228,14 @@ public class Batch {
         }
 
         // top left, top right, bottom left
-        vertex(x1, y1, 0, r, g, b, a, u, v);
-        vertex(x2, y2, 0, r, g, b, a, u2, v);
-        vertex(x4, y4, 0, r, g, b, a, u, v2);
+        vertex(x1, y1, tid, r, g, b, a, u, v);
+        vertex(x2, y2, tid, r, g, b, a, u2, v);
+        vertex(x4, y4, tid, r, g, b, a, u, v2);
 
         // top right, bottom right, bottom left
-        vertex(x2, y2, 0, r, g, b, a, u2, v);
-        vertex(x3, y3, 0, r, g, b, a, u2, v2);
-        vertex(x4, y4, 0, r, g, b, a, u, v2);
+        vertex(x2, y2, tid, r, g, b, a, u2, v);
+        vertex(x3, y3, tid, r, g, b, a, u2, v2);
+        vertex(x4, y4, tid, r, g, b, a, u, v2);
     }
 
 }
