@@ -11,7 +11,7 @@ public class Button extends ViewComponent{
     }
 
     public boolean buttonPressed(){
-        if(new Utility().viewCompenentisCollidingWithMouse(this)){
+        if(new Utility().viewCompenentIsCollidingWithMouse(this)){
             return true;
         }else{
             return false;

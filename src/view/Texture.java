@@ -10,7 +10,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
 
-public class Texture {
+public class Texture implements ITexture {
 
     protected int id;
     protected int width;
@@ -176,6 +176,10 @@ public class Texture {
 
     public float getV2() {
         return 1f;
+    }
+
+    public Texture getTexture() {
+        return this;
     }
 
 }
