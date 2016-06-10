@@ -1,6 +1,8 @@
 package view;
 
 
+import view.components.ViewComponent;
+
 public class TestView extends View {
 
     private float rotationRadians = 0;

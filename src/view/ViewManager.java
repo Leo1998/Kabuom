@@ -14,9 +14,11 @@ public class ViewManager {
     private Batch batch;
 
     public static BitmapFont font;
-    public static Texture test0;
-    public static Texture test1;
-    public static Texture test2;
+    public static ITexture test0;
+    public static ITexture test1;
+    public static ITexture test2;
+    public static ITexture buttonMainTexture;
+    public static ITexture buttonPressedTexture;
 
     public static void load (){
         try {
@@ -25,6 +27,8 @@ public class ViewManager {
             test0 = new Texture(ViewManager.class.getResource("/textures/test0.png"));
             test1 = new Texture(ViewManager.class.getResource("/textures/test1.png"));
             test2 = new Texture(ViewManager.class.getResource("/textures/test2.png"));
+            buttonMainTexture = new Texture(ViewManager.class.getResource("/textures/viewTextures/mainButton.png"));
+            buttonPressedTexture = new Texture(ViewManager.class.getResource("/textures/viewTextures/pressedButton.png"));
         } catch(IOException e) {
             e.printStackTrace();
             font = null;
