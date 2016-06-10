@@ -29,8 +29,10 @@ public class TestView extends View {
     @Override
     public void render(float deltaTime, Batch batch) {
         if(testButton.buttonPressed()) {
-            //ViewManager.font.drawText(batch, "Hallo Kabuom!     abcdefghijklmnopqrstuvwxyzß", 100, 300);
-
+            for (int i = 100; i < 600; i += 50) {
+                batch.draw(ViewManager.test0, i, 450, 25, 25, 12, 12, rotationRadians, 1f, 1f, 1f, 1f);
+            }
+            ViewManager.font.drawText(batch, "Hallo Kabuom!     abcdefghijklmnopqrstuvwxyzß", 100, 400);
         }
 
         rotationRadians += Math.toRadians(deltaTime * 50);

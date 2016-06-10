@@ -17,8 +17,12 @@ public class PostProcessingManager {
         this.batch = batch;
     }
 
+    private boolean isEnabled() {
+        return false && isSupported();
+    }
+
     public void resize(int width, int height) {
-        if (isSupported()) {
+        if (isEnabled()) {
             try {
                 if (mainFB != null) {
                     mainFB.dispose();
@@ -32,17 +36,17 @@ public class PostProcessingManager {
     }
 
     public void begin() {
-        if (isSupported()) {
+        if (isEnabled()) {
             mainFB.begin();
+
+            GL11.glClearColor(0f, 0f, 0f, 1f);
+            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
         }
     }
 
     public void end() {
-        if (isSupported()) {
+        if (isEnabled()) {
             mainFB.end();
-
-            GL11.glClearColor(0f, 0f, 0f, 1f);
-            GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
             batch.begin();
             batch.draw(mainFB, 0, 0, Display.getWidth(), Display.getHeight());

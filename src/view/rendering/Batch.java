@@ -151,6 +151,7 @@ public class Batch {
 
         idx = 0;
         texIdx = 0;
+        textures.clear();
         renderCalls = 0;
 
         shader.use();
@@ -166,7 +167,6 @@ public class Batch {
             textures.clear();
             buffer.clear();
         }
-
     }
 
     public void end() {
@@ -191,11 +191,11 @@ public class Batch {
 
     private void vertex(float x, float y, float tid, float r, float g, float b, float a, float u, float v) {
         buffer.put(x).put(y).put(tid).put(r).put(g).put(b).put(a).put(u).put(v);
-        idx += 9;
+        idx++;
     }
 
     private void checkFlush() {
-        if (idx > maxIdx)
+        if (idx >= maxIdx)
             flush();
     }
 
@@ -208,7 +208,7 @@ public class Batch {
             if (texIdx >= maxTextureIdx) {
                 flush();
             }
-            textures.add(tex);
+            textures.add(texIdx, tex);
             texIdx++;
 
             return texIdx - 1;
@@ -227,10 +227,7 @@ public class Batch {
         float u2 = tex.getU2();
         float v2 = tex.getV2();
 
-        int tid = -1;
-        if (tex != null) {
-            tid = checkTexture(tex.getTexture());
-        }
+        int tid = checkTexture(tex.getTexture());
 
         float x1,y1, x2,y2, x3,y3, x4,y4;
 

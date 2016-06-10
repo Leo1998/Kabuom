@@ -1,6 +1,7 @@
 package view.components;
 
 import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.Display;
 import utility.Utility;
 import view.rendering.Batch;
 import view.rendering.ITexture;
@@ -20,9 +21,8 @@ public class Button extends ViewComponent{
 
     }
 
-
     public boolean buttonPressed(){
-        if(new Utility().viewComponentIsCollidingWithMouse(this, Mouse.getX(),Mouse.getY())&&Mouse.isButtonDown(1)){
+        if(new Utility().viewComponentIsCollidingWithMouse(this, Mouse.getX(), Display.getHeight() - Mouse.getY()) && Mouse.isButtonDown(0)){
             texture= ViewManager.buttonPressedTexture;
             return true;
         }else{
@@ -39,9 +39,7 @@ public class Button extends ViewComponent{
         ViewManager.font.drawText(batch, buttontext , (int)getX(), (int)(getY() + getHeight()/4));
     }
 
-    public ITexture getTexture(){
-        return texture;
-    }
+    public ITexture getTexture() {return texture;}
 
     public String getButtontext(){
         return buttontext;

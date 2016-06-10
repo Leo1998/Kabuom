@@ -124,11 +124,14 @@ public class ViewManager {
             onResize(Display.getWidth(), Display.getHeight());
         }
 
+        GL11.glClearColor(0f, 0f, 0f, 1f);
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+
         while(Mouse.next()){
             if(Mouse.getEventButtonState()){
                 int button = Mouse.getEventButton();
                 int mouseX = Mouse.getEventX();
-                int mouseY = Mouse.getEventY();
+                int mouseY = Display.getHeight() - Mouse.getEventY();
 
                 currentView.onMouseDown(button, mouseX,mouseY);
             }
@@ -158,9 +161,6 @@ public class ViewManager {
         }
 
         ppManager.begin();
-
-        GL11.glClearColor(0f, 0f, 0f, 1f);
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
 
