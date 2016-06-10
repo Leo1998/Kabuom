@@ -1,13 +1,16 @@
 package view;
 
 
+import view.components.ViewComponent;
+
+import java.util.List;
+
 public class TestView extends View {
-
-
 
     private float rotationRadians = 0;
 
     public TestView(){
+
         super();
 
 
@@ -25,6 +28,7 @@ public class TestView extends View {
         batch.draw(ViewManager.test0, 0, 0, 200, 200, 100, 100, rotationRadians, 1f, 1f, 1f, 1f);
         batch.draw(ViewManager.test1, 200, 0, 200, 200, 100, 100, rotationRadians, 1f, 1f, 1f, 1f);
         batch.draw(ViewManager.test2, 400, 0, 200, 200, 100, 100, rotationRadians, 1f, 1f, 1f, 1f);
+        batch.draw()
 
         ViewManager.font.drawText(batch, "Hallo Kabuom!     abcdefghijklmnopqrstuvwxyzß", 100, 300);
 
