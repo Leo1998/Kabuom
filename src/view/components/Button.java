@@ -1,5 +1,6 @@
 package view.components;
 
+import org.lwjgl.input.Mouse;
 import utility.Utility;
 import view.rendering.Batch;
 import view.rendering.ITexture;
@@ -19,8 +20,9 @@ public class Button extends ViewComponent{
 
     }
 
+
     public boolean buttonPressed(){
-        if(new Utility().viewComponentIsCollidingWithMouse(this)){
+        if(new Utility().viewComponentIsCollidingWithMouse(this, Mouse.getX(),Mouse.getY())&&Mouse.isButtonDown(1)){
             texture= ViewManager.buttonPressedTexture;
             return true;
         }else{

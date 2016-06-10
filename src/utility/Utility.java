@@ -1,7 +1,6 @@
 package utility;
 
 import model.GameObject;
-import org.lwjgl.input.Mouse;
 import view.components.ViewComponent;
 
 
@@ -18,12 +17,12 @@ public class Utility {
             throw new IllegalArgumentException();
         }
     }
-    public boolean gameObjectIsCollidingWithMouse(GameObject o1){
+    public boolean gameObjectIsCollidingWithMouse(GameObject o1, int mouseX, int mouseY){
         if(o1 != null ){
-            if(Mouse.getX()>= o1.getX() &&
-                    Mouse.getX() <= o1.getX()+o1.getRadius()&&
-                    Mouse.getY() >= o1.getY()&&
-                    Mouse.getY() <= o1.getY()+o1.getRadius()){
+            if(mouseX>= o1.getX() &&
+                    mouseX <= o1.getX()+o1.getRadius()&&
+                    mouseY >= o1.getY()&&
+                    mouseY <= o1.getY()+o1.getRadius()){
                 return true;
             }else{
                 return false;
@@ -35,12 +34,12 @@ public class Utility {
 
     }
 
-    public boolean viewComponentIsCollidingWithMouse(ViewComponent o1) {
+    public boolean viewComponentIsCollidingWithMouse(ViewComponent o1, int mouseX, int mouseY) {
         if (o1 != null) {
-            if (Mouse.getX() >= o1.getX() &&
-                    Mouse.getX() <= o1.getX() + o1.getWidth() &&
-                    Mouse.getY() >= o1.getY() &&
-                    Mouse.getY() <= o1.getY() + o1.getHeight()) {
+            if (mouseX >= o1.getX() &&
+                    mouseX <= o1.getX() + o1.getWidth() &&
+                    mouseY >= o1.getY() &&
+                    mouseY <= o1.getY() + o1.getHeight()) {
                 return true;
             } else {
                 return false;

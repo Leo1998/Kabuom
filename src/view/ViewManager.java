@@ -2,6 +2,7 @@ package view;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -123,12 +124,19 @@ public class ViewManager {
             onResize(Display.getWidth(), Display.getHeight());
         }
 
+        while(Mouse.next()){
+            if(Mouse.getEventButtonState()){
+                int button = Mouse.getEventButton();
+                int mouseX = Mouse.getEventX();
+                int mouseY = Mouse.getEventY();
+
+                currentView.onMouseDown(button, mouseX,mouseY);
+            }
+        }
         while(Keyboard.next()){
             if(Keyboard.getEventKeyState()){
                 int key = Keyboard.getEventKey();
                 char c = Keyboard.getEventCharacter();
-
-
 
                 if (key == Keyboard.KEY_F11) {
                     fullscreen = !fullscreen;

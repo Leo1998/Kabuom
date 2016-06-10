@@ -22,11 +22,12 @@ public abstract class View {
         }
     }
 
-    public void layout(float width, float height){}
 
+    public void layout(float width, float height){}
     public List<ViewComponent> getComponents(){return components;}
 
-    public void onKeyDown(int key,char c){
+    public abstract void onKeyDown(int key,char c);
+    public void onMouseDown(int button, int mouseX, int mouseY){
 
     }
 
