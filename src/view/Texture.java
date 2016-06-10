@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 
 public class Texture implements ITexture {
 
-    protected int id;
+    protected int handle;
     protected int width;
     protected int height;
 
@@ -32,7 +32,7 @@ public class Texture implements ITexture {
 
     public Texture(int width, int height, int filter, int wrap) {
         GL11.glEnable(getTarget());
-        id = GL11.glGenTextures();
+        handle = GL11.glGenTextures();
         this.width = width;
         this.height = height;
         bind();
@@ -73,7 +73,7 @@ public class Texture implements ITexture {
             buf.flip();
 
             GL11.glEnable(getTarget());
-            id = GL11.glGenTextures();
+            handle = GL11.glGenTextures();
 
             bind();
             setFilter(minFilter, magFilter);
@@ -101,7 +101,7 @@ public class Texture implements ITexture {
     }
 
     public int getID() {
-        return id;
+        return handle;
     }
 
     protected void setUnpackAlignment() {
@@ -140,18 +140,18 @@ public class Texture implements ITexture {
     public void bind() {
         if (!valid())
             throw new IllegalStateException("trying to bind a texture that was disposed");
-        GL11.glBindTexture(getTarget(), id);
+        GL11.glBindTexture(getTarget(), handle);
     }
 
     public void dispose() {
         if (valid()) {
-            GL11.glDeleteTextures(id);
-            id = 0;
+            GL11.glDeleteTextures(handle);
+            handle = 0;
         }
     }
 
     public boolean valid() {
-        return id != 0;
+        return handle != 0;
     }
 
     public int getWidth() {

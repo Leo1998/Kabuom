@@ -3,8 +3,6 @@ package view;
 
 public class TestView extends View {
 
-
-
     private float rotationRadians = 0;
 
     public TestView(){
