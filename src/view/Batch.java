@@ -2,6 +2,7 @@ package view;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GLContext;
 import utility.Matrix4;
 import utility.OrthographicCamera;
 
@@ -38,14 +39,59 @@ public class Batch {
                 "varying float v_tid;\n" +
                 "varying vec2 v_texCoords;\n" +
                 "" +
-                "uniform sampler2D textures[16];\n" +
+                "uniform sampler2D texture0;\n" +
+                "uniform sampler2D texture1;\n" +
+                "uniform sampler2D texture2;\n" +
+                "uniform sampler2D texture3;\n" +
+                "uniform sampler2D texture4;\n" +
+                "uniform sampler2D texture5;\n" +
+                "uniform sampler2D texture6;\n" +
+                "uniform sampler2D texture7;\n" +
+                "uniform sampler2D texture8;\n" +
+                "uniform sampler2D texture9;\n" +
+                "uniform sampler2D texture10;\n" +
+                "uniform sampler2D texture11;\n" +
+                "uniform sampler2D texture12;\n" +
+                "uniform sampler2D texture13;\n" +
+                "uniform sampler2D texture14;\n" +
+                "uniform sampler2D texture15;\n" +
                 "" +
                 "void main() {\n" +
                 "vec4 color = v_color;\n" +
                 "int tid = int(v_tid);\n" +
-                "if (tid >= 0) {\n" +
-                "color *= texture2D(textures[tid], v_texCoords);\n" +
-                "}\n" +
+                "if (tid == 0)\n" +
+                "color *= texture2D(texture0, v_texCoords);\n" +
+                "else if (tid == 1)\n" +
+                "color *= texture2D(texture1, v_texCoords);\n" +
+                "else if (tid == 2)\n" +
+                "color *= texture2D(texture2, v_texCoords);\n" +
+                "else if (tid == 3)\n" +
+                "color *= texture2D(texture3, v_texCoords);\n" +
+                "else if (tid == 4)\n" +
+                "color *= texture2D(texture4, v_texCoords);\n" +
+                "else if (tid == 5)\n" +
+                "color *= texture2D(texture5, v_texCoords);\n" +
+                "else if (tid == 6)\n" +
+                "color *= texture2D(texture6, v_texCoords);\n" +
+                "else if (tid == 7)\n" +
+                "color *= texture2D(texture7, v_texCoords);\n" +
+                "else if (tid == 8)\n" +
+                "color *= texture2D(texture8, v_texCoords);\n" +
+                "else if (tid == 9)\n" +
+                "color *= texture2D(texture9, v_texCoords);\n" +
+                "else if (tid == 10)\n" +
+                "color *= texture2D(texture10, v_texCoords);\n" +
+                "else if (tid == 11)\n" +
+                "color *= texture2D(texture11, v_texCoords);\n" +
+                "else if (tid == 12)\n" +
+                "color *= texture2D(texture12, v_texCoords);\n" +
+                "else if (tid == 13)\n" +
+                "color *= texture2D(texture13, v_texCoords);\n" +
+                "else if (tid == 14)\n" +
+                "color *= texture2D(texture14, v_texCoords);\n" +
+                "else if (tid == 15)\n" +
+                "color *= texture2D(texture15, v_texCoords);\n" +
+                "\n" +
                 "gl_FragColor = color;\n" +
                 "}\n";
 
@@ -66,7 +112,7 @@ public class Batch {
     private Matrix4 projectionMatrix = new Matrix4();
 
     private int texIdx = 0;
-    private final int maxTextureIdx = 16;
+    private final int maxTextureIdx = Math.min(16, GL11.glGetInteger(GL13.GL_MAX_TEXTURE_UNITS));
     private List<Texture> textures = new ArrayList<Texture>();
     private int idx = 0;
     private int maxIdx;
@@ -89,6 +135,8 @@ public class Batch {
         this.shader = createShader(attribs);
 
         maxIdx = buffer.getVertexCount();
+
+        System.out.println("Batch created with " + size + " sprites and " + maxTextureIdx + " textures!");
     }
 
     public void resize(int w, int h) {
@@ -134,7 +182,7 @@ public class Batch {
 
             GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
             tex.bind();
-            shader.setUniformi(shader.getUniformLocation("textures[" + i + "]"), i);
+            shader.setUniformi(shader.getUniformLocation("texture" + i ), i);
         }
         buffer.bind();
         buffer.draw(GL11.GL_TRIANGLES, 0, idx);
@@ -168,20 +216,21 @@ public class Batch {
         }
     }
 
-    public void draw(Texture tex, float x, float y, float width, float height) {
+    public void draw(ITexture tex, float x, float y, float width, float height) {
         draw(tex, x, y, width, height, 0, 0, 0, 1f, 1f, 1f, 1f);
     }
 
-    public void draw(Texture tex, float x, float y, float width, float height, float originX, float originY, float rotationRadians, float r, float g, float b, float a) {
-        draw(tex, x, y, width, height, originX, originY, rotationRadians, r, g, b, a, 0, 0, 1, 1);
-    }
-
-    public void draw(Texture tex, float x, float y, float width, float height, float originX, float originY, float rotationRadians, float r, float g, float b, float a, float u, float v, float u2, float v2) {
+    public void draw(ITexture tex, float x, float y, float width, float height, float originX, float originY, float rotationRadians, float r, float g, float b, float a) {
         checkFlush();
+
+        float u = tex.getU();
+        float v = tex.getV();
+        float u2 = tex.getU2();
+        float v2 = tex.getV2();
 
         int tid = -1;
         if (tex != null) {
-            tid = checkTexture(tex);
+            tid = checkTexture(tex.getTexture());
         }
 
         float x1,y1, x2,y2, x3,y3, x4,y4;
