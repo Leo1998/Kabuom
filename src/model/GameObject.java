@@ -20,8 +20,6 @@ public class GameObject {
     }
     public float getRadius(){return radius; }
 
-    public float getRadius() {return radius}
-
     public int getHp() {
         return hp;
     }

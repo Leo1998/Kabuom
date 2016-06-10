@@ -48,10 +48,6 @@ public class Utility {
         } else {
             throw new IllegalArgumentException();
 
-            if(new Vector2(o1.getX(),o1.getY(),o2.getX(),o2.getY()).getLength() > o1.getRadius()+o2.getRadius()) {
-                return true;
-            }
-
         }
     }
 }
