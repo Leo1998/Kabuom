@@ -5,6 +5,10 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import view.rendering.Batch;
+import view.rendering.BitmapFont;
+import view.rendering.ITexture;
+import view.rendering.Texture;
 
 import java.awt.*;
 import java.io.IOException;

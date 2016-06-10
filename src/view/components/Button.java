@@ -1,8 +1,7 @@
 package view.components;
 
 import utility.Utility;
-import view.ITexture;
-import view.Texture;
+import view.rendering.ITexture;
 import view.View;
 import view.ViewManager;
 

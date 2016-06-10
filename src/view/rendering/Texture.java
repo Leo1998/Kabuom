@@ -1,4 +1,4 @@
-package view;
+package view.rendering;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
 import org.lwjgl.BufferUtils;

@@ -1,7 +1,7 @@
 package view;
 
 
-import view.components.ViewComponent;
+import view.rendering.Batch;
 
 public class TestView extends View {
 

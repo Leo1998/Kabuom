@@ -1,4 +1,4 @@
-package view;
+package view.rendering;
 
 import java.io.BufferedReader;
 import java.io.IOException;

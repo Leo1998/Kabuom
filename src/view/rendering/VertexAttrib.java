@@ -1,4 +1,4 @@
-package view;
+package view.rendering;
 
 public class VertexAttrib {
 

@@ -1,7 +1,7 @@
 package view;
 
-import org.lwjgl.input.Keyboard;
 import view.components.ViewComponent;
+import view.rendering.Batch;
 
 import java.util.List;
 

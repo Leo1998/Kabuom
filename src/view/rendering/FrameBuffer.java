@@ -1,4 +1,4 @@
-package view;
+package view.rendering;
 
 import org.lwjgl.LWJGLException;
 import static org.lwjgl.opengl.EXTFramebufferObject.*;
