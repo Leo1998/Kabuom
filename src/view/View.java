@@ -10,12 +10,14 @@ public abstract class View {
     public View(){
 
     }
-    public void render(float deltatime, Batch batch){}
+    public void render(float deltaTime, Batch batch){}
 
     public void layout(float width, float height){}
 
     public ViewComponent[] getComponents(){return components;}
 
-    public void onKeyDown(int key,char c){}
+    public void onKeyDown(int key,char c){
+
+    }
 
 }

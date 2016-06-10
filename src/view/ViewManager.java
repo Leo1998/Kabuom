@@ -12,12 +12,27 @@ import java.io.IOException;
 public class ViewManager {
 
     private Batch batch;
-    private BitmapFont font;
 
-    private Texture test0;
-    private Texture test1;
-    private Texture test2;
-    private float rotationRadians = 0;
+    public static BitmapFont font;
+    public static Texture test0;
+    public static Texture test1;
+    public static Texture test2;
+
+    public static void load (){
+        try {
+            font = new BitmapFont(ViewManager.class.getResource("/font/font.fnt"), ViewManager.class.getResource("/font/font.png"));
+
+            test0 = new Texture(ViewManager.class.getResource("/textures/test0.png"));
+            test1 = new Texture(ViewManager.class.getResource("/textures/test1.png"));
+            test2 = new Texture(ViewManager.class.getResource("/textures/test2.png"));
+        } catch(IOException e) {
+            e.printStackTrace();
+            font = null;
+        }
+    }
+
+    private View currentView;
+
     private boolean fullscreen = false;
 
     public ViewManager() {
@@ -32,18 +47,12 @@ public class ViewManager {
             System.exit(0);
         }
 
+        load();
+
         this.batch = new Batch();
         batch.resize(Display.getWidth(), Display.getHeight());
 
-        try {
-            font = new BitmapFont(getClass().getResource("/font/font.fnt"), getClass().getResource("/font/font.png"));
-        } catch(IOException e) {
-            e.printStackTrace();
-        }
-
-        this.test0 = new Texture(getClass().getResource("/textures/test0.png"));
-        this.test1 = new Texture(getClass().getResource("/textures/test1.png"));
-        this.test2 = new Texture(getClass().getResource("/textures/test2.png"));
+        currentView = new TestView();
     }
 
     public void setDisplayMode(int width, int height, boolean fullscreen) {
@@ -108,6 +117,8 @@ public class ViewManager {
                 int key = Keyboard.getEventKey();
                 char c = Keyboard.getEventCharacter();
 
+
+
                 if (key == Keyboard.KEY_F11) {
                     fullscreen = !fullscreen;
 
@@ -132,30 +143,8 @@ public class ViewManager {
 
         batch.begin();
 
-        /*float xStep = Display.getWidth() / 5;
-        float yStep = Display.getHeight() / 5;
-        for (float x = 0f; x < Display.getWidth(); x += xStep) {
-            for (float y = 0f; y < Display.getHeight(); y += yStep) {
-                Texture tex = null;
-                int i = (int) x % 3;
-                if (i == 0)
-                    tex = test0;
-                else if (i == 1)
-                    tex = test1;
-                else if (i == 2)
-                    tex = test2;
 
-                batch.draw(tex, x, y, xStep - (xStep / 5f), yStep - (yStep / 5f));
-            }
-        }*/
-
-        rotationRadians += Math.toRadians(deltaTime * 50);
-
-        batch.draw(test0, 0, 0, 200, 200, 100, 100, rotationRadians, 1f, 1f, 1f, 1f);
-        batch.draw(test1, 200, 0, 200, 200, 100, 100, rotationRadians, 1f, 1f, 1f, 1f);
-        batch.draw(test2, 400, 0, 200, 200, 100, 100, rotationRadians, 1f, 1f, 1f, 1f);
-
-        font.drawText(batch, "Hallo Kabuom!     abcdefghijklmnopqrstuvwxyzß", 100, 300);
+        currentView.render(deltaTime,batch);
 
         batch.end();
 

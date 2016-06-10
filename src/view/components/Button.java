@@ -9,7 +9,7 @@ import view.View;
 public class Button extends ViewComponent{
 
     private String buttontext;
-    private Texture mainTexture,pressedTexture, texture;
+    private ITexture mainTexture,pressedTexture, texture;
 
     public Button(float x, float y, float width, float height, View v, String buttontext) {
         super(x, y, width, height, v);
@@ -29,7 +29,7 @@ public class Button extends ViewComponent{
         }
     }
 
-    public Texture getTexture(){
+    public ITexture getTexture(){
         return texture;
     }
 
