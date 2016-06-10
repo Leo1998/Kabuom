@@ -5,10 +5,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
-import view.rendering.Batch;
-import view.rendering.BitmapFont;
-import view.rendering.ITexture;
-import view.rendering.Texture;
+import view.rendering.*;
 
 import java.awt.*;
 import java.io.IOException;
@@ -40,7 +37,7 @@ public class ViewManager {
     }
 
     private View currentView;
-
+    private PostProcessingManager ppManager;
     private boolean fullscreen = false;
 
     public ViewManager() {
@@ -57,8 +54,14 @@ public class ViewManager {
 
         load();
 
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
         this.batch = new Batch();
         batch.resize(Display.getWidth(), Display.getHeight());
+
+        this.ppManager = new PostProcessingManager(batch);
+        ppManager.resize(Display.getWidth(), Display.getHeight());
 
         currentView = new TestView();
     }
@@ -146,15 +149,17 @@ public class ViewManager {
             }
         }
 
+        ppManager.begin();
+
         GL11.glClearColor(0f, 0f, 0f, 1f);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
         batch.begin();
 
-
-        currentView.render(deltaTime,batch);
+        currentView.render(deltaTime, batch);
 
         batch.end();
+        ppManager.end();
 
         Display.update();
         Display.sync(60);
@@ -163,6 +168,7 @@ public class ViewManager {
     private void onResize(int width, int height) {
         GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
         batch.resize(Display.getWidth(), Display.getHeight());
+        ppManager.resize(Display.getWidth(), Display.getHeight());
     }
 
     public void dispose() {

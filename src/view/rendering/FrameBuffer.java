@@ -3,10 +3,7 @@ package view.rendering;
 import org.lwjgl.LWJGLException;
 import static org.lwjgl.opengl.EXTFramebufferObject.*;
 
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GLContext;
+import org.lwjgl.opengl.*;
 
 public class FrameBuffer implements ITexture {
 
