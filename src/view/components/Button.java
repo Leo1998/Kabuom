@@ -1,6 +1,7 @@
 package view.components;
 
 import utility.Utility;
+import view.rendering.Batch;
 import view.rendering.ITexture;
 import view.View;
 import view.ViewManager;
@@ -26,6 +27,14 @@ public class Button extends ViewComponent{
             texture = ViewManager.buttonMainTexture;
             return false;
         }
+    }
+
+    @Override
+    public void draw(Batch batch) {
+        super.draw(batch);
+
+        batch.draw(getTexture(),getX(),getY(),getWidth(),getHeight());
+        ViewManager.font.drawText(batch, buttontext , (int)getX(), (int)(getY() + getHeight()/4));
     }
 
     public ITexture getTexture(){

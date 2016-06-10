@@ -1,7 +1,11 @@
 package view;
 
 
+import view.components.Button;
+import view.components.ViewComponent;
 import view.rendering.Batch;
+
+import java.util.*;
 
 public class TestView extends View {
 
@@ -10,6 +14,7 @@ public class TestView extends View {
     public TestView(){
         super();
 
+        components.add(new Button(150,150,50,50,this, "Test"));
 
     }
 
