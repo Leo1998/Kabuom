@@ -5,7 +5,6 @@ import model.GameObject;
 import view.components.Button;
 import view.components.ViewComponent;
 import view.rendering.Batch;
-
 import java.util.List;
 
 public class GameView extends View{
@@ -13,7 +12,6 @@ public class GameView extends View{
     private Button turretButton;
     private Button pause;
     private List<GameObject> currentObjects;
-    private List<Vertex> currentWay;
 
 
     public GameView(){
