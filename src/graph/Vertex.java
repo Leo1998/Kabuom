@@ -16,8 +16,9 @@ package graph;
  * @author Qualitaets- und UnterstuetzungsAgentur - Landesinstitut fuer Schule, Materialien zum schulinternen Lehrplan Informatik SII
  * @version Oktober 2015
  */
-public class Vertex{
+public class Vertex<ContentType>{
   //Einmalige ID des Knotens und Markierung
+  private ContentType content;
   private String id;
   private boolean mark;
   /**
@@ -47,5 +48,13 @@ public class Vertex{
   */
   public boolean isMarked(){
     return mark;
+  }
+
+  public ContentType getContent() {
+    return content;
+  }
+
+  public void setContent(ContentType content) {
+    this.content = content;
   }
 }

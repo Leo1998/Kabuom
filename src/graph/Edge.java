@@ -1,5 +1,7 @@
 package graph;
 
+import enemy.Enemy;
+
 /**
  * <p>
  * Materialien zu den zentralen NRW-Abiturpruefungen im Fach Informatik ab 2018
@@ -21,6 +23,7 @@ public class Edge{
   private Vertex[] vertices;
   private double weight;
   private boolean mark;
+  private List<Enemy> enemies;
   
   /**
   * Ein neues Objekt vom Typ Edge wird erstellt. Die von diesem Objekt 
@@ -73,5 +76,12 @@ public class Edge{
   public boolean isMarked(){
     return mark;
   }
-  
+
+  public List<Enemy> getEnemies() {
+    return enemies;
+  }
+
+  public void setEnemies(List<Enemy> enemies) {
+    this.enemies = enemies;
+  }
 }
