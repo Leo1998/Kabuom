@@ -10,12 +10,14 @@ public class Enemy extends GameObject{
     private int attackSpeed, speed;
     private List<Vertex> path;
     private float attackCooldown;
+    private EnemyType enemyType;
 
-    public Enemy(int maxHp, int level, String name, float x, float y,float radius, int attackSpeed, int speed, float attackCooldown) {
-        super(maxHp, level, name, x, y,radius);
-        this.attackSpeed = attackSpeed;
-        this.speed = speed;
-        this.attackCooldown = attackCooldown;
+    public Enemy(EnemyType enemyType,int level,int x,int y) {
+        super(enemyType.getMaxHP(), level, enemyType.getName(), x, y,enemyType.getRadius());
+        this.enemyType = enemyType;
+        attackCooldown = 0;
+        speed = enemyType.getSpeed();
+        attackSpeed = enemyType.getAttackSpeed();
     }
 
     public int getAttackSpeed() {
