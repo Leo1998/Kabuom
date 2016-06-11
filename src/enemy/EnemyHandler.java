@@ -2,35 +2,20 @@ package enemy;
 
 import graph.*;
 import projectile.ProjectileType;
-import tower.Tower;
-import tower.TowerType;
+import tower.*;
 
 /**
  * Created by Daniel on 09.06.2016.
- */
+*/
 public class EnemyHandler {
-    private Graph graph,adoptedGraph;
+    private Graph adoptedGraph;
 
     public EnemyHandler(Graph graph) {
-        this.graph = graph;
-        adoptedGraph = copyGraph();
+        calcAdoptedGraph(graph);
     }
 
     public void handleEnemies(float dt, List<Enemy> enemies, List<Tower> towers){
 
-    }
-
-    public void setGraph(Graph graph) {
-        this.graph = graph;
-    }
-
-    private void calcAdoptedGraph(){
-        List<Edge> vList = adoptedGraph.getEdges();
-        vList.toFirst();
-        while (vList.hasAccess()){
-            Edge currEdge = vList.getContent();
-
-        }
     }
 
     private void changedTower(Vertex<VertexData> pos,TowerType towerType){
@@ -70,27 +55,38 @@ public class EnemyHandler {
         return (new Double(Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)))).floatValue();
     }
 
-    private Graph copyGraph(){
-        Graph newGraph = new Graph();
+    private void calcAdoptedGraph(Graph graph){
+        Queue<Vertex> vQueue = new Queue<>();
+        adoptedGraph = new Graph();
         List<Vertex> vList = graph.getVertices();
         vList.toFirst();    //Kopiere Vertices
         while (vList.hasAccess()){
             Vertex<Tower> currVertex = vList.getContent();
             Vertex<VertexData> nVertex = new Vertex(currVertex.getID());
-            nVertex.setContent(new VertexData(currVertex.getContent().getTowerType),currVertex.getContent().getX(),currVertex.getContent().getY());
-            newGraph.addVertex(nVertex);
+            nVertex.setContent(new VertexData(currVertex.getContent().getTowerType()), currVertex.getContent().getX(), currVertex.getContent().getY());
+            if(nVertex.getContent().dps > 0){
+                vQueue.enqueue(nVertex);
+                vQueue.enqueue(currVertex);
+            }
+            adoptedGraph.addVertex(nVertex);
             vList.next();
         }
         List<Edge> eList = graph.getEdges();
         eList.toFirst();    //Kopiere Edges
         while (eList.hasAccess()){
             Edge currEdge = eList.getContent();
-            Vertex v1 = newGraph.getVertex(currEdge.getVertices()[0].getID());
-            Vertex v2 = newGraph.getVertex(currEdge.getVertices()[1].getID());
+            Vertex v1 = adoptedGraph.getVertex(currEdge.getVertices()[0].getID());
+            Vertex v2 = adoptedGraph.getVertex(currEdge.getVertices()[1].getID());
             Edge nEdge = new Edge(v1,v2,currEdge.getWeight());
-            newGraph.addEdge(nEdge);
+            adoptedGraph.addEdge(nEdge);
         }
-        return newGraph;
+        while (!vQueue.isEmpty()){
+            Vertex<Tower> towerVertex = vQueue.front();
+            vQueue.dequeue();
+            Vertex<VertexData> dataVertex = vQueue.front();
+            vQueue.dequeue();
+            changedTower(dataVertex,towerVertex.getTowerType());
+        }
     }
 
     private class VertexData{
@@ -111,4 +107,5 @@ public class EnemyHandler {
             projectileRange = projectileType.getRange();
         }
     }
+
 }
