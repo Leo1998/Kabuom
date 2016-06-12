@@ -23,7 +23,7 @@ public class GameObject {
 
     }
 
-    public ITexture getTexture(){return texture}
+    public ITexture getTexture(){return texture;}
 
     public float getRadius(){return radius; }
 
