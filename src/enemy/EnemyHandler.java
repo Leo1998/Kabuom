@@ -1,4 +1,4 @@
-package enemy;
+/**package enemy;
 
 import graph.*;
 import projectile.ProjectileType;
@@ -6,7 +6,7 @@ import tower.*;
 
 /**
  * Created by Daniel on 09.06.2016.
-*/
+
 public class EnemyHandler {
     private Graph adoptedGraph;
 
@@ -142,3 +142,4 @@ public class EnemyHandler {
     }
 
 }
+*/
