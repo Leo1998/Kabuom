@@ -28,7 +28,7 @@ public class EnemyHandler {
             addDPS = dps - pos.getContent().dps;
         }
         pos.getContent().getFromTowerType(towerType);
-
+        DFS(pos,pos.getContent().x,pos.getContent().y,pos.getContent().attackRange,addDPS);
     }
 
     private void DFS(Vertex<VertexData> currVertex,float startX,float startY,float range,int dps){
@@ -80,6 +80,37 @@ public class EnemyHandler {
             Edge nEdge = new Edge(v1,v2,currEdge.getWeight());
             adoptedGraph.addEdge(nEdge);
         }
+        updateData(vQueue);
+    }
+
+    public void setGraph(Graph graph){
+        List<Vertex> nVList = graph.getVertices();
+        List<Vertex> oVList = adoptedGraph.getVertices();
+        Queue<Vertex> vQueue = new Queue<>();
+        nVList.toFirst();
+        oVList.toFirst();
+        while (nVList.hasAccess()){
+            while (nVList.getContent().getID() != oVList.getContent().getID()){
+                adoptedGraph.removeVertex(oVList.getContent());
+                oVList.remove();
+            }
+            Tower currTower = (Tower) nVList.getContent().getContent();
+            VertexData currData = (VertexData) oVList.getContent().getContent();
+            if(!currData.name.equals(currTower.getName())){
+                vQueue.enqueue(oVList.getContent());
+                vQueue.enqueue(nVList.getContent());
+            }
+            nVList.next();
+            oVList.next();
+        }
+        while (oVList.hasAccess()){
+            adoptedGraph.removeVertex(oVList.getContent());
+            oVList.remove();
+        }
+        updateData(vQueue);
+    }
+
+    private void updateData(Queue<Vertex> vQueue){
         while (!vQueue.isEmpty()){
             Vertex<Tower> towerVertex = vQueue.front();
             vQueue.dequeue();
@@ -90,6 +121,7 @@ public class EnemyHandler {
     }
 
     private class VertexData{
+        private String name;
         private int dps,attackRange,projectileRange,dpsInRange;
         private float x,y;
 
@@ -105,6 +137,7 @@ public class EnemyHandler {
             dps = projectileType.getDamage()*towerType.getFrequency();
             attackRange = towerType.getAttackRange();
             projectileRange = projectileType.getRange();
+            name = towerType.getName();
         }
     }
 
