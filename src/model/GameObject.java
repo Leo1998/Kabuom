@@ -2,13 +2,11 @@ package model;
 
 import view.rendering.ITexture;
 
-/**
- * Created by Daniel on 09.06.2016.
- */
 public class GameObject {
     private int hp,maxHp,level;
     private String name;
     private float x,y,radius;
+    protected ITexture texture;
 
 
 
@@ -25,6 +23,7 @@ public class GameObject {
 
     }
 
+    public ITexture getTexture(){return texture}
 
     public float getRadius(){return radius; }
 
