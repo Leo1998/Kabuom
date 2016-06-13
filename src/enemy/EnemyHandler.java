@@ -1,12 +1,16 @@
 package enemy;
 
+/**package enemy;
+
 import graph.*;
 import projectile.ProjectileType;
 import tower.*;
 
 /**
  * Created by Daniel on 09.06.2016.
+<<<<<<< HEAD
 */
+
 
 public class EnemyHandler {
     /*
