@@ -1,7 +1,9 @@
 package view;
 
 
-import org.lwjgl.opengl.Display;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import utility.Utility;
 import view.components.Button;
 import view.components.ViewComponent;
 import view.rendering.Batch;
@@ -14,6 +16,8 @@ public class TestView extends View {
 
     private Button testButton;
 
+    private int testX1,testY1,testX2,testY2;
+
     public TestView(){
         super();
 
@@ -24,7 +28,30 @@ public class TestView extends View {
 
     @Override
     public void onKeyDown(int key, char c) {
-
+        if(key== Keyboard.KEY_S){
+            testX1 = testX1+20;
+        }else
+        if(key== Keyboard.KEY_W){
+            testX1 = testX1-20;
+        }else
+        if(key== Keyboard.KEY_A){
+            testY1 = testY1 -20;
+        }else
+        if(key== Keyboard.KEY_D){
+            testY1 = testY1 +20;
+        }else
+        if(key == Keyboard.KEY_DOWN){
+            testX2 = testX2 +20;
+        }else
+        if(key == Keyboard.KEY_UP){
+            testX2 = testX2 -20;
+        }else
+        if(key == Keyboard.KEY_LEFT){
+            testY2 = testY2 -20;
+        }else
+        if(key == Keyboard.KEY_RIGHT){
+            testY2 = testY2 +20;
+        }
     }
 
     @Override
@@ -38,9 +65,12 @@ public class TestView extends View {
 
         rotationRadians += Math.toRadians(deltaTime * 50);
 
-        batch.draw(ViewManager.test0, 0, 0, 200, 200, 100, 100, rotationRadians, 1f, 1f, 1f, 1f);
-        batch.draw(ViewManager.test1, 200, 0, 200, 200, 100, 100, rotationRadians, 1f, 1f, 1f, 1f);
-        batch.draw(ViewManager.test2, 400, 0, 200, 200, 100, 100, rotationRadians, 1f, 1f, 1f, 1f);
+        batch.draw(ViewManager.test1, testX2, testY2, 200, 200, 100, 100,(float) (new Utility().calculateAngleBetweenTwoPoints(testX2+100,testY2+100, testX1,testY1)), 1f, 1f, 1f, 1f);
+        //batch.draw(ViewManager.test2, 400, 0, 200, 200, 100, 100, (float) 3, 1f, 1f, 1f, 1f);
+        batch.draw(ViewManager.test0, testX1, testY1, 5, 5, 100, 100, (float) 0, 1f, 1f, 1f, 1f);
+        System.out.println(new Utility().calculateAngleBetweenTwoPoints(testX2+100,testY2+100, testX1,testY1));
+
+
 
         super.render(deltaTime, batch);
     }

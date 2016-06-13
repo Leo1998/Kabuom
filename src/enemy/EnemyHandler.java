@@ -1,3 +1,5 @@
+package enemy;
+
 /**package enemy;
 
 import graph.*;
@@ -6,8 +8,12 @@ import tower.*;
 
 /**
  * Created by Daniel on 09.06.2016.
+<<<<<<< HEAD
+*/
+
 
 public class EnemyHandler {
+    /*
     private Graph adoptedGraph;
 
     public EnemyHandler(Graph graph) {
@@ -140,6 +146,5 @@ public class EnemyHandler {
             name = towerType.getName();
         }
     }
-
-}
 */
+}
