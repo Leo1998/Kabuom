@@ -8,7 +8,7 @@ import tower.*;
  * Created by Daniel on 09.06.2016.
 */
 public class EnemyHandler {
-
+/*
     private Graph adoptedGraph;
     private boolean changed;
 
@@ -43,7 +43,7 @@ public class EnemyHandler {
         }
     }
 
-    private List<List<Enemy>> addToList(List<Queue<Enemy>> pList,Enemy enemy){
+    private List<Queue<Enemy>> addToList(List<Queue<Enemy>> pList,Enemy enemy){
         boolean added = false;
         pList.toFirst();
         while (pList.hasAccess()){
@@ -60,6 +60,7 @@ public class EnemyHandler {
             eQueue.enqueue(enemy);
             pList.append(eQueue);
         }
+        return pList;
     }
 
     private Queue<Vertex> dijkstraAlgorithm(Vertex start, Vertex target){
@@ -91,11 +92,12 @@ public class EnemyHandler {
         }
         return retList;
     }
-
+*/
     /**
      * Sucht in vertexList den Knoten mit geringster dist
      * Entfernt diesen aus vertexList und gibt ihn zurück
      */
+    /*
     private Vertex findSmallest(List<Vertex> vertexList){
         vertexList.toFirst();
         Vertex<VertexData> v = vertexList.getContent();
@@ -116,10 +118,11 @@ public class EnemyHandler {
         }
         return null;
     }
-
+*/
     /**
      * Berechnet die Entfernungen ausgehend vom Knoten source
      */
+    /*
     private void calcDist(Vertex<VertexData> source,List<Vertex> vertexList){
         List<Edge> edgeList = adoptedGraph.getEdges(source);
         edgeList.toFirst();
@@ -151,7 +154,7 @@ public class EnemyHandler {
         }
         return vertexList;
     }
-
+*/
     /**
      * Überprüft, ob der Knoten v in vertexList ist
      */
@@ -163,7 +166,7 @@ public class EnemyHandler {
         }
         return false;
     }
-
+/*
     private void changedTower(Vertex<VertexData> pos,TowerType towerType){
         VertexData content = pos.getContent();
         int addDPS;
@@ -312,4 +315,5 @@ public class EnemyHandler {
             name = towerType.getName();
         }
     }
+    */
 }
