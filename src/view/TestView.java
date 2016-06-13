@@ -29,28 +29,28 @@ public class TestView extends View {
     @Override
     public void onKeyDown(int key, char c) {
         if(key== Keyboard.KEY_S){
-            testX1 = testX1+20;
+            testY1 = testY1+20;
         }else
         if(key== Keyboard.KEY_W){
-            testX1 = testX1-20;
+            testY1 = testY1-20;
         }else
         if(key== Keyboard.KEY_A){
-            testY1 = testY1 -20;
+            testX1 = testX1 -20;
         }else
         if(key== Keyboard.KEY_D){
-            testY1 = testY1 +20;
+            testX1 = testX1 +20;
         }else
         if(key == Keyboard.KEY_DOWN){
-            testX2 = testX2 +20;
+            testY2 = testY2 +20;
         }else
         if(key == Keyboard.KEY_UP){
-            testX2 = testX2 -20;
-        }else
-        if(key == Keyboard.KEY_LEFT){
             testY2 = testY2 -20;
         }else
+        if(key == Keyboard.KEY_LEFT){
+            testX2 = testX2 -20;
+        }else
         if(key == Keyboard.KEY_RIGHT){
-            testY2 = testY2 +20;
+            testX2 = testX2 +20;
         }
     }
 

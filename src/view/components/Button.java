@@ -4,6 +4,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import utility.Utility;
 import view.rendering.Batch;
+import view.rendering.BitmapFont;
 import view.rendering.ITexture;
 import view.View;
 import view.ViewManager;
@@ -36,7 +37,7 @@ public class Button extends ViewComponent{
         super.draw(batch);
 
         batch.draw(getTexture(),getX(),getY(),getWidth(),getHeight());
-        ViewManager.font.drawText(batch, buttontext , (int)getX(), (int)(getY() + getHeight()/4));
+        ViewManager.font.drawText(batch, buttontext , (int)getX(), (int)(getY() + getHeight()/2- ViewManager.font.getLineHeight()/2));
     }
 
     public ITexture getTexture() {return texture;}

@@ -48,29 +48,33 @@ public class Utility {
         }else{
             deltaY = 1;
         }
-        /*
-        if(x2 < x1)
-            deltaX = deltaX;
-        if(y2 > y1)
-            deltaY = -deltaY;
-        */
 
-        /*switch (tempCoord) {
-            case 1: {
-                return (float) (Math.atan((-deltaX) / (deltaY)));
+        if(x2 < x1) {
+            if (y2 < y1) {
+                tempCoord = 3;
+            } else {
+                tempCoord = 2;
             }
-            case 2: {
-                return (float) (Math.atan((deltaX) / (-deltaY)));
+        }else{
+            if (y2 < y1) {
+                tempCoord = 4;
+            } else {
+                tempCoord = 1;
             }
-            case 3: {
-                return (float) (Math.atan((-deltaX) / (-deltaY)));
-            }
-            case 4: {
-                return (float) (Math.atan((deltaX) / (deltaY)));
-            }
+        }
 
-        }*/
-        double angle = Math.atan((deltaX)/ (deltaY));
+        double angle = Math.atan(deltaX/deltaY);
+        if (tempCoord == 1) {
+            angle = (float) (Math.atan((deltaX) / (-deltaY)));
+        } else if (tempCoord == 2) {
+            angle = (float) (Math.atan((deltaX) / (-deltaY)));
+        } else if (tempCoord == 3) {
+            angle = (float) (Math.atan((deltaX) / (-deltaY))) + Math.PI;
+        } else if (tempCoord == 4) {
+            angle = (float) (Math.atan((deltaX) / (-deltaY))) + Math.PI;
+        }
+
+
         return (float) (angle);
     }
 
