@@ -164,7 +164,6 @@ public class ViewManager {
         }
 
         ppManager.begin();
-
         batch.begin();
 
         currentView.render(deltaTime, batch);

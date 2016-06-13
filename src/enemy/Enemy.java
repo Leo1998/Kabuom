@@ -8,16 +8,18 @@ import model.GameObject;
  */
 public class Enemy extends GameObject{
     private int attackSpeed, speed;
-    private List<Vertex> path;
+    private Queue<Vertex> path;
     private float attackCooldown;
     private EnemyType enemyType;
+    private Edge pos;
 
-    public Enemy(EnemyType enemyType,int level,int x,int y) {
+    public Enemy(EnemyType enemyType,int level,int x,int y,Edge pos) {
         super(enemyType.getMaxHP(), level, enemyType.getName(), x, y,enemyType.getRadius());
         this.enemyType = enemyType;
         attackCooldown = 0;
         speed = enemyType.getSpeed();
         attackSpeed = enemyType.getAttackSpeed();
+        this.pos = pos;
     }
 
     public int getAttackSpeed() {
@@ -28,7 +30,7 @@ public class Enemy extends GameObject{
         return speed;
     }
 
-    public List<Vertex> getPath() {
+    public Queue<Vertex> getPath() {
         return path;
     }
 
@@ -36,11 +38,19 @@ public class Enemy extends GameObject{
         return attackCooldown;
     }
 
-    public void setPath(List<Vertex> path) {
+    public void setPath(Queue<Vertex> path) {
         this.path = path;
     }
 
     public void setAttackCooldown(float attackCooldown) {
         this.attackCooldown = attackCooldown;
+    }
+
+    public Edge getPos() {
+        return pos;
+    }
+
+    public void setPos(Edge pos) {
+        this.pos = pos;
     }
 }

@@ -5,10 +5,31 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import utility.Matrix4;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ShaderProgram {
+
+    private static String loadShader(File file) {
+        StringBuilder result = new StringBuilder();
+
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            String buffer = "";
+            while ((buffer = bufferedReader.readLine()) != null)
+                result.append(buffer + "\n");
+            bufferedReader.close();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+
+        return result.toString();
+    }
 
     protected static FloatBuffer buf16Pool;
 
@@ -20,6 +41,16 @@ public class ShaderProgram {
     public final int vertex;
     public final int fragment;
     protected String log;
+
+    protected HashMap<String, Integer> uniforms = new HashMap<String, Integer>();
+
+    public ShaderProgram(File vertexShader, File fragmentShader) {
+        this(vertexShader, fragmentShader, null);
+    }
+
+    public ShaderProgram(File vertexShader, File fragmentShader, Map<Integer, String> attributes) {
+        this(loadShader(vertexShader), loadShader(fragmentShader), attributes);
+    }
 
     public ShaderProgram(String vertexSource, String fragmentSource) {
         this(vertexSource, fragmentSource, null);
@@ -86,13 +117,99 @@ public class ShaderProgram {
         GL20.glDeleteProgram(program);
     }
 
-    public int getUniformLocation(String str) {
-        return GL20.glGetUniformLocation(program, str);
+    private void fetchUniforms() {
+        int len = GL20.glGetProgrami(program, GL20.GL_ACTIVE_UNIFORMS);
+
+        int strLen = GL20.glGetProgrami(program, GL20.GL_ACTIVE_UNIFORM_MAX_LENGTH);
+        for (int i = 0; i < len; i++) {
+            String name = GL20.glGetActiveUniform(program, i, strLen);
+            int id = GL20.glGetUniformLocation(program, name);
+            uniforms.put(name, new Integer(id));
+        }
+    }
+
+    public int getUniformLocation(String name) {
+        int location = -1;
+        Integer locI = uniforms.get(name);
+        if (locI == null) {
+            location = GL20.glGetUniformLocation(program, name);
+            uniforms.put(name, location);
+        } else
+            location = locI.intValue();
+
+        return location;
+    }
+
+    public void setUniformf(int loc, float f) {
+        if (loc==-1) return;
+        GL20.glUniform1f(loc, f);
+    }
+
+    public void setUniformf(int loc, float a, float b) {
+        if (loc==-1) return;
+        GL20.glUniform2f(loc, a, b);
+    }
+
+    public void setUniformf(int loc, float a, float b, float c) {
+        if (loc==-1) return;
+        GL20.glUniform3f(loc, a, b, c);
+    }
+
+    public void setUniformf(int loc, float a, float b, float c, float d) {
+        if (loc==-1) return;
+        GL20.glUniform4f(loc, a, b, c, d);
     }
 
     public void setUniformi(int loc, int i) {
         if (loc==-1) return;
         GL20.glUniform1i(loc, i);
+    }
+
+    public void setUniformi(int loc, int a, int b) {
+        if (loc==-1) return;
+        GL20.glUniform2i(loc, a, b);
+    }
+
+    public void setUniformi(int loc, int a, int b, int c) {
+        if (loc==-1) return;
+        GL20.glUniform3i(loc, a, b, c);
+    }
+
+    public void setUniformi(int loc, int a, int b, int c, int d) {
+        if (loc==-1) return;
+        GL20.glUniform4i(loc, a, b, c, d);
+    }
+
+    public void setUniformf(String name, float f) {
+        setUniformf(getUniformLocation(name), f);
+    }
+
+    public void setUniformf(String name, float a, float b) {
+        setUniformf(getUniformLocation(name), a, b);
+    }
+
+    public void setUniformf(String name, float a, float b, float c) {
+        setUniformf(getUniformLocation(name), a, b, c);
+    }
+
+    public void setUniformf(String name, float a, float b, float c, float d) {
+        setUniformf(getUniformLocation(name), a, b, c, d);
+    }
+
+    public void setUniformi(String name, int i) {
+        setUniformi(getUniformLocation(name), i);
+    }
+
+    public void setUniformi(String name, int a, int b) {
+        setUniformi(getUniformLocation(name), a, b);
+    }
+
+    public void setUniformi(String name, int a, int b, int c) {
+        setUniformi(getUniformLocation(name), a, b, c);
+    }
+
+    public void setUniformi(String name, int a, int b, int c, int d) {
+        setUniformi(getUniformLocation(name), a, b, c, d);
     }
 
     public void setUniformMatrix(int loc, boolean transposed, Matrix4 mat) {
