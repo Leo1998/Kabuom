@@ -7,7 +7,9 @@ import tower.*;
 /**
  * Created by Daniel on 09.06.2016.
 */
+
 public class EnemyHandler {
+    /*
     private Graph adoptedGraph;
 
     public EnemyHandler(Graph graph) {
@@ -140,5 +142,5 @@ public class EnemyHandler {
             name = towerType.getName();
         }
     }
-
+*/
 }

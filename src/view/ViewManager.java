@@ -141,6 +141,8 @@ public class ViewManager {
                 int key = Keyboard.getEventKey();
                 char c = Keyboard.getEventCharacter();
 
+                currentView.onKeyDown(key , c);
+
                 if (key == Keyboard.KEY_F11) {
                     fullscreen = !fullscreen;
 
@@ -157,6 +159,7 @@ public class ViewManager {
                         e.printStackTrace();
                     }
                 }
+
             }
         }
 
