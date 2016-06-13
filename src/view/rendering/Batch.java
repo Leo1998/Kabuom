@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL13;
 import utility.Matrix4;
 import utility.OrthographicCamera;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,94 +14,21 @@ import java.util.Map;
 public class Batch {
 
     private static ShaderProgram createShader(VertexAttrib[] attribs) {
-        String vertexSource = "#version 110\n" +
-                "attribute vec2 position;\n" +
-                "attribute float tid;\n" +
-                "attribute vec4 color;\n" +
-                "attribute vec2 texCoords;\n" +
-                "" +
-                "uniform mat4 projectionMatrix;\n" +
-                "" +
-                "varying vec4 v_color;\n" +
-                "varying float v_tid;\n" +
-                "varying vec2 v_texCoords;\n" +
-                "" +
-                "void main() {\n" +
-                "v_color = color;\n" +
-                "v_tid = tid;\n" +
-                "v_texCoords = texCoords;\n" +
-                "gl_Position = vec4(position.xy, 0.0, 1.0) * projectionMatrix;\n" +
-                "}\n";
+        try {
+            File vert = new File(Batch.class.getResource("/shaders/batch.vert").toURI());
+            File frag = new File(Batch.class.getResource("/shaders/batch.frag").toURI());
 
-        String fragmentSource = "#version 110\n" +
-                "" +
-                "varying vec4 v_color;\n" +
-                "varying float v_tid;\n" +
-                "varying vec2 v_texCoords;\n" +
-                "" +
-                "uniform sampler2D texture0;\n" +
-                "uniform sampler2D texture1;\n" +
-                "uniform sampler2D texture2;\n" +
-                "uniform sampler2D texture3;\n" +
-                "uniform sampler2D texture4;\n" +
-                "uniform sampler2D texture5;\n" +
-                "uniform sampler2D texture6;\n" +
-                "uniform sampler2D texture7;\n" +
-                "uniform sampler2D texture8;\n" +
-                "uniform sampler2D texture9;\n" +
-                "uniform sampler2D texture10;\n" +
-                "uniform sampler2D texture11;\n" +
-                "uniform sampler2D texture12;\n" +
-                "uniform sampler2D texture13;\n" +
-                "uniform sampler2D texture14;\n" +
-                "uniform sampler2D texture15;\n" +
-                "" +
-                "void main() {\n" +
-                "vec4 color = v_color;\n" +
-                "int tid = int(v_tid);\n" +
-                "if (tid == 0)\n" +
-                "color *= texture2D(texture0, v_texCoords);\n" +
-                "else if (tid == 1)\n" +
-                "color *= texture2D(texture1, v_texCoords);\n" +
-                "else if (tid == 2)\n" +
-                "color *= texture2D(texture2, v_texCoords);\n" +
-                "else if (tid == 3)\n" +
-                "color *= texture2D(texture3, v_texCoords);\n" +
-                "else if (tid == 4)\n" +
-                "color *= texture2D(texture4, v_texCoords);\n" +
-                "else if (tid == 5)\n" +
-                "color *= texture2D(texture5, v_texCoords);\n" +
-                "else if (tid == 6)\n" +
-                "color *= texture2D(texture6, v_texCoords);\n" +
-                "else if (tid == 7)\n" +
-                "color *= texture2D(texture7, v_texCoords);\n" +
-                "else if (tid == 8)\n" +
-                "color *= texture2D(texture8, v_texCoords);\n" +
-                "else if (tid == 9)\n" +
-                "color *= texture2D(texture9, v_texCoords);\n" +
-                "else if (tid == 10)\n" +
-                "color *= texture2D(texture10, v_texCoords);\n" +
-                "else if (tid == 11)\n" +
-                "color *= texture2D(texture11, v_texCoords);\n" +
-                "else if (tid == 12)\n" +
-                "color *= texture2D(texture12, v_texCoords);\n" +
-                "else if (tid == 13)\n" +
-                "color *= texture2D(texture13, v_texCoords);\n" +
-                "else if (tid == 14)\n" +
-                "color *= texture2D(texture14, v_texCoords);\n" +
-                "else if (tid == 15)\n" +
-                "color *= texture2D(texture15, v_texCoords);\n" +
-                "\n" +
-                "gl_FragColor = color;\n" +
-                "}\n";
+            Map<Integer, String> map = new HashMap<>();
 
-        Map<Integer, String> map = new HashMap<>();
+            for (VertexAttrib attrib : attribs) {
+                map.put(attrib.location, attrib.name);
+            }
 
-        for (VertexAttrib attrib : attribs) {
-            map.put(attrib.location, attrib.name);
+            return new ShaderProgram(vert, frag, map);
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
         }
-
-        return new ShaderProgram(vertexSource, fragmentSource, map);
     }
 
     private static final int VERTICES_PER_SPRITE = 6;
@@ -147,6 +75,10 @@ public class Batch {
     }
 
     public void begin() {
+        begin(this.shader);
+    }
+
+    public void begin(ShaderProgram shader) {
         drawing = true;
 
         idx = 0;
@@ -199,8 +131,10 @@ public class Batch {
             flush();
     }
 
-    private int checkTexture(Texture tex) {
-        if (tex == null) return -1;
+    private int checkTexture(ITexture itex) {
+        if (itex == null) return -1;
+
+        Texture tex = itex.getTexture();
 
         if (textures.contains(tex)) {
             return textures.indexOf(tex);
@@ -222,12 +156,18 @@ public class Batch {
     public void draw(ITexture tex, float x, float y, float width, float height, float originX, float originY, float rotationRadians, float r, float g, float b, float a) {
         checkFlush();
 
-        float u = tex.getU();
-        float v = tex.getV();
-        float u2 = tex.getU2();
-        float v2 = tex.getV2();
+        int tid = checkTexture(tex);
 
-        int tid = checkTexture(tex.getTexture());
+        float u = 0f;
+        float v = 1f;
+        float u2 = 1f;
+        float v2 = 0f;
+        if (tex != null) {
+            u = tex.getU();
+            v = tex.getV();
+            u2 = tex.getU2();
+            v2 = tex.getV2();
+        }
 
         float x1,y1, x2,y2, x3,y3, x4,y4;
 

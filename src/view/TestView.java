@@ -1,6 +1,7 @@
 package view;
 
 
+import org.lwjgl.opengl.Display;
 import view.components.Button;
 import view.components.ViewComponent;
 import view.rendering.Batch;
