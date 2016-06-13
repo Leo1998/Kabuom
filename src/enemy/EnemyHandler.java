@@ -8,6 +8,7 @@ import tower.*;
  * Created by Daniel on 09.06.2016.
 */
 public class EnemyHandler {
+
     private Graph adoptedGraph;
     private boolean changed;
 
@@ -311,5 +312,4 @@ public class EnemyHandler {
             name = towerType.getName();
         }
     }
-
 }
