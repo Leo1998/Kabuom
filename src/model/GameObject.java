@@ -1,12 +1,15 @@
 package model;
 
-/**
- * Created by Daniel on 09.06.2016.
- */
+import view.rendering.ITexture;
+
 public class GameObject {
     private int hp,maxHp,level;
     private String name;
     private float x,y,radius;
+    protected ITexture texture;
+
+
+
 
     public GameObject(int maxHp, int level, String name, float x, float y, float radius) {
         this.maxHp = maxHp;
@@ -17,7 +20,11 @@ public class GameObject {
         this.radius = radius;
         hp = maxHp;
 
+
     }
+
+    public ITexture getTexture(){return texture;}
+
     public float getRadius(){return radius; }
 
     public int getHp() {
