@@ -21,6 +21,7 @@ public class ViewManager {
     public static ITexture test2;
     public static ITexture buttonMainTexture;
     public static ITexture buttonPressedTexture;
+    public static ITexture mgTurret, mgTurretGreen, mgTurretRed;
 
     public static void load (){
         try {
@@ -29,6 +30,9 @@ public class ViewManager {
             test0 = new Texture(ViewManager.class.getResource("/textures/test0.png"));
             test1 = new Texture(ViewManager.class.getResource("/textures/test1.png"));
             test2 = new Texture(ViewManager.class.getResource("/textures/test2.png"));
+            mgTurret = new Texture(ViewManager.class.getResource("/textures/MgTurret.png"));
+            mgTurretGreen = new Texture(ViewManager.class.getResource("/textures/MgTurretGruen.png"));
+            mgTurretRed = new Texture(ViewManager.class.getResource("/textures/MgTurretRot.png"));
             buttonMainTexture = new Texture(ViewManager.class.getResource("/textures/viewTextures/mainButton.png"));
             buttonPressedTexture = new Texture(ViewManager.class.getResource("/textures/viewTextures/pressedButton.png"));
         } catch(IOException e) {
