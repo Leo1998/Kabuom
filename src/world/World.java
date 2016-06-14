@@ -50,7 +50,7 @@ public class World {
             }
             objects.next();
         }
-        eH.handleEnemies(dt,enemyList,towerList);
+        //eH.handleEnemies(dt,enemyList,towerList);
         pH.handleProjectiles(dt,projectileList,enemyList);
         tH.handleTowers(dt,towerList,enemyList);
     }
