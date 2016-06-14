@@ -3,6 +3,7 @@ package controller;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import view.ViewManager;
+import world.World;
 
 public class Controller {
 
@@ -11,6 +12,7 @@ public class Controller {
     }
 
     private ViewManager viewManager;
+    private World world;
 
     public void mainLoop() {
         viewManager = new ViewManager();
@@ -35,6 +37,10 @@ public class Controller {
         }
 
         viewManager.dispose();
+    }
+
+    private void createWorld(){
+        world = new World(1024,768,9000);
     }
 
 }
