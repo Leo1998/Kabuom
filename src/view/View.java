@@ -1,5 +1,6 @@
 package view;
 
+import org.lwjgl.opengl.Display;
 import view.components.ViewComponent;
 import view.rendering.Batch;
 
@@ -10,9 +11,15 @@ import java.util.List;
 public abstract class View {
 
     protected List<ViewComponent> components;
+    protected float originWidth,originHeight;
 
-    public View(){
+    public View(float width,float height)
+    {
         components = new ArrayList<ViewComponent>() ;
+        originHeight = height;
+        originWidth = width;
+        width = originWidth;
+        height = originHeight;
     }
 
     public void render(float deltaTime, Batch batch){
@@ -23,12 +30,14 @@ public abstract class View {
     }
 
 
-    public void layout(float width, float height){}
+    public void layout(float width, float height){
+    }
     public List<ViewComponent> getComponents(){return components;}
 
     public abstract void onKeyDown(int key,char c);
     public void onMouseDown(int button, int mouseX, int mouseY){
 
     }
+
 
 }

@@ -7,7 +7,7 @@ import view.rendering.ITexture;
 
 public abstract class ViewComponent {
 
-    private View view;
+    protected View view;
     private float x,y,width,height;
 
     public ViewComponent(float x, float y, float width,float height, View v){

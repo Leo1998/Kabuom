@@ -64,7 +64,7 @@ public class ViewManager {
         this.ppManager = new PostProcessingManager(batch);
         ppManager.resize(Display.getWidth(), Display.getHeight());
 
-        currentView = new TestView();
+        currentView = new TestView(Display.getWidth(),Display.getHeight());
     }
 
     public void setDisplayMode(int width, int height, boolean fullscreen) {

@@ -34,10 +34,9 @@ public class Button extends ViewComponent{
 
     @Override
     public void draw(Batch batch) {
-        super.draw(batch);
 
-        batch.draw(getTexture(),getX(),getY(),getWidth(),getHeight());
-        ViewManager.font.drawText(batch, buttontext , (int)getX(), (int)(getY() + getHeight()/2- ViewManager.font.getLineHeight()/2));
+        batch.draw(getTexture(),Utility.layoutX(getX()),Utility.layoutY(getY()),Utility.layoutX(getWidth()),Utility.layoutY(getHeight()));
+        ViewManager.font.drawText(batch, buttontext , (int)(Utility.layoutX(getX())+ Utility.layoutX(getWidth())/2 - ViewManager.font.getWidth(buttontext)/2),(int) (Utility.layoutY(getY()) + Utility.layoutY(getHeight())/2- ViewManager.font.getLineHeight()/2));
     }
 
     public ITexture getTexture() {return texture;}

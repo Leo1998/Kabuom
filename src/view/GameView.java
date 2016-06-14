@@ -19,9 +19,8 @@ public class GameView extends View{
     private List<GameObject> currentObjects;
     private Button[] towerButtons;
 
-    public GameView(){
-
-        super();
+    public GameView(float width, float height){
+        super(width,height);
         u = new Utility();
 
     }
@@ -37,7 +36,6 @@ public class GameView extends View{
         }else if( o instanceof Projectile){
             batch.draw(o.getTexture(), o.getX(),o.getY(),o.getRadius(),o.getRadius());
         }
-
     }
 
 
@@ -71,5 +69,6 @@ public class GameView extends View{
     public void onKeyDown(int key, char c) {
 
     }
+
 
 }
