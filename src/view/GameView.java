@@ -17,7 +17,7 @@ public class GameView extends View{
 
 
     private List<GameObject> currentObjects;
-
+    private Button[] towerButtons;
 
     public GameView(){
 
@@ -25,6 +25,7 @@ public class GameView extends View{
         u = new Utility();
 
     }
+
     public void drawGameObject(GameObject o,Batch batch){
         if(o instanceof Tower){
             float angle = u.calculateAngleBetweenTwoPoints(o.getX(),o.getY(),100,100);
@@ -48,6 +49,8 @@ public class GameView extends View{
         }
 
     }
+
+
 
     @Override
     public void layout(float width, float height) {
