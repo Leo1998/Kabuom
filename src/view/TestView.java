@@ -67,13 +67,10 @@ public class TestView extends View {
 
         rotationRadians += Math.toRadians(deltaTime * 50);
 
-        batch.draw(ViewManager.mgTurret, Utility.layoutX(testX2), Utility.layoutY(testY2), 200, 200, 100, 100,(float) (new Utility().calculateAngleBetweenTwoPoints(testX2+100,testY2+100, testX1,testY1)+ Math.PI), 1f, 1f, 1f, 1f);
+        batch.draw(ViewManager.mgTurret, Utility.layoutX(testX2), Utility.layoutY(testY2), Utility.layoutX(200), Utility.layoutY(200), Utility.layoutX(200/2), Utility.layoutY(200/2),(float) (Utility.calculateAngleBetweenTwoPoints(testX2+200/2,testY2+200/2, testX1,testY1)+ Math.PI), 1f, 1f, 1f, 1f);
         //batch.draw(ViewManager.test2, 400, 0, 200, 200, 100, 100, (float) 3, 1f, 1f, 1f, 1f);
         batch.draw(ViewManager.test0, Utility.layoutX(testX1), Utility.layoutY(testY1), 5, 5, 100, 100, (float) 0, 1f, 1f, 1f, 1f);
         //System.out.println(new Utility().calculateAngleBetweenTwoPoints(testX2+100,testY2+100, testX1,testY1));
-
-
-
 
         super.render(deltaTime, batch);
     }

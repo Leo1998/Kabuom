@@ -39,6 +39,7 @@ public class Utility {
     public static float calculateAngleBetweenTwoPoints(float x1, float y1,float x2, float y2){
         double deltaX , deltaY;
         int tempCoord;
+        System.out.println(x2 + " / "+ y2);
 
         if(x2-x1 != 0) {
             deltaX = x2 - x1;
