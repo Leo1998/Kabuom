@@ -43,6 +43,7 @@ public class ViewManager {
 
     private View currentView;
     private PostProcessingManager ppManager;
+    private ParticleManager particleManager;
     private boolean fullscreen = false;
 
     public ViewManager() {
@@ -67,6 +68,8 @@ public class ViewManager {
 
         this.ppManager = new PostProcessingManager(batch);
         ppManager.resize(Display.getWidth(), Display.getHeight());
+
+        this.particleManager = new ParticleManager(10000);
 
         currentView = new TestView(Display.getWidth(),Display.getHeight());
     }
@@ -171,6 +174,8 @@ public class ViewManager {
         batch.begin();
 
         currentView.render(deltaTime, batch);
+
+        particleManager.render(batch);
 
         batch.end();
         ppManager.end();
