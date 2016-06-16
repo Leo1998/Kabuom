@@ -8,7 +8,7 @@ import tower.*;
  * Created by Daniel on 09.06.2016.
 */
 public class EnemyHandler {
-/*
+
     private Graph adoptedGraph;
     private boolean changed;
 
@@ -17,8 +17,56 @@ public class EnemyHandler {
         changed = true;
     }
 
-    public void handleEnemies(float dt, List<Enemy> enemies,String targetID){
+    public void handleEnemies(float dt, List<Enemy> enemies,String targetID, Graph graph, boolean placedTower){
+        if(placedTower){
+            setGraph(graph);
+        }
         calcAllPaths(enemies,targetID);
+        moveEnemies(dt,graph,enemies);
+    }
+
+    private void moveEnemies(float dt,Graph graph,List<Enemy> enemies){
+        enemies.toFirst();
+        while (enemies.hasAccess()){
+            handleEnemy(dt,graph,enemies.getContent());
+            enemies.next();
+        }
+    }
+
+    private void handleEnemy(float dt,Graph graph,Enemy enemy){
+        enemy.setAttackCooldown(enemy.getAttackCooldown()+dt);
+        Tower tower = checkCollision(enemy);
+        if(tower != null){
+            if(enemy.getAttackCooldown() > enemy.getAttackSpeed()){
+                tower.setHp(tower.getHp()-enemy.getDamage());
+            }
+        }else{
+
+        }
+    }
+
+    private void move(Enemy enemy, Graph graph){
+        Edge pos = enemy.getPos();
+        String id1 = pos.getVertices()[0].getID();
+        String id2 = pos.getVertices()[1].getID();
+    }
+
+    private Tower checkCollision(Enemy enemy){
+        Vertex<Tower> v1 = enemy.getPos().getVertices()[0];
+        Vertex<Tower> v2 = enemy.getPos().getVertices()[1];
+        if(v1.getContent().getHp() > 0){
+            Tower tower = v1.getContent();
+            if(calcDist(tower.getX(),tower.getY(),enemy.getX(),enemy.getY()) < tower.getRadius() + enemy.getRadius()){
+                return tower;
+            }
+        }
+        if(v2.getContent().getHp() > 0){
+            Tower tower = v2.getContent();
+            if(calcDist(tower.getX(),tower.getY(),enemy.getX(),enemy.getY()) < tower.getRadius() + enemy.getRadius()){
+                return tower;
+            }
+        }
+        return null;
     }
 
     private void calcAllPaths(List<Enemy> enemies,String targetID) {
@@ -92,12 +140,11 @@ public class EnemyHandler {
         }
         return retList;
     }
-*/
+
     /**
      * Sucht in vertexList den Knoten mit geringster dist
      * Entfernt diesen aus vertexList und gibt ihn zurück
      */
-    /*
     private Vertex findSmallest(List<Vertex> vertexList){
         vertexList.toFirst();
         Vertex<VertexData> v = vertexList.getContent();
@@ -118,11 +165,10 @@ public class EnemyHandler {
         }
         return null;
     }
-*/
+
     /**
      * Berechnet die Entfernungen ausgehend vom Knoten source
      */
-    /*
     private void calcDist(Vertex<VertexData> source,List<Vertex> vertexList){
         List<Edge> edgeList = adoptedGraph.getEdges(source);
         edgeList.toFirst();
@@ -154,7 +200,7 @@ public class EnemyHandler {
         }
         return vertexList;
     }
-*/
+
     /**
      * Überprüft, ob der Knoten v in vertexList ist
      */
@@ -166,7 +212,7 @@ public class EnemyHandler {
         }
         return false;
     }
-/*
+
     private void changedTower(Vertex<VertexData> pos,TowerType towerType){
         VertexData content = pos.getContent();
         int addDPS;
@@ -255,7 +301,7 @@ public class EnemyHandler {
         updateData(vQueue);
     }
 
-    public void setGraph(Graph graph){
+    private void setGraph(Graph graph){
         changed = true;
         List<Vertex> nVList = graph.getVertices();
         List<Vertex> oVList = adoptedGraph.getVertices();
@@ -315,5 +361,4 @@ public class EnemyHandler {
             name = towerType.getName();
         }
     }
-    */
 }

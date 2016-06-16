@@ -53,4 +53,8 @@ public class Enemy extends GameObject{
     public void setPos(Edge pos) {
         this.pos = pos;
     }
+
+    public int getDamage(){
+        return enemyType.getDamage();
+    }
 }
