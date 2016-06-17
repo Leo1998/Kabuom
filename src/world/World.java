@@ -25,6 +25,9 @@ public class World {
         this.height = height;
         this.difficulty = difficulty;
         timePassed = 0;
+
+        this.objects = new ArrayList<>();
+        this.blocks = new Block[width][height];
     }
 
     /**
@@ -77,7 +80,7 @@ public class World {
         return blocks;
     }
 
-    public List<GameObject> getObjects() {
+    public ArrayList<GameObject> getObjects() {
         return objects;
     }
 }

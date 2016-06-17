@@ -2,6 +2,8 @@ package controller;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import view.GameView;
+import view.View;
 import view.ViewManager;
 import world.World;
 
@@ -16,6 +18,8 @@ public class Controller {
 
     public void mainLoop() {
         viewManager = new ViewManager();
+
+        createWorld();
 
         float deltaTime;
         long startTime = System.currentTimeMillis();
@@ -40,7 +44,10 @@ public class Controller {
     }
 
     private void createWorld(){
-        world = new World(1024,768,9000);
+        world = new World(20,20,9000);
+
+        View view = new GameView(Display.getWidth(),Display.getHeight(), viewManager, world);
+        viewManager.setCurrentView(view);
     }
 
 }

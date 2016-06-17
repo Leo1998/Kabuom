@@ -18,14 +18,14 @@ public class GameView extends View{
 
     private Utility u;
 
-
     private World world;
     private Button[] towerButtons;
 
-    public GameView(float width, float height, ViewManager viewManager){
+    public GameView(float width, float height, ViewManager viewManager, World world){
         super(width,height, viewManager);
-        u = new Utility();
+        this.world = world;
 
+        u = new Utility();
     }
 
     public void drawGameObject(GameObject o,Batch batch){
