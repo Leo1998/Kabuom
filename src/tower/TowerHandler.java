@@ -3,24 +3,57 @@ package tower;
 import enemy.Enemy;
 import graph.List;
 import projectile.ProjectileType;
+import utility.Vector2;
 
-/**
- * Created by Daniel on 09.06.2016.
- */
 public class TowerHandler {
-    public void handleTowers(float dt, List<Tower> towers, List<Enemy> enemies) {
-        Tower curTower= towers.getContent();
 
+    public void handleTowers(float dt, List<Tower> towers, List<Enemy> enemies, Tower mainTower) {
+        Tower curTower = towers.getContent();
+        if (curTower.getTarget()==null){
+            aim(curTower,enemies,mainTower);
+        }
+        if (curTower.getTarget()!=null&&curTower.getCooldown()<=0){
+            shoot(curTower);
+        }
+        if (curTower.getCooldown()>0) {
+            curTower.setCooldown(curTower.getCooldown() - dt);
+        }
+    }
+
+    public void aim(Tower tower,List<Enemy> enemies,Tower mainTower) {
+
+        List<Enemy> targetList=new List<>();
+        Enemy target=null;
+
+        if (tower.getType()==TowerType.MGTURRET||tower.getType()==TowerType.SNIPER){
+
+            //hier ultrageile Formel einfuegen... Mach ich spaeter XD
+
+        }else {
+            enemies.toFirst();
+            while (enemies.hasAccess()){
+                Enemy curEnemy = enemies.getContent();
+
+                if (enemyInRange(curEnemy,tower)){
+                    targetList.append(curEnemy);
+                }
+                enemies.next();
+            }
+            targetList.toFirst();
+            float shortestWay = Float.MAX_VALUE;
+            while (targetList.hasAccess()) {
+                if (new Vector2(mainTower.getX(), mainTower.getY(), targetList.getContent().getX(), targetList.getContent().getY()).getLength() < shortestWay) {
+                    target = targetList.getContent();
+                    shortestWay = new Vector2(mainTower.getX(), mainTower.getY(), targetList.getContent().getX(), targetList.getContent().getY()).getLength();
+                }
+            }
+            tower.setTarget(target);
+        }
 
     }
 
-    public void aim(Tower tower) {
-
-        //hier ultrageile Formel einfuegen... Mach ich spaeter XD
-    }
 
 
-/*
     public void shoot(Tower tower) {
         float enemyX = tower.getTarget().getX();
         float enemyY = tower.getTarget().getY();
@@ -28,6 +61,8 @@ public class TowerHandler {
         float towerY = tower.getY();
         float towerEnemyDistanceX = enemyX - towerX;
         float towerEnemyDistanceY = enemyY - towerY;
+
+        tower.setCooldown(tower.getFrequency());
 
         if (tower.getType() == TowerType.MGTURRET){
             //main idea
@@ -75,5 +110,13 @@ public class TowerHandler {
             }
 
         }
-    }*/
+    }
+    public boolean enemyInRange(Enemy e1, Tower t1){
+        if(e1!= null && t1 != null){
+            if(new Vector2(e1.getX(),e1.getY(),t1.getX(),t1.getY()).getLength() > e1.getRadius()+t1.getAttackRadius()) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

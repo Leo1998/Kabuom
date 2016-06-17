@@ -9,13 +9,13 @@ public enum EnemyType {
     TYPE3 (50,50,50,50,50,"3");
 
     private final int maxHP;
-    private final int speed;
-    private final int attackSpeed;
+    private final float speed;
+    private final float attackSpeed;
     private final int damage;
     private final int radius;
     private final String name;
 
-    EnemyType(int attackSpeed, int maxHP, int speed, int damage, int radius, String name) {
+    EnemyType(float attackSpeed, int maxHP, float speed, int damage, int radius, String name) {
         this.attackSpeed = attackSpeed;
         this.maxHP = maxHP;
         this.speed = speed;
@@ -36,11 +36,11 @@ public enum EnemyType {
         return radius;
     }
 
-    public int getSpeed() {
+    public float getSpeed() {
         return speed;
     }
 
-    public int getAttackSpeed() {
+    public float getAttackSpeed() {
         return attackSpeed;
     }
 
