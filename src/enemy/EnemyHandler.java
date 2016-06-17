@@ -17,15 +17,19 @@ public class EnemyHandler {
         changed = true;
     }
 
+    /**
+     * Berechnet die Handlungen aller Gegner und führt diese aus
+     * @param dt Zeit seit dem letztem Frame
+     * @param enemies Liste aller Gegner
+     * @param targetID ID des Ziel-Vertex
+     * @param graph Der Graph
+     * @param placedTower Ist true, wenn in dem Frame ein Turm geädnert wurde
+     */
     public void handleEnemies(float dt, List<Enemy> enemies,String targetID, Graph graph, boolean placedTower){
         if(placedTower){
             setGraph(graph);
         }
         calcAllPaths(enemies,targetID);
-        moveEnemies(dt,graph,enemies);
-    }
-
-    private void moveEnemies(float dt,Graph graph,List<Enemy> enemies){
         enemies.toFirst();
         while (enemies.hasAccess()){
             handleEnemy(dt,graph,enemies.getContent());
@@ -33,35 +37,64 @@ public class EnemyHandler {
         }
     }
 
+    /**
+     * Entscheidet, ob ein Gegner sich bewegen oder angreifen soll.
+     * Führt dies aus
+     * @param dt Zeit seit dem letztem Frame
+     * @param graph Der Graph
+     * @param enemy Gegner, für den dies entschieden werden soll
+     */
     private void handleEnemy(float dt,Graph graph,Enemy enemy){
         enemy.setAttackCooldown(enemy.getAttackCooldown()+dt);
         Tower tower = checkCollision(enemy);
-        if(tower != null){
+        if(tower != null){  //Attack
             if(enemy.getAttackCooldown() > enemy.getAttackSpeed()){
                 tower.setHp(tower.getHp()-enemy.getDamage());
             }
-        }else{
-
+        }else{              //Move
+            move(enemy,enemy.getSpeed()*dt,graph);
         }
     }
 
-    private void move(Enemy enemy, Graph graph){
-        Edge pos = enemy.getPos();
-        String id1 = pos.getVertices()[0].getID();
-        String id2 = pos.getVertices()[1].getID();
-    }
-
-    private Tower checkCollision(Enemy enemy){
-        Vertex<Tower> v1 = enemy.getPos().getVertices()[0];
-        Vertex<Tower> v2 = enemy.getPos().getVertices()[1];
-        if(v1.getContent().getHp() > 0){
-            Tower tower = v1.getContent();
-            if(calcDist(tower.getX(),tower.getY(),enemy.getX(),enemy.getY()) < tower.getRadius() + enemy.getRadius()){
-                return tower;
+    /**
+     * Bewegt einen Gegner entlang des berechneten Weges path
+     * @param enemy Der zu bewegene Gegner
+     * @param moveableDist Die Strecke, die der Gegner in diesem Frame noch zurücklegen kann
+     * @param graph Der Graph
+     */
+    private void move(Enemy enemy, float moveableDist, Graph graph){
+        if(checkCollision(enemy) != null) {
+            float[] pos = {enemy.getX(), enemy.getY()};
+            VertexData vd = (VertexData) enemy.getPath().front().getContent();
+            float[] target = {vd.x, vd.y};
+            float dist = (new Double(Math.sqrt(Math.pow(pos[0] - target[0], 2) + Math.pow(pos[1] - target[1], 2)))).floatValue();
+            if (dist < moveableDist) {
+                enemy.setX(target[0]);
+                enemy.setY(target[1]);
+                moveableDist = moveableDist - dist;
+                enemy.setPos(graph.getVertex(enemy.getPath().front().getID()));
+                enemy.getPath().dequeue();
+                move(enemy, moveableDist, graph);
+            } else {
+                float q = moveableDist / dist;
+                float nX = pos[0] + ((pos[0] - target[0]) * q);
+                float nY = pos[1] + ((pos[1] - target[1]) * q);
+                enemy.setX(nX);
+                enemy.setY(nY);
+                enemy.setPos(graph.getVertex(enemy.getPath().front().getID()));
             }
         }
-        if(v2.getContent().getHp() > 0){
-            Tower tower = v2.getContent();
+    }
+
+    /**
+     * Überprüft, ob der Gegner mit einem Turm kollidiert.
+     * @param enemy Der Gegner, für den die Kollision überprüft werden soll
+     * @return Ist null, wenn der Gegner mit keinem Turm kollidiert. Gibt sonst den Turm mit den der Gegner kollidiert zurück
+     */
+    private Tower checkCollision(Enemy enemy){
+        Vertex<Tower> towerVertex = enemy.getPos();
+        if(towerVertex.getContent().getHp() > 0){
+            Tower tower = towerVertex.getContent();
             if(calcDist(tower.getX(),tower.getY(),enemy.getX(),enemy.getY()) < tower.getRadius() + enemy.getRadius()){
                 return tower;
             }
@@ -69,6 +102,11 @@ public class EnemyHandler {
         return null;
     }
 
+    /**
+     * Berechnet für alle Gegner, für die dies nötig ist, den besten Weg
+     * @param enemies Liste aller Gegner
+     * @param targetID ID des Zielvertex
+     */
     private void calcAllPaths(List<Enemy> enemies,String targetID) {
         List<Queue<Enemy>> qEList = new List<>();
         enemies.toFirst();
@@ -83,14 +121,40 @@ public class EnemyHandler {
         qEList.toFirst();
         while (qEList.hasAccess()){
             Queue<Enemy> currQueue = qEList.getContent();
-            Queue<Vertex> path = dijkstraAlgorithm(adoptedGraph.getVertex(currQueue.front().getPos().getVertices()[0].getID()),adoptedGraph.getVertex(targetID));
+            Queue<Vertex> path = dijkstraAlgorithm(adoptedGraph.getVertex(currQueue.front().getPos().getID()),adoptedGraph.getVertex(targetID));
+            path.dequeue();
             while (!currQueue.isEmpty()){
-                currQueue.front().setPath(path);
+                currQueue.front().setPath(copyQueue(path n));
                 currQueue.dequeue();
             }
         }
     }
 
+    /**
+     * Kopiert eine Queue
+     */
+    private Queue<Vertex> copyQueue(Queue<Vertex> queue){
+        List<Vertex> list = new List<>();
+        while (!queue.isEmpty()){
+            list.append(queue.front());
+            queue.dequeue();
+        }
+        Queue<Vertex> nQueue = new Queue<>();
+        list.toFirst();
+        while (list.hasAccess()){
+            nQueue.enqueue(list.getContent());
+            queue.enqueue(list.getContent());
+        }
+        return nQueue;
+    }
+
+    /**
+     * Fügt den Gegner an die Stelle der Liste, an der die Gegner in der Queue dieselbe Position haben.
+     * Wenn es in den Queues der Liste keine Gegner mit derselben Position wie den übergebenen Gegner gibt, wird eine neue Queue, die diesen enthält ans Ende der Liste gefügt
+     * @param pList Liste aus Queues mit Gegnern
+     * @param enemy Gegner, der in die richtige Queue der Liste gefügt werden soll
+     * @return Liste aus Queues mit Gegnern
+     */
     private List<Queue<Enemy>> addToList(List<Queue<Enemy>> pList,Enemy enemy){
         boolean added = false;
         pList.toFirst();
@@ -111,6 +175,12 @@ public class EnemyHandler {
         return pList;
     }
 
+    /**
+     * Führt den Dijkstra-Navigations-Algorithmus auf adoptedGraph aus.
+     * @param start Start-Vertex
+     * @param target Ziel-Vertex
+     * @return Berechneter Pfad
+     */
     private Queue<Vertex> dijkstraAlgorithm(Vertex start, Vertex target){
         List<Vertex> vertexList = initiate(start);
         boolean foundTarget = false;
@@ -341,7 +411,7 @@ public class EnemyHandler {
 
     private class VertexData{
         private String name;
-        private int dps,attackRange,projectileRange,dpsInRange;
+        private int dps,attackRange,dpsInRange;
         private float x,y;
         private double dist;
         private Edge prev;
@@ -357,7 +427,6 @@ public class EnemyHandler {
             ProjectileType projectileType = towerType.getProjectileType;
             dps = projectileType.getDamage()*towerType.getFrequency();
             attackRange = towerType.getAttackRange();
-            projectileRange = projectileType.getRange();
             name = towerType.getName();
         }
     }
