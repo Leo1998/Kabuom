@@ -1,11 +1,11 @@
 package projectile;
 
 import enemy.Enemy;
-import graph.List;
-import utility.Vector2;
+
+import java.util.ArrayList;
 
 public class ProjectileHandler {
-    public void handleProjectiles(float dt, List<Projectile> projectiles, List<Enemy> enemies) {
+    public void handleProjectiles(float dt, ArrayList<Projectile> projectiles, ArrayList<Enemy> enemies) {
 
     }
 }
