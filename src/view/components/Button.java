@@ -14,29 +14,47 @@ public class Button extends ViewComponent{
 
     private String buttontext;
     private ITexture texture;
-
+    private boolean gotClicked;
     public Button(float x, float y, float width, float height, View v, String buttontext) {
         super(x, y, width, height, v);
         this.buttontext = buttontext;
         texture = ViewManager.buttonMainTexture;
+        gotClicked = false;
 
     }
 
     public boolean buttonPressed(){
-        if(new Utility().viewComponentIsCollidingWithMouse(this, Mouse.getX(), Display.getHeight() - Mouse.getY()) && Mouse.isButtonDown(0)){
-            texture= ViewManager.buttonPressedTexture;
-            return true;
+        if( Utility.viewComponentIsCollidingWithMouse(this, Mouse.getX(), Display.getHeight() - Mouse.getY()) ){
+
+            if (Mouse.isButtonDown(0)) {
+                texture= ViewManager.buttonPressedTexture;
+                gotClicked = true;
+                return false;
+            }else {
+                if (gotClicked) {
+                    System.out.println("TRUE");
+                    gotClicked = false;
+                    texture = ViewManager.buttonMainTexture;
+                    return true;
+                } else {
+
+                }
+            }
+            return false;
         }else{
+
             texture = ViewManager.buttonMainTexture;
+            gotClicked = false;
             return false;
         }
+
     }
 
     @Override
     public void draw(Batch batch) {
 
-        batch.draw(getTexture(),Utility.layoutX(getX()),Utility.layoutY(getY()),Utility.layoutX(getWidth()),Utility.layoutY(getHeight()));
-        ViewManager.font.drawText(batch, buttontext , (int)(Utility.layoutX(getX())+ Utility.layoutX(getWidth())/2 - ViewManager.font.getWidth(buttontext)/2),(int) (Utility.layoutY(getY()) + Utility.layoutY(getHeight())/2- ViewManager.font.getLineHeight()/2));
+        batch.draw(getTexture(),(getX()),(getY()),(getWidth()),(getHeight()));
+        ViewManager.font.drawText(batch, buttontext , (int)((getX())+ (getWidth())/2 - ViewManager.font.getWidth(buttontext)/2),(int) ((getY()) + (getHeight())/2- ViewManager.font.getLineHeight()/2));
     }
 
     public ITexture getTexture() {return texture;}

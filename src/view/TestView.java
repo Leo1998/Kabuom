@@ -20,6 +20,7 @@ public class TestView extends View {
     private float testX1,testY1,testX2,testY2;
 
 
+
     public TestView(float width, float height){
         super(width, height);
 
@@ -58,21 +59,30 @@ public class TestView extends View {
 
     @Override
     public void render(float deltaTime, Batch batch) {
+        float h2,w2;
+        if(originHeight < originWidth * 7/8) {
+            h2 = originHeight;
+            w2 = h2;
+        }else{
+            w2 = originWidth*7/8;
+            h2 = w2;
+        }
+        //batch.draw(ViewManager.mgTurret,0,0,200,200);
+        batch.draw(ViewManager.world1,originWidth*7/8/2-w2/2,0,w2,h2);
+
         if(testButton.buttonPressed()) {
             for (int i = 100; i < 600; i += 50) {
-                batch.draw(ViewManager.test0,Utility.layoutX(i), Utility.layoutY(450), Utility.layoutX(25), Utility.layoutY(25), 12, 12, rotationRadians, 1f, 1f, 1f, 1f);
+                batch.draw(ViewManager.test0,(i), (450), (25), (25), 12, 12, rotationRadians, 1f, 1f, 1f, 1f);
             }
-            ViewManager.font.drawText(batch, "Hallo Kabuom!     abcdefghijklmnopqrstuvwxyzß", (int)Utility.layoutX(100), (int) Utility.layoutY(400));
+            ViewManager.font.drawText(batch, "Hallo Kabuom!     abcdefghijklmnopqrstuvwxyzß", (int)(100), (int) (400));
         }
 
         rotationRadians += Math.toRadians(deltaTime * 50);
 
-        batch.draw(ViewManager.mgTurret, Utility.layoutX(testX2), Utility.layoutY(testY2), Utility.layoutX(200), Utility.layoutY(200), Utility.layoutX(200/2), Utility.layoutY(200/2),(float) (Utility.calculateAngleBetweenTwoPoints(testX2+200/2,testY2+200/2, testX1,testY1)+ Math.PI), 1f, 1f, 1f, 1f);
+        //batch.draw(ViewManager.test1, (testX2), (testY2), (200), (200), (200/2), (200/2),(float) (Utility.calculateAngleBetweenTwoPoints(testX2+200/2,testY2+200/2, testX1,testY1)+ Math.PI), 1f, 1f, 1f, 1f);
         //batch.draw(ViewManager.test2, 400, 0, 200, 200, 100, 100, (float) 3, 1f, 1f, 1f, 1f);
-        batch.draw(ViewManager.test0, Utility.layoutX(testX1), Utility.layoutY(testY1), 5, 5, 100, 100, (float) 0, 1f, 1f, 1f, 1f);
-        System.out.println("1 : " +testX1 + " / " + testY1);
-
-
+        //batch.draw(ViewManager.test0, (testX1), (testY1), 5, 5, 100, 100, (float) 0, 1f, 1f, 1f, 1f);
+        //System.out.println("1 : " +testX1 + " / " + testY1);
 
 
 

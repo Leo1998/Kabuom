@@ -13,13 +13,10 @@ public abstract class View {
     protected List<ViewComponent> components;
     protected float originWidth,originHeight;
 
-    public View(float width,float height)
-    {
-        components = new ArrayList<ViewComponent>() ;
-        originHeight = height;
-        originWidth = width;
-        width = originWidth;
-        height = originHeight;
+    public View(float width,float height) {
+        components = new ArrayList<ViewComponent>();
+        originWidth = Display.getWidth();
+        originHeight = Display.getHeight();
     }
 
     public void render(float deltaTime, Batch batch){
@@ -31,6 +28,8 @@ public abstract class View {
 
 
     public void layout(float width, float height){
+        originHeight = height;
+        originWidth = width;
     }
     public List<ViewComponent> getComponents(){return components;}
 
