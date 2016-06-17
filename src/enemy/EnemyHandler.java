@@ -5,8 +5,6 @@ import projectile.ProjectileType;
 import tower.*;
 
 /**
- * Created by Daniel on 09.06.2016.
-*/
 public class EnemyHandler {
 
     private Graph adoptedGraph;
@@ -141,10 +139,6 @@ public class EnemyHandler {
         return retList;
     }
 
-    /**
-     * Sucht in vertexList den Knoten mit geringster dist
-     * Entfernt diesen aus vertexList und gibt ihn zurück
-     */
     private Vertex findSmallest(List<Vertex> vertexList){
         vertexList.toFirst();
         Vertex<VertexData> v = vertexList.getContent();
@@ -166,9 +160,6 @@ public class EnemyHandler {
         return null;
     }
 
-    /**
-     * Berechnet die Entfernungen ausgehend vom Knoten source
-     */
     private void calcDist(Vertex<VertexData> source,List<Vertex> vertexList){
         List<Edge> edgeList = adoptedGraph.getEdges(source);
         edgeList.toFirst();
@@ -201,9 +192,6 @@ public class EnemyHandler {
         return vertexList;
     }
 
-    /**
-     * Überprüft, ob der Knoten v in vertexList ist
-     */
     private boolean isInList(Vertex v,List<Vertex> vertexList){
         vertexList.toFirst();
         while (vertexList.hasAccess()){
@@ -362,3 +350,4 @@ public class EnemyHandler {
         }
     }
 }
+ */

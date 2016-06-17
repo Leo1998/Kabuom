@@ -22,7 +22,7 @@ public class PostProcessingManager {
     public PostProcessingManager(Batch batch) {
         this.batch = batch;
 
-        effects.add(new RadialBlurEffect());
+        //effects.add(new RadialBlurEffect());
     }
 
     public void resize(int width, int height) {

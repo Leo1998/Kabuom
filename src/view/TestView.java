@@ -8,7 +8,10 @@ import utility.Utility;
 import view.components.Button;
 import view.components.ViewComponent;
 import view.rendering.Batch;
+import view.rendering.Particle;
+import view.rendering.ParticleEffect;
 
+import java.awt.*;
 import java.util.*;
 
 public class TestView extends View {
@@ -20,8 +23,8 @@ public class TestView extends View {
     private float testX1,testY1,testX2,testY2;
 
 
-    public TestView(float width, float height){
-        super(width, height);
+    public TestView(float width, float height, ViewManager viewManager){
+        super(width, height, viewManager);
 
         testButton=new Button(300,300,50,50,this, "Test");
         components.add(testButton);
@@ -59,6 +62,8 @@ public class TestView extends View {
     @Override
     public void render(float deltaTime, Batch batch) {
         if(testButton.buttonPressed()) {
+            flame();
+
             for (int i = 100; i < 600; i += 50) {
                 batch.draw(ViewManager.test0,Utility.layoutX(i), Utility.layoutY(450), Utility.layoutX(25), Utility.layoutY(25), 12, 12, rotationRadians, 1f, 1f, 1f, 1f);
             }
@@ -81,6 +86,36 @@ public class TestView extends View {
     }
 
 
+    public void flame() {
+        Particle.ParticleRandomizer randomizer = new Particle.ParticleRandomizer() {
+            private Random random = new Random();
+            @Override
+            public float randomizeDir(float dir) {
+                return dir + random.nextInt(60) - 30;
+            }
+            @Override
+            public float randomizeSpeed(float speed) {
+                return speed + random.nextFloat() * 10 - 5;
+            }
+            @Override
+            public float randomizeSize(float size) {
+                return size;
+            }
+            @Override
+            public float randomizeLifeTime(float lifeTime) {
+                return lifeTime + random.nextFloat() * 3 - 1;
+            }
+            @Override
+            public Color randomizeColor(Color color) {
+                float r = Math.max(0, Math.min(1, color.getRed()));
+                float g = Math.max(0, Math.min(1, color.getGreen() + random.nextFloat() * 0.6f));
+                float b = Math.max(0, Math.min(1, color.getBlue()));
 
+                return new Color(r, g, b, 1.0f);
+            }
+        };
+        ParticleEffect effect = new ParticleEffect(15, 400, 400, 270, 160f, 4, 1.5f, Color.RED, randomizer);
+        viewManager.getParticleManager().emit(effect);
+    }
 
 }

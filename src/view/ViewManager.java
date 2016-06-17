@@ -71,7 +71,7 @@ public class ViewManager {
 
         this.particleManager = new ParticleManager(10000);
 
-        currentView = new TestView(Display.getWidth(),Display.getHeight());
+        currentView = new TestView(Display.getWidth(),Display.getHeight(), this);
     }
 
     public void setDisplayMode(int width, int height, boolean fullscreen) {
@@ -175,7 +175,7 @@ public class ViewManager {
 
         currentView.render(deltaTime, batch);
 
-        particleManager.render(batch);
+        particleManager.render(batch, deltaTime);
 
         batch.end();
         ppManager.end();
@@ -198,4 +198,7 @@ public class ViewManager {
         return Display.isCloseRequested();
     }
 
+    public ParticleManager getParticleManager() {
+        return particleManager;
+    }
 }
