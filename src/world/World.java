@@ -14,7 +14,7 @@ public class World {
     private ArrayList<GameObject> objects;
     private Graph graph;
     private Block[][] blocks;
-    private int width,height,difficulty;
+    private int width, height, difficulty;
     private float timePassed;
     private EnemyHandler eH;
     private ProjectileHandler pH;
