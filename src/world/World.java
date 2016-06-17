@@ -8,11 +8,10 @@ import projectile.Projectile;
 import projectile.ProjectileHandler;
 import tower.*;
 
-/**
- * Created by Daniel on 09.06.2016.
- */
+import java.util.ArrayList;
+
 public class World {
-    private List<GameObject> objects;
+    private ArrayList<GameObject> objects;
     private Graph graph;
     private Block[][] blocks;
     private int width,height,difficulty;
@@ -34,24 +33,23 @@ public class World {
      * @param dt
      */
     public void update(float dt){
+        ArrayList<Enemy> enemyList = new ArrayList<Enemy>();
+        ArrayList<Projectile> projectileList = new ArrayList<Projectile>();
+        ArrayList<Tower> towerList = new ArrayList<Tower>();
 
-        List<Enemy> enemyList = new List<Enemy>();
-        List<Projectile> projectileList = new List<Projectile>();
-        List<Tower> towerList = new List<Tower>();
+        for(int i = 0; i < objects.size(); i++){
+            GameObject object = objects.get(i);
 
-        objects.toFirst();
-        while(objects.hasAccess()){
-            if (objects.getContent().getClass().equals(Enemy.class)){
-                enemyList.append((Enemy)objects.getContent());
-            } else if(objects.getContent().getClass().equals(Projectile.class)){
-                projectileList.append((Projectile) objects.getContent());
-            } else if(objects.getContent().getClass().equals(Tower.class)){
-                towerList.append((Tower) objects.getContent());
+            if (object instanceof Enemy){
+                enemyList.add((Enemy) object);
+            } else if(object instanceof Projectile){
+                projectileList.add((Projectile) object);
+            } else if(object instanceof Tower){
+                towerList.add((Tower) object);
             }
-            objects.next();
         }
         //eH.handleEnemies(dt,enemyList,towerList);
-        pH.handleProjectiles(dt,projectileList,enemyList);
+        pH.handleProjectiles(dt, projectileList, enemyList);
         tH.handleTowers(dt, towerList, enemyList, null);//TODO: mainTower???????
     }
     /**

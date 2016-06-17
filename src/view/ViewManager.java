@@ -76,7 +76,7 @@ public class ViewManager {
 
         this.particleManager = new ParticleManager(10000);
 
-        currentView = new TestView(Display.getWidth(),Display.getHeight(), this);
+        currentView = new GameView(Display.getWidth(),Display.getHeight(), this);
     }
 
     public void setDisplayMode(int width, int height, boolean fullscreen) {

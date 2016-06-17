@@ -77,7 +77,7 @@ public class TestView extends View {
         //batch.draw(ViewManager.mgTurret,0,0,200,200);
         batch.draw(ViewManager.world1,originWidth*7/8/2-w2/2,0,w2,h2);
 
-        if(testButton.buttonPressed()) {
+        if(Mouse.isButtonDown(0)) {
             flame();
 
             for (int i = 100; i < 600; i += 50) {
