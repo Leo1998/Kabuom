@@ -32,7 +32,6 @@ public class Button extends ViewComponent{
                 return false;
             }else {
                 if (gotClicked) {
-                    System.out.println("TRUE");
                     gotClicked = false;
                     texture = ViewManager.buttonMainTexture;
                     return true;
