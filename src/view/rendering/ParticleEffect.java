@@ -11,10 +11,10 @@ public class ParticleEffect {
     private float speed;
     private float size;
     private float lifeTime;
-    private Color color;
+    private float[] color;
     private Particle.ParticleRandomizer randomizer;
 
-    public ParticleEffect(int count, int x, int y, float dir, float speed, float size, float lifeTime, Color color, Particle.ParticleRandomizer randomizer) {
+    public ParticleEffect(int count, int x, int y, float dir, float speed, float size, float lifeTime, float[] color, Particle.ParticleRandomizer randomizer) {
         this.count = count;
         this.x = x;
         this.y = y;
@@ -54,7 +54,7 @@ public class ParticleEffect {
         return lifeTime;
     }
 
-    public Color getColor() {
+    public float[] getColor() {
         return color;
     }
 

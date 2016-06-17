@@ -51,7 +51,6 @@ public class Button extends ViewComponent{
 
     @Override
     public void draw(Batch batch) {
-
         batch.draw(getTexture(),(getX()),(getY()),(getWidth()),(getHeight()));
         ViewManager.font.drawText(batch, buttontext , (int)((getX())+ (getWidth())/2 - ViewManager.font.getWidth(buttontext)/2),(int) ((getY()) + (getHeight())/2- ViewManager.font.getLineHeight()/2));
     }

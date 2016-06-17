@@ -14,7 +14,7 @@ public class Particle {
 
         public float randomizeLifeTime(float lifeTime);
 
-        public Color randomizeColor(Color color);
+        public float[] randomizeColor(float[] color);
     }
 
     public static final ParticleRandomizer identityRandomizer = new ParticleRandomizer() {
@@ -39,7 +39,7 @@ public class Particle {
         }
 
         @Override
-        public Color randomizeColor(Color color) {
+        public float[] randomizeColor(float[] color) {
             return color;
         }
     };
@@ -51,12 +51,12 @@ public class Particle {
     private float dir;
     private float speed;
     private float size;
-    private Color color;
+    private float[] color;
     private float life = 0;
     private float lifeTime;
     private ParticleRandomizer randomizer;
 
-    public Particle(float x, float y, float dir, float speed, float size, float lifeTime, Color color, ParticleRandomizer randomizer) {
+    public Particle(float x, float y, float dir, float speed, float size, float lifeTime, float[] color, ParticleRandomizer randomizer) {
         this.x = x;
         this.y = y;
         this.dir = randomizer.randomizeDir(dir);
@@ -94,19 +94,19 @@ public class Particle {
     }
 
     public float getR() {
-        return color.getRed();
+        return color[0];
     }
 
     public float getG() {
-        return color.getGreen();
+        return color[1];
     }
 
     public float getB() {
-        return color.getBlue();
+        return color[2];
     }
 
     public float getA() {
-        return color.getAlpha();
+        return color[3];
     }
 
     public float getSize() {

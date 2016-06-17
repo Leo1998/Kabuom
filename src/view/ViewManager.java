@@ -57,7 +57,7 @@ public class ViewManager {
 
             Display.create();
 
-            System.out.println("OpenGL context created! Version: " + GL11.glGetString(GL11.GL_VERSION));
+            System.out.println("OpenGL context created! Version: " + GL11.glGetString(GL11.GL_VERSION) + ", Vendor: " + GL11.glGetString(GL11.GL_VENDOR) + ", Renderer: " + GL11.glGetString(GL11.GL_RENDERER));
         } catch (LWJGLException e) {
             e.printStackTrace();
             System.exit(0);

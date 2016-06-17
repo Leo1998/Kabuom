@@ -31,10 +31,9 @@ public class TestView extends View {
     public TestView(float width, float height, ViewManager viewManager){
         super(width, height, viewManager);
 
+        testButton=new Button(300, 300, 50, 50, this, "Test");
 
-        testButton=new Button(300,300,50,50,this, "Test");
         components.add(testButton);
-
     }
 
     @Override
@@ -108,7 +107,6 @@ public class TestView extends View {
         super.layout(width, height);
     }
 
-
     public void flame() {
         Particle.ParticleRandomizer randomizer = new Particle.ParticleRandomizer() {
             private Random random = new Random();
@@ -129,15 +127,15 @@ public class TestView extends View {
                 return lifeTime + random.nextFloat() * 3 - 1;
             }
             @Override
-            public Color randomizeColor(Color color) {
-                float r = Math.max(0, Math.min(1, color.getRed()));
-                float g = Math.max(0, Math.min(1, color.getGreen() + random.nextFloat() * 0.6f));
-                float b = Math.max(0, Math.min(1, color.getBlue()));
+            public float[] randomizeColor(float[] color) {
+                float r = 1.0f;
+                float g = random.nextFloat() * 0.8f;
+                float b = 0.0f;
 
-                return new Color(r, g, b, 1.0f);
+                return new float[] {r, g, b, 0.8f};
             }
         };
-        ParticleEffect effect = new ParticleEffect(15, 400, 400, 270, 160f, 4, 1.5f, Color.RED, randomizer);
+        ParticleEffect effect = new ParticleEffect(15, 400, 400, 270, 160f, 4, 1.5f, new float[] {1.0f, 1.0f, 1.0f, 1.0f}, randomizer);
         viewManager.getParticleManager().emit(effect);
     }
 
