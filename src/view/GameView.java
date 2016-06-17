@@ -5,10 +5,13 @@ import graph.Vertex;
 import model.GameObject;
 import projectile.Projectile;
 import tower.Tower;
+import tower.TowerType;
 import utility.Utility;
 import view.components.Button;
 import view.components.ViewComponent;
 import view.rendering.Batch;
+import world.World;
+
 import java.util.List;
 
 public class GameView extends View{
@@ -16,7 +19,7 @@ public class GameView extends View{
     private Utility u;
 
 
-    private List<GameObject> currentObjects;
+    private World world;
     private Button[] towerButtons;
 
     public GameView(float width, float height, ViewManager viewManager){
@@ -42,9 +45,23 @@ public class GameView extends View{
     @Override
     public void render(float deltaTime, Batch batch) {
         super.render(deltaTime, batch);
-        for(int i = 0 ; i< currentObjects.size(); i++){
-            drawGameObject(currentObjects.get(i),batch);
+
+        for(int i = 0 ; i< world.getObjects().size(); i++){
+            drawGameObject(world.getObjects().get(i),batch);
         }
+
+        float h2,w2;
+        if(originHeight < originWidth * 7/8) {
+            h2 = originHeight;
+            w2 = h2;
+        }else{
+            w2 = originWidth*7/8;
+            h2 = w2;
+        }
+        batch.draw(ViewManager.world1,originWidth * 7 / 8 / 2- w2 / 2, 0, w2, h2);
+
+        TowerType.values();
+
 
     }
 

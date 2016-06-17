@@ -78,4 +78,8 @@ public class World {
     public Block[][] getBlocks(){
         return blocks;
     }
+
+    public List<GameObject> getObjects() {
+        return objects;
+    }
 }
