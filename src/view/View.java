@@ -12,11 +12,23 @@ public abstract class View {
 
     protected List<ViewComponent> components;
     protected float originWidth,originHeight;
+    protected final ViewManager viewManager;
 
     public View(float width,float height) {
         components = new ArrayList<ViewComponent>();
         originWidth = Display.getWidth();
         originHeight = Display.getHeight();
+        viewManager = null;
+    }
+
+    public View(float width, float height, ViewManager viewManager)
+    {
+        components = new ArrayList<ViewComponent>() ;
+        originHeight = height;
+        originWidth = width;
+        width = originWidth;
+        height = originHeight;
+        this.viewManager = viewManager;
     }
 
     public void render(float deltaTime, Batch batch){

@@ -52,7 +52,7 @@ public class World {
         }
         //eH.handleEnemies(dt,enemyList,towerList);
         pH.handleProjectiles(dt,projectileList,enemyList);
-        tH.handleTowers(dt,towerList,enemyList);
+        tH.handleTowers(dt, towerList, enemyList, null);//TODO: mainTower???????
     }
     /**
      * Die Anfrage liefert die Schwierigkeit der Welt als Integer.

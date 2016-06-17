@@ -19,8 +19,8 @@ public class GameView extends View{
     private List<GameObject> currentObjects;
     private Button[] towerButtons;
 
-    public GameView(float width, float height){
-        super(width,height);
+    public GameView(float width, float height, ViewManager viewManager){
+        super(width,height, viewManager);
         u = new Utility();
 
     }

@@ -153,6 +153,10 @@ public class Batch {
         draw(tex, x, y, width, height, 0, 0, 0, 1f, 1f, 1f, 1f);
     }
 
+    public void draw(ITexture tex, float x, float y, float width, float height, float r, float g, float b, float a) {
+        draw(tex, x, y, width, height, 0, 0, 0, r, g, b, a);
+    }
+
     public void draw(ITexture tex, float x, float y, float width, float height, float originX, float originY, float rotationRadians, float r, float g, float b, float a) {
         checkFlush();
 
