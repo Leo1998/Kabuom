@@ -14,7 +14,7 @@ import tower.*;
 public class World {
     private List<GameObject> objects;
     private Graph graph;
-    private Vertex[][] blocks;
+    private Block[][] blocks;
     private int width,height,difficulty;
     private float timePassed;
     private EnemyHandler eH;
@@ -75,7 +75,7 @@ public class World {
     /**
      * Die Anfrage liefert die Blöcke der Welt als Zweidimensionales Array der Klasse Vertex.
      */
-    public Vertex[][] getBlocks(){
+    public Block[][] getBlocks(){
         return blocks;
     }
 }

@@ -22,6 +22,7 @@ public class ViewManager {
     public static ITexture buttonMainTexture;
     public static ITexture buttonPressedTexture;
     public static ITexture mgTurret, mgTurretGreen, mgTurretRed;
+    public static ITexture world1,world2,world3;
 
     public static void load (){
         try {
@@ -35,6 +36,10 @@ public class ViewManager {
             mgTurretRed = new Texture(ViewManager.class.getResource("/textures/MgTurretRot.png"));
             buttonMainTexture = new Texture(ViewManager.class.getResource("/textures/viewTextures/mainButton.png"));
             buttonPressedTexture = new Texture(ViewManager.class.getResource("/textures/viewTextures/pressedButton.png"));
+            world1 = new Texture(ViewManager.class.getResource("/textures/GrundlageWelt.png"));
+            world2 = new Texture(ViewManager.class.getResource("/textures/GrundlageWelt2.png"));
+            world3 = new Texture(ViewManager.class.getResource("/textures/GrundlageWelt3.png"));
+
         } catch(IOException e) {
             e.printStackTrace();
             font = null;
@@ -80,6 +85,7 @@ public class ViewManager {
                 (Display.isFullscreen() == fullscreen)) {
             return;
         }
+
 
         try {
             DisplayMode targetDisplayMode = null;
@@ -188,6 +194,9 @@ public class ViewManager {
         GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
         batch.resize(Display.getWidth(), Display.getHeight());
         ppManager.resize(Display.getWidth(), Display.getHeight());
+        if(currentView!= null)
+            currentView.layout(width,height);
+
     }
 
     public void dispose() {

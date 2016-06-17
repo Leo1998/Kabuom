@@ -14,6 +14,13 @@ public abstract class View {
     protected float originWidth,originHeight;
     protected final ViewManager viewManager;
 
+    public View(float width,float height) {
+        components = new ArrayList<ViewComponent>();
+        originWidth = Display.getWidth();
+        originHeight = Display.getHeight();
+        viewManager = null;
+    }
+
     public View(float width, float height, ViewManager viewManager)
     {
         components = new ArrayList<ViewComponent>() ;
@@ -33,6 +40,8 @@ public abstract class View {
 
 
     public void layout(float width, float height){
+        originHeight = height;
+        originWidth = width;
     }
     public List<ViewComponent> getComponents(){return components;}
 

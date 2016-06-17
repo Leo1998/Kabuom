@@ -1,8 +1,6 @@
 package utility;
 
 import model.GameObject;
-import org.lwjgl.opengl.Display;
-import view.ViewManager;
 import view.components.ViewComponent;
 
 
@@ -10,7 +8,7 @@ public class Utility {
 
     public boolean gameObjectIsCollidingWithGameObject(GameObject o1, GameObject o2){
         if(o1!= null && o2 != null){
-            if(new Vector2(Utility.layoutX(o1.getX()),Utility.layoutY(o1.getY()),Utility.layoutX(o2.getX()),Utility.layoutY(o2.getY())).getLength() >= o1.getRadius()+o2.getRadius()) {
+            if(new Vector2((o1.getX()),(o1.getY()),(o2.getX()),(o2.getY())).getLength() >= o1.getRadius()+o2.getRadius()) {
                 return true;
             }else{
                 return false;
@@ -21,10 +19,10 @@ public class Utility {
     }
     public boolean gameObjectIsCollidingWithMouse(GameObject o1, int mouseX, int mouseY){
         if(o1 != null ){
-            if(mouseX>= Utility.layoutX(o1.getX()) &&
-                    mouseX <= Utility.layoutX(o1.getX())+Utility.layoutX(o1.getRadius())&&
-                    mouseY >= Utility.layoutY(o1.getY())&&
-                            mouseY <= Utility.layoutY(o1.getY())+Utility.layoutY(o1.getRadius())){
+            if(mouseX>= (o1.getX()) &&
+                    mouseX <= (o1.getX())+(o1.getRadius())&&
+                    mouseY >= (o1.getY())&&
+                            mouseY <= (o1.getY())+(o1.getRadius())){
                 return true;
             }else{
                 return false;
@@ -80,12 +78,12 @@ public class Utility {
         return (float) (angle);
     }
 
-    public boolean viewComponentIsCollidingWithMouse(ViewComponent o1, int mouseX, int mouseY) {
+    public static boolean viewComponentIsCollidingWithMouse(ViewComponent o1, int mouseX, int mouseY) {
         if (o1 != null) {
-            if (mouseX >= Utility.layoutX(o1.getX()) &&
-                    mouseX <= Utility.layoutX(o1.getX()) + Utility.layoutX(o1.getWidth()) &&
-                    mouseY >= Utility.layoutY(o1.getY()) &&
-                            mouseY <= Utility.layoutY(o1.getY()) + Utility.layoutY(o1.getHeight())) {
+            if (mouseX >= (o1.getX()) &&
+                    mouseX <= (o1.getX()) +(o1.getWidth()) &&
+                    mouseY >= (o1.getY()) &&
+                            mouseY <= (o1.getY()) + (o1.getHeight())) {
                 return true;
             } else {
                 return false;
@@ -94,12 +92,5 @@ public class Utility {
             throw new IllegalArgumentException();
 
         }
-    }
-
-    public static float layoutX(float koord){
-        return koord * Display.getWidth() / 800;
-    }
-    public static float layoutY(float koord){
-        return koord * Display.getHeight() / 600 ;
     }
 }
