@@ -1,0 +1,10 @@
+Also guys mein mini-pc ist wieder abgestürzt deshalb benutzen wir jetzt github.com als server!
+
+ihr müsst euch auf der seite einen account erstellen und mir dann euren username schicke damit ich euch freigebe
+
+dann: 
+
+git remote remove origin
+git remote add origin https://github.com/Leo1998/Kabuom.git
+
+ab dann ist alles wie vorher
