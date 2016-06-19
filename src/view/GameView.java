@@ -51,12 +51,6 @@ public class GameView extends View{
     @Override
     public void render(float deltaTime, Batch batch) {
         super.render(deltaTime, batch);
-        batch.draw(ViewManager.test1,originWidth*7/8,0,originWidth*1/8,originHeight);
-        if(world!=null && world.getObjects()!= null) {
-            for (int i = 0; i < world.getObjects().size(); i++) {
-                drawGameObject(world.getObjects().get(i), batch);
-            }
-        }
         float h2,w2;
         if(originHeight < originWidth * 7/8) {
             h2 = originHeight;
@@ -65,13 +59,26 @@ public class GameView extends View{
             w2 = originWidth*7/8;
             h2 = w2;
         }
-        batch.draw(ViewManager.world1,originWidth * 7 / 8 / 2- w2 / 2, 0, w2, h2);
+        for(int i = 0; i < world.getBlocks().length; i++){
+            for(int j = 0; j < world.getBlocks()[i].length; j++){
+                    batch.draw(ViewManager.test0,(w2/world.getBlocks().length * i)+ (originWidth*7/8-w2) / 2, h2/world.getBlocks()[i].length * j+ (originHeight-h2)/2, w2/world.getBlocks().length, h2/world.getBlocks()[i].length);
+            }
+        }
+        batch.draw(ViewManager.test1,originWidth*7/8,(originHeight-h2)/2,originWidth*1/8,h2);
+        if(world!=null && world.getObjects()!= null) {
+            for (int i = 0; i < world.getObjects().size(); i++) {
+                drawGameObject(world.getObjects().get(i), batch);
+            }
+        }
 
-        for(int i = 0; i < TowerType.values().length; i++){
-            towerButtons[i].draw(batch);
+
+        //batch.draw(ViewManager.world1,originWidth * 7 / 8 / 2- w2 / 2, 0, w2, h2);
+
+        for(int i = 0; i < towerButtons.length; i++){
+            towerButtons[i].draw(batch,h2/towerButtons.length *i + (originHeight-h2)/2);
             if(setTower == null){
                 if(towerButtons[i].buttonPressed()){
-                    setTower = new Tower(towerButtons[i].getTowerType(), 0, "Tower" + i,Mouse.getX(),originHeight- Mouse.getY(),100);
+                    setTower = new Tower(towerButtons[i].getTowerType(), 0, "Tower" + i,Mouse.getX(),originHeight- Mouse.getY(),h2/world.getBlocks().length);
                 }
             }
         }

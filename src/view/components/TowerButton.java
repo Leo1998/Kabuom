@@ -2,6 +2,7 @@ package view.components;
 
 import tower.TowerType;
 import view.View;
+import view.ViewManager;
 import view.rendering.Batch;
 import view.rendering.ITexture;
 
@@ -21,6 +22,9 @@ public class TowerButton extends Button{
         super.draw(batch);
     }
 
+    public void draw(Batch batch,float height){
+        batch.draw(getTexture(),(getX()),(height),(getWidth()),(getHeight()),getWidth()/2,getHeight()/2,(float) Math.toRadians(270),1f,1f,1f,1f);
+    }
     @Override
     public boolean buttonPressed() {
         return super.buttonPressed();

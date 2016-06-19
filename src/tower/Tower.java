@@ -7,7 +7,7 @@ import projectile.ProjectileType;
 public class Tower extends GameObject{
     private ProjectileType projectile;
     private int attackRadius,cost,HP;
-    private float frequency,radius,cooldown;
+    private float frequency,cooldown;
     private TowerType type;
     private Enemy target;
 
@@ -18,7 +18,6 @@ public class Tower extends GameObject{
         this.cost = type.cost;
         this.type = type;
         this.frequency = type.frequency;
-        this.radius = radius;
     }
 
     public int getAttackRadius() {
@@ -38,8 +37,6 @@ public class Tower extends GameObject{
     public float getFrequency(){return frequency;}
 
     public int getHP(){return HP;}
-
-    public float getRadius(){return radius;}
 
     public float getCooldown(){return cooldown;}
 
