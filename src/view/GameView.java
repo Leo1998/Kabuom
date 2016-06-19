@@ -79,6 +79,8 @@ public class GameView extends View{
 
         if(setTower != null){
             batch.draw(ViewManager.mgTurret,Mouse.getX()-setTower.getRadius()/2,originHeight-Mouse.getY()-setTower.getRadius()/2,setTower.getRadius(),setTower.getRadius());
+            if(Mouse.isButtonDown(1))
+                setTower = null;
         }
     }
 
