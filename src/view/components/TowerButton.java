@@ -1,5 +1,6 @@
 package view.components;
 
+import tower.TowerType;
 import view.View;
 import view.rendering.Batch;
 import view.rendering.ITexture;
@@ -9,8 +10,10 @@ import view.rendering.ITexture;
  */
 public class TowerButton extends Button{
 
-    public TowerButton(float x, float y, float width, float height, View v, String buttontext, ITexture mainTexture, ITexture pressedTexture) {
+    private TowerType towerType;
+    public TowerButton(float x, float y, float width, float height, View v, String buttontext, ITexture mainTexture, ITexture pressedTexture, TowerType towerType) {
         super(x, y, width, height, v, buttontext, mainTexture, pressedTexture);
+        this.towerType = towerType;
     }
 
     @Override
@@ -21,5 +24,9 @@ public class TowerButton extends Button{
     @Override
     public boolean buttonPressed() {
         return super.buttonPressed();
+    }
+
+    public TowerType getTowerType(){
+        return towerType;
     }
 }

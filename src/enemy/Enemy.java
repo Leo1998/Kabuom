@@ -3,9 +3,7 @@ package enemy;
 import graph.*;
 import model.GameObject;
 
-/**
- * Created by Daniel on 09.06.2016.
- */
+
 public class Enemy extends GameObject{
     private float attackSpeed, speed;
     private Queue<Vertex> path;

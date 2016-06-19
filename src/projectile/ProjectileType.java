@@ -8,5 +8,5 @@ public enum ProjectileType {
     LIGHTNING ,
     PIERCINGBULLET ,
     FRAGGRANADE ,
-    POISON ;
+    POISON
 }

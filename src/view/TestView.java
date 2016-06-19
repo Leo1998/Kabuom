@@ -63,7 +63,7 @@ public class TestView extends View {
         }
     }
 
-    
+
 
     @Override
     public void render(float deltaTime, Batch batch) {
