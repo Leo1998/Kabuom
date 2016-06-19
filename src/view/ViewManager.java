@@ -174,7 +174,7 @@ public class ViewManager {
             }
         }
 
-        ppManager.begin();
+        ppManager.begin(deltaTime);
         batch.begin();
 
         if (currentView != null) {

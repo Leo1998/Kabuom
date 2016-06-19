@@ -13,16 +13,24 @@ public class PostProcessingManager {
         return FrameBuffer.isSupported();
     }
 
-    private FrameBuffer sceneFB;
     private Batch batch;
     private boolean enabled = true;
 
+    private float totalTime = 0;
+
+    private FrameBuffer sceneFB;
     private ArrayList<PostProcessingEffect> effects = new ArrayList<>();
+    private ArrayList<FrameBuffer> passThroughFrameBuffers = new ArrayList<>();
 
     public PostProcessingManager(Batch batch) {
         this.batch = batch;
 
-        //effects.add(new RadialBlurEffect());
+        addEffect(new DrunkEffect());
+        addEffect(new RadialBlurEffect());
+    }
+
+    public void addEffect(PostProcessingEffect effect) {
+        effects.add(effect);
     }
 
     public void resize(int width, int height) {
@@ -33,13 +41,24 @@ public class PostProcessingManager {
                 }
                 sceneFB = new FrameBuffer(width, height, GL11.GL_LINEAR, GL12.GL_CLAMP_TO_EDGE);
 
+                for (int i = 0; i < passThroughFrameBuffers.size(); i++) {
+                    passThroughFrameBuffers.get(i).dispose();
+                    passThroughFrameBuffers.remove(i);
+                }
+
+                for (int i = 0; i < Math.max(0, effects.size() - 1); i++) {
+                    passThroughFrameBuffers.add(new FrameBuffer(width, height, GL11.GL_LINEAR, GL12.GL_CLAMP_TO_EDGE));
+                }
+
             } catch(LWJGLException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    public void begin() {
+    public void begin(float deltaTime) {
+        totalTime += deltaTime;
+
         if (isEnabled()) {
             sceneFB.begin();
 
@@ -53,11 +72,23 @@ public class PostProcessingManager {
             sceneFB.end();
 
             if (!effects.isEmpty()) {
-                if (effects.size() > 1) {
-                    throw new IllegalStateException("Only one Effect is supported yet!;");
-                }
-                for (PostProcessingEffect e : effects) {
-                    e.render(sceneFB, batch);
+                FrameBuffer inFrameBuffer = sceneFB;
+
+                for (int i = 0; i < effects.size(); i++) {
+                    PostProcessingEffect e = effects.get(i);
+
+                    FrameBuffer fb = null;
+                    if (effects.size() > 1 && i < effects.size() - 1) {
+                        fb = passThroughFrameBuffers.get(i);
+                        fb.begin();
+                    }
+
+                    e.render(inFrameBuffer, batch, totalTime);
+
+                    if (fb != null) {
+                        fb.end();
+                        inFrameBuffer = fb;
+                    }
                 }
             } else {
                 batch.begin();

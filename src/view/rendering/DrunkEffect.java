@@ -8,12 +8,12 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RadialBlurEffect extends PostProcessingEffect {
+public class DrunkEffect extends PostProcessingEffect {
 
     private static ShaderProgram createShader() {
         try {
-            File vert = new File(Batch.class.getResource("/shaders/radialBlur.vert").toURI());
-            File frag = new File(Batch.class.getResource("/shaders/radialBlur.frag").toURI());
+            File vert = new File(Batch.class.getResource("/shaders/drunk.vert").toURI());
+            File frag = new File(Batch.class.getResource("/shaders/drunk.frag").toURI());
 
             VertexAttrib[] attribs = new VertexAttrib[] {
                     new VertexAttrib(0, "position", 2),
@@ -37,7 +37,7 @@ public class RadialBlurEffect extends PostProcessingEffect {
 
     private ShaderProgram shader;
 
-    public RadialBlurEffect() {
+    public DrunkEffect() {
         this.shader = createShader();
     }
 
@@ -49,12 +49,7 @@ public class RadialBlurEffect extends PostProcessingEffect {
         sceneTexture.getTexture().bind();
         shader.setUniformi("sceneTexture", 0);
 
-        float x = (Mouse.getX() / (float) Display.getWidth());
-        float y = (Mouse.getY() / (float) Display.getHeight());
-
-        shader.setUniformf("radial_blur", 0.08f);
-        shader.setUniformf("radial_bright", 1.0f);
-        shader.setUniformf("radial_origin", x, y);
+        shader.setUniformf("time", totalTime);
 
         batch.draw(null, 0, 0, Display.getWidth(), Display.getHeight());
         batch.end();
