@@ -52,7 +52,7 @@ public class RadialBlurEffect extends PostProcessingEffect {
         float x = (Mouse.getX() / (float) Display.getWidth());
         float y = (Mouse.getY() / (float) Display.getHeight());
 
-        shader.setUniformf("radial_blur", 0.08f);
+        shader.setUniformf("radial_blur", 0.04f);
         shader.setUniformf("radial_bright", 1.0f);
         shader.setUniformf("radial_origin", x, y);
 
