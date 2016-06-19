@@ -8,6 +8,7 @@ import tower.Tower;
 import tower.TowerType;
 import utility.Utility;
 import view.components.Button;
+import view.components.TowerButton;
 import view.components.ViewComponent;
 import view.rendering.Batch;
 import world.World;
@@ -24,7 +25,10 @@ public class GameView extends View{
     public GameView(float width, float height, ViewManager viewManager, World world){
         super(width,height, viewManager);
         this.world = world;
-
+        towerButtons = new Button[TowerType.values().length];
+        for(int i= 0 ; i < TowerType.values().length; i++){
+           towerButtons[i] = new TowerButton(width * 7/8, i * height/TowerType.values().length,width* 1/8,height/TowerType.values().length, this, null, viewManager.mgTurretGreen,viewManager.mgTurretRed);
+        }
         u = new Utility();
     }
 
@@ -46,10 +50,11 @@ public class GameView extends View{
     public void render(float deltaTime, Batch batch) {
         super.render(deltaTime, batch);
 
-        for(int i = 0 ; i< world.getObjects().size(); i++){
-            drawGameObject(world.getObjects().get(i),batch);
+        if(world!=null && world.getObjects()!= null) {
+            for (int i = 0; i < world.getObjects().size(); i++) {
+                drawGameObject(world.getObjects().get(i), batch);
+            }
         }
-
         float h2,w2;
         if(originHeight < originWidth * 7/8) {
             h2 = originHeight;
@@ -60,7 +65,9 @@ public class GameView extends View{
         }
         batch.draw(ViewManager.world1,originWidth * 7 / 8 / 2- w2 / 2, 0, w2, h2);
 
-        TowerType.values();
+        for(int i = 0; i < TowerType.values().length; i++){
+            towerButtons[i].draw(batch);
+        }
 
 
     }

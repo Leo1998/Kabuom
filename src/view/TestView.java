@@ -31,7 +31,6 @@ public class TestView extends View {
     public TestView(float width, float height, ViewManager viewManager){
         super(width, height, viewManager);
 
-        testButton=new Button(300, 300, 50, 50, this, "Test");
 
         components.add(testButton);
     }
@@ -63,6 +62,8 @@ public class TestView extends View {
             testX2 = testX2 +20;
         }
     }
+
+    
 
     @Override
     public void render(float deltaTime, Batch batch) {
