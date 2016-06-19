@@ -7,7 +7,6 @@ attribute vec2 texCoords;
 uniform mat4 projectionMatrix;
 
 varying vec4 v_color;
-varying float v_tid;
 varying vec2 v_texCoords;
 
 void main() {

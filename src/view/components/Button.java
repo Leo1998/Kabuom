@@ -66,4 +66,6 @@ public class Button extends ViewComponent{
     public void setButtontext(String buttontext){
         this.buttontext = buttontext;
     }
+
+
 }
