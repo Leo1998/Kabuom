@@ -8,6 +8,7 @@ import projectile.Projectile;
 import tower.Tower;
 import tower.TowerType;
 import utility.Utility;
+import utility.Vector2;
 import view.components.Button;
 import view.components.TowerButton;
 import view.components.ViewComponent;
@@ -69,11 +70,24 @@ public class GameView extends View{
             for (int i = 0; i < world.getObjects().size(); i++) {
                 drawGameObject(world.getObjects().get(i), batch);
             }
+            for(int i = 0; i < world.getBlocks().length; i++){
+                for(int j = 0 ; j< world.getBlocks()[i].length ; j++ ) {
+                    if(world.getBlocks()[i][j].getContent().getType() == TowerType.DUMMY){
+
+                    }else{
+                        batch.draw(ViewManager.mgTurret,(w2/world.getBlocks().length * i)+ (originWidth*7/8-w2) / 2, h2/world.getBlocks()[i].length * j+ (originHeight-h2)/2, w2/world.getBlocks().length, h2/world.getBlocks()[i].length);
+
+                    }
+                }
+            }
         }
 
 
-        //batch.draw(ViewManager.world1,originWidth * 7 / 8 / 2- w2 / 2, 0, w2, h2);
 
+        //batch.draw(ViewManager.world1,originWidth * 7 / 8 / 2- w2 / 2, 0, w2, h2);
+        /**
+         * Alles Was mit dem Towersetzen zu tun hat
+         */
         for(int i = 0; i < towerButtons.length; i++){
             towerButtons[i].draw(batch,h2/towerButtons.length *i + (originHeight-h2)/2);
             if(setTower == null){
@@ -82,13 +96,19 @@ public class GameView extends View{
                 }
             }
         }
-
-
         if(setTower != null){
             batch.draw(ViewManager.mgTurret,Mouse.getX()-setTower.getRadius()/2,originHeight-Mouse.getY()-setTower.getRadius()/2,setTower.getRadius(),setTower.getRadius());
             if(Mouse.isButtonDown(1))
                 setTower = null;
+            if(getBlockIDOfMouse(w2,h2) != null){
+
+                if(Mouse.isButtonDown(0)){
+                    world.getBlocks()[(int)getBlockIDOfMouse(w2,h2).getCoords()[0]][(int)getBlockIDOfMouse(w2,h2).getCoords()[1]].setContent(setTower);
+                    setTower = null;
+                }
+            }
         }
+
     }
 
 
@@ -102,6 +122,14 @@ public class GameView extends View{
             towerButtons[i].setWidth(width* 1/8);
             towerButtons[i].setHeight(height/towerButtons.length);
         }
+    }
+
+    public Vector2 getBlockIDOfMouse(float w2, float h2){
+
+        if(Mouse.getX() > (originWidth * 7 / 8 / 2- w2 / 2) && Mouse.getY() > 0 && Mouse.getX() < w2 && Mouse.getY() < h2) {
+            return  new Vector2(Mouse.getX() / (w2 + (originWidth * 7 / 8 - w2)), Mouse.getY() / (h2 + (originHeight - h2) / 2));
+        }
+        return null;
     }
 
     @Override
