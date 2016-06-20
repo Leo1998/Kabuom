@@ -13,7 +13,7 @@ import java.util.ArrayList;
 public class World {
     private ArrayList<GameObject> objects;
     private Graph graph;
-    private Block[][] blocks;
+    private Vertex<Tower>[][] blocks;
     private int width, height, difficulty;
     private float timePassed;
     private EnemyHandler eH;
@@ -27,7 +27,13 @@ public class World {
         timePassed = 0;
 
         this.objects = new ArrayList<>();
-        this.blocks = new Block[width][height];
+        this.blocks = new Vertex[width][height];
+        for(int i = 0 ; i< this.blocks.length ; i++ ){
+            for(int j = 0 ; j< this.blocks[i].length ; j++ ) {
+                blocks[i][j]= new Vertex<Tower>(i+" "+j);
+                blocks[i][j].setContent(new Tower(TowerType.DUMMY,12,"Leer",i,j,0));
+            }
+        }
     }
 
     /**
@@ -76,7 +82,7 @@ public class World {
     /**
      * Die Anfrage liefert die Blöcke der Welt als Zweidimensionales Array der Klasse Vertex.
      */
-    public Block[][] getBlocks(){
+    public Vertex<Tower>[][] getBlocks(){
         return blocks;
     }
 
