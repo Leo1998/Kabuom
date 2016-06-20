@@ -6,8 +6,8 @@ public class Vector2 {
 
     public Vector2(float x, float y){
         coords = new float[2];
-        coords[1] = x;
-        coords[2] = y;
+        coords[0] = x;
+        coords[1] = y;
     }
 
     public float getLength(){
