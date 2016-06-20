@@ -9,6 +9,17 @@ import java.util.ArrayList;
 
 public class PostProcessingManager {
 
+    public enum Effect {
+        Drunk(DrunkEffect.class),
+        RadialBlur(RadialBlurEffect.class);
+
+        Class<? extends PostProcessingEffect> clazz;
+
+        Effect(Class<? extends PostProcessingEffect> clazz) {
+            this.clazz = clazz;
+        }
+    }
+
     public static boolean isSupported() {
         return FrameBuffer.isSupported();
     }
@@ -24,13 +35,38 @@ public class PostProcessingManager {
 
     public PostProcessingManager(Batch batch) {
         this.batch = batch;
+    }
 
-        addEffect(new DrunkEffect());
-        addEffect(new RadialBlurEffect());
+    public void enableEffect(Effect effect) {
+        try {
+            PostProcessingEffect e = effect.clazz.newInstance();
+
+            addEffect(e);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void disableEffect(Effect effect) {
+        for (int i = 0; i < effects.size(); i++) {
+            if (effect.clazz.isInstance(effects.get(i))) {
+                removeEffect(effects.get(i));
+                return;
+            }
+        }
     }
 
     public void addEffect(PostProcessingEffect effect) {
         effects.add(effect);
+
+        resize(Display.getWidth(), Display.getHeight());
+    }
+
+    public void removeEffect(PostProcessingEffect effect) {
+        effects.remove(effect);
+        effect.dispose();
+
+        resize(Display.getWidth(), Display.getHeight());
     }
 
     public void resize(int width, int height) {

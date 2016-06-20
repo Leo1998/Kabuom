@@ -22,12 +22,6 @@ public class TestView extends View {
 
     private float testX1,testY1,testX2,testY2;
 
-
-
-    public TestView(float width, float height) {
-        super(width, height);
-    }
-
     public TestView(float width, float height, ViewManager viewManager){
         super(width, height, viewManager);
 

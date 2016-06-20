@@ -57,7 +57,7 @@ public class World {
                 towerList.add((Tower) object);
             }
         }
-        //eH.handleEnemies(dt,enemyList,towerList);
+        eH.handleEnemies(dt,enemyList,"Ziel ID",graph,false,true);//TODO: ZielID->ID des Zielvektors , recalculate(false)->true,wenn Tower platziert oder drunk aktiviert wurde , drunk(true)->true wenn drunk aktiv ist
         pH.handleProjectiles(dt, projectileList, enemyList);
         tH.handleTowers(dt, towerList, enemyList, null);//TODO: mainTower???????
     }

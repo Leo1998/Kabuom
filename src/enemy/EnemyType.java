@@ -4,13 +4,17 @@ package enemy;
  * Created by 204g11 on 10.06.2016.
  */
 public enum EnemyType {
-    TYPE1 (50,50,50,50,50,"1"),
-    TYPE2 (50,50,50,50,50,"2"),
-    TYPE3 (50,50,50,50,50,"3");
+    Cheap (0.2f,25,1,5,10,"Cheap"),
+    Tank (1,400,0.5f,5,50,"Tank"),
+    Speed (0.1f,50,2,15,10,"Speed"),
+    Damage (0.2f,150,0.8f,60,30,"Damage"),
+    Super (0.1f,500,1,70,50,"Super"),
+    Troll (1,500,0.2f,0,50,"Troll"),
+    Cheat (0,Integer.MAX_VALUE,Float.MAX_VALUE,Integer.MAX_VALUE,1,"Cheat");
 
+    private final float attackSpeed;
     private final int maxHP;
     private final float speed;
-    private final float attackSpeed;
     private final int damage;
     private final int radius;
     private final String name;

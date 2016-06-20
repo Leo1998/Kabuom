@@ -59,4 +59,9 @@ public class RadialBlurEffect extends PostProcessingEffect {
         batch.draw(null, 0, 0, Display.getWidth(), Display.getHeight());
         batch.end();
     }
+
+    @Override
+    public void dispose() {
+        shader.dispose();
+    }
 }
