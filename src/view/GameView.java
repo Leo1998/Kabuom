@@ -105,7 +105,7 @@ public class GameView extends View{
             if(getBlockIDOfMouse(w2,h2) != null){
 
                 if(Mouse.isButtonDown(0)){
-                    //world.getBlocks()[(int)getBlockIDOfMouse(w2,h2).getCoords()[0]][(int)getBlockIDOfMouse(w2,h2).getCoords()[1]].setContent(setTower);
+                    world.getBlocks()[(int)getBlockIDOfMouse(w2,h2).getCoords()[0]][(int)getBlockIDOfMouse(w2,h2).getCoords()[1]].setContent(setTower);
                     setTower = null;
                 }
             }
@@ -133,8 +133,8 @@ public class GameView extends View{
         float w = x + w2;
         float h = y + h2;
         if(Mouse.getX() > x && Mouse.getY() > y && Mouse.getX() < w && Mouse.getY() < h) {
-            System.out.println(Mouse.getX()+" "+ (originHeight-Mouse.getY()));
-            return  new Vector2((Mouse.getX()-(originWidth*7/8-w2)) / 2 /w2 * world.getBlocks().length,originHeight-Mouse.getY());
+            System.out.println((Mouse.getX() - (originWidth * 7 / 8 - w2) / 2 )*world.getBlocks().length/ w2 +" "+ (originHeight-Mouse.getY() - (originHeight  - h2) / 2 )*world.getBlocks().length/ h2);
+            return  new Vector2((Mouse.getX() - (originWidth * 7 / 8 - w2) / 2 )*world.getBlocks().length/ w2,(originHeight-Mouse.getY() - (originHeight  - h2) / 2 )*world.getBlocks().length/ h2);
         }
         return null;
     }
