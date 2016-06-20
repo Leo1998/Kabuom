@@ -64,7 +64,7 @@ public class GameView extends View{
         }
         for(int i = 0; i < world.getBlocks().length; i++){
             for(int j = 0; j < world.getBlocks()[i].length; j++){
-                    batch.draw(ViewManager.test0,(w2/world.getBlocks().length * i)+ (originWidth*7/8-w2) / 2, h2/world.getBlocks()[i].length * j+ (originHeight-h2)/2, w2/world.getBlocks().length, h2/world.getBlocks()[i].length);
+                    batch.draw(ViewManager.test0,blockCoordToViewCoordX(i, w2), blockCoordToViewCoordY(j,h2), w2/world.getBlocks().length, h2/world.getBlocks()[i].length);
             }
         }
         batch.draw(ViewManager.test1,originWidth*7/8,(originHeight-h2)/2,originWidth*1/8,h2);
@@ -77,7 +77,7 @@ public class GameView extends View{
                     if(world.getBlocks()[i][j].getContent().getType() == TowerType.DUMMY){
 
                     }else{
-                        batch.draw(ViewManager.mgTurret,(w2/world.getBlocks().length * i)+ (originWidth*7/8-w2) / 2, h2/world.getBlocks()[i].length * j+ (originHeight-h2)/2, w2/world.getBlocks().length, h2/world.getBlocks()[i].length);
+                        batch.draw(ViewManager.mgTurret,blockCoordToViewCoordX(i, w2), blockCoordToViewCoordY(j, h2), w2/world.getBlocks().length, h2/world.getBlocks()[i].length);
 
                     }
                 }
@@ -137,6 +137,14 @@ public class GameView extends View{
             return  new Vector2((Mouse.getX() - (originWidth * 7 / 8 - w2) / 2 )*world.getBlocks().length/ w2,(originHeight-Mouse.getY() - (originHeight  - h2) / 2 )*world.getBlocks().length/ h2);
         }
         return null;
+    }
+
+    private float blockCoordToViewCoordX(float coord, float w2){
+        return w2/world.getBlocks().length * coord+ (originWidth*7/8-w2) / 2;
+    }
+
+    private float blockCoordToViewCoordY(float coord, float h2){
+        return h2/world.getBlocks().length * coord+ (originHeight-h2) / 2;
     }
 
     @Override
