@@ -14,13 +14,6 @@ public abstract class View {
     protected float originWidth,originHeight;
     protected final ViewManager viewManager;
 
-    public View(float width,float height) {
-        components = new ArrayList<ViewComponent>();
-        originWidth = Display.getWidth();
-        originHeight = Display.getHeight();
-        viewManager = null;
-    }
-
     public View(float width, float height, ViewManager viewManager)
     {
         components = new ArrayList<ViewComponent>() ;
@@ -45,7 +38,11 @@ public abstract class View {
     }
     public List<ViewComponent> getComponents(){return components;}
 
-    public abstract void onKeyDown(int key,char c);
+    public ViewManager getViewManager() {
+        return viewManager;
+    }
+
+    public abstract void onKeyDown(int key, char c);
     public void onMouseDown(int button, int mouseX, int mouseY){
 
     }

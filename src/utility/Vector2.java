@@ -2,20 +2,20 @@ package utility;
 
 public class Vector2 {
 
-    private float[] koords;
+    private float[] coords;
 
-    public Vector2(float x1, float y1,float x2, float y2){
-        koords = new float[2];
-        koords[1] = x2-x1;
-        koords[2] = y2-y1;
+    public Vector2(float x, float y){
+        coords = new float[2];
+        coords[1] = x;
+        coords[2] = y;
     }
 
     public float getLength(){
-        return (float) Math.sqrt((koords[1]*koords[1])+(koords[2]*koords[2]));
+        return (float) Math.sqrt((coords[1]*coords[1])+(coords[2]*coords[2]));
     }
 
-    public float[] getKoords() {
-        return koords;
+    public float[] getCoords() {
+        return coords;
     }
 
 }

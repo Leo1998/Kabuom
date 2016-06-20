@@ -3,6 +3,7 @@ package view;
 import enemy.Enemy;
 import graph.Vertex;
 import model.GameObject;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import projectile.Projectile;
 import tower.Tower;
@@ -12,6 +13,7 @@ import view.components.Button;
 import view.components.TowerButton;
 import view.components.ViewComponent;
 import view.rendering.Batch;
+import view.rendering.PostProcessingManager;
 import world.World;
 
 import java.util.List;
@@ -116,8 +118,17 @@ public class GameView extends View{
 
     @Override
     public void onKeyDown(int key, char c) {
-
+        if (key == Keyboard.KEY_1) {
+            this.getViewManager().getPostProcessingManager().enableEffect(PostProcessingManager.Effect.RadialBlur);
+        }
+        if (key == Keyboard.KEY_2) {
+            this.getViewManager().getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);
+        }
+        if (key == Keyboard.KEY_3) {
+            this.getViewManager().getPostProcessingManager().enableEffect(PostProcessingManager.Effect.Drunk);
+        }
+        if (key == Keyboard.KEY_4) {
+            this.getViewManager().getPostProcessingManager().disableEffect(PostProcessingManager.Effect.Drunk);
+        }
     }
-
-
 }
