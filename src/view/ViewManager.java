@@ -211,6 +211,10 @@ public class ViewManager {
         return particleManager;
     }
 
+    public PostProcessingManager getPostProcessingManager() {
+        return ppManager;
+    }
+
     public View getCurrentView() {
         return currentView;
     }

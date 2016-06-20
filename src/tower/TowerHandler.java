@@ -41,9 +41,9 @@ public class TowerHandler {
             }
             float shortestWay = Float.MAX_VALUE;
             for (int i = 0; i < targetList.size(); i++) {
-                if (new Vector2(mainTower.getX(), mainTower.getY(), targetList.get(i).getX(), targetList.get(i).getY()).getLength() < shortestWay) {
+                if (new Vector2(mainTower.getX() - targetList.get(i).getX(), mainTower.getY() - targetList.get(i).getY()).getLength() < shortestWay) {
                     target = targetList.get(i);
-                    shortestWay = new Vector2(mainTower.getX(), mainTower.getY(), targetList.get(i).getX(), targetList.get(i).getY()).getLength();
+                    shortestWay = new Vector2(mainTower.getX() - targetList.get(i).getX(), mainTower.getY() - targetList.get(i).getY()).getLength();
                 }
             }
             tower.setTarget(target);
@@ -109,7 +109,7 @@ public class TowerHandler {
     }
     public boolean enemyInRange(Enemy e1, Tower t1){
         if(e1!= null && t1 != null){
-            if(new Vector2(e1.getX(),e1.getY(),t1.getX(),t1.getY()).getLength() > e1.getRadius()+t1.getAttackRadius()) {
+            if(new Vector2(e1.getX() - t1.getX(), e1.getY() - t1.getY()).getLength() > e1.getRadius()+t1.getAttackRadius()) {
                 return true;
             }
         }
