@@ -67,7 +67,7 @@ public class World {
      * Gibt zürück, ob dies möglich war oder nicht
      */
     public boolean CanSetTowerInBlocks(int i, int j, Tower setTower){
-        if(!isTowerAtCoords(i,j)){
+        if(!isTowerAtCoords(i,j)&& setTower != null){
             blocks[i][j].setContent(setTower);
             return true;
         }

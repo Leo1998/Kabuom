@@ -68,21 +68,20 @@ public class GameView extends View{
             }
             for(int i = 0; i < world.getBlocks().length; i++){
                 for(int j = 0 ; j< world.getBlocks()[i].length ; j++ ) {
-                    System.out.println(world);
-                    System.out.println(world.getBlocks()[i][j].getContent());
-                    if(world.getBlocks()[i][j].getContent().getType() == TowerType.DUMMY){
 
-                    }else{
-                        GameObject o = world.getBlocks()[i][j].getContent();
-                        float angle = 0;
-                        if(((Tower)o).getTarget() != null)
-                            angle = Utility.calculateAngleBetweenTwoPoints(o.getX() + o.getRadius() / 2, o.getY() + o.getRadius() / 2, ((Tower) o).getTarget().getX() + ((Tower) o).getTarget().getRadius() / 2, ((Tower) o).getTarget().getY() + ((Tower) o).getTarget().getRadius() / 2);
-                        float oX = blockCoordToViewCoordX(i);
-                        float oY = blockCoordToViewCoordY(j);
-                        float oW = w2/world.getBlocks().length;
-                        float oH = h2/world.getBlocks()[i].length;
-                        batch.draw(ViewManager.mgTurret, oX, oY, oW ,oH , oW/2,oH/2, angle, 1f,1f,1f,1f);
-                    }
+                        if (world.getBlocks()[i][j].getContent().getType() == TowerType.DUMMY) {
+
+                        } else {
+                            GameObject o = world.getBlocks()[i][j].getContent();
+                            float angle = 0;
+                            if (((Tower) o).getTarget() != null)
+                                angle = Utility.calculateAngleBetweenTwoPoints(o.getX() + o.getRadius() / 2, o.getY() + o.getRadius() / 2, ((Tower) o).getTarget().getX() + ((Tower) o).getTarget().getRadius() / 2, ((Tower) o).getTarget().getY() + ((Tower) o).getTarget().getRadius() / 2);
+                            float oX = blockCoordToViewCoordX(i);
+                            float oY = blockCoordToViewCoordY(j);
+                            float oW = w2 / world.getBlocks().length;
+                            float oH = h2 / world.getBlocks()[i].length;
+                            batch.draw(ViewManager.mgTurret, oX, oY, oW, oH, oW / 2, oH / 2, angle, 1f, 1f, 1f, 1f);
+                        }
                 }
             }
         }
@@ -118,6 +117,7 @@ public class GameView extends View{
         float y = 0;
         float w = x + w2;
         float h = y + h2;
+
         if(mouseX > x && mouseY > y && mouseX < w &&mouseY < h) {
             //System.out.println((mouseX - (originWidth * 7 / 8 - w2) / 2 )*world.getBlocks().length/ w2 +" "+ (mouseY - (originHeight  - h2) / 2 )*world.getBlocks().length/ h2);
             return  new Vector2((mouseX - (originWidth * 7 / 8 - w2) / 2 )*world.getBlocks().length/ w2,(mouseY - (originHeight  - h2) / 2 )*world.getBlocks().length/ h2);
@@ -147,13 +147,13 @@ public class GameView extends View{
                 viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);
                 setTower = null;
             }
-        }
-        if (getBlockIDOfMouse(mouseX, mouseY) != null) {
+            if (getBlockIDOfMouse(mouseX, mouseY) != null) {
 
-            if (button == 0){
-                if (world.CanSetTowerInBlocks((int) getBlockIDOfMouse(mouseX, mouseY).getCoords()[0], (int) getBlockIDOfMouse(mouseX, mouseY).getCoords()[1], (setTower))) {
-                    viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);
-                    setTower = null;
+                if (button == 0) {
+                    if (world.CanSetTowerInBlocks((int) getBlockIDOfMouse(mouseX, mouseY).getCoords()[0], (int) getBlockIDOfMouse(mouseX, mouseY).getCoords()[1], (setTower))) {
+                        viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);
+                        setTower = null;
+                    }
                 }
             }
         }
