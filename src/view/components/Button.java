@@ -19,7 +19,8 @@ public class Button extends ViewComponent{
         super(x, y, width, height, v);
         this.buttontext = buttontext;
         buttonMainTexture = mainTexture;
-        buttonPressedTexture = texture = pressedTexture;
+        buttonPressedTexture =  pressedTexture;
+        texture = buttonMainTexture;
         gotClicked = false;
 
     }

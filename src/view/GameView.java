@@ -1,7 +1,6 @@
 package view;
 
 import enemy.Enemy;
-import graph.Vertex;
 import model.GameObject;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -10,7 +9,6 @@ import tower.Tower;
 import tower.TowerType;
 import utility.Utility;
 import utility.Vector2;
-import view.components.Button;
 import view.components.TowerButton;
 import view.components.ViewComponent;
 import view.rendering.Batch;
@@ -26,6 +24,7 @@ public class GameView extends View{
     private World world;
     private TowerButton[] towerButtons;
     private Tower setTower;
+    private float w2,h2;
 
     public GameView(float width, float height, ViewManager viewManager, World world){
         super(width,height, viewManager);
@@ -38,11 +37,7 @@ public class GameView extends View{
     }
 
     public void drawGameObject(GameObject o,Batch batch){
-        if(o instanceof Tower){
-            float angle = u.calculateAngleBetweenTwoPoints(o.getX(),o.getY(),100,100);
-           // batch.draw(o.getTexture(),o.getX(),o.getY(),o.getRadius(),o.getRadius(),100,100,Utility.calculateAngleBetweenTwoPoints(o.getX()+o.getRadius()/2,o.getY()+o.getRadius()/2,o.getTarget().getX()+o.getTarget().getRadius()/2,o.getTarget().getY()+o.getTarget.getRadius()/2) ,1f,1f,1f,1f);
-
-        }else if( o instanceof Enemy){
+         if( o instanceof Enemy){
             batch.draw(o.getTexture(), o.getX(),o.getY(),o.getRadius(),o.getRadius());
 
         }else if( o instanceof Projectile){
@@ -54,7 +49,6 @@ public class GameView extends View{
     @Override
     public void render(float deltaTime, Batch batch) {
         super.render(deltaTime, batch);
-        float h2,w2;
         if(originHeight < originWidth * 7/8) {
             h2 = originHeight;
             w2 = h2;
@@ -64,7 +58,7 @@ public class GameView extends View{
         }
         for(int i = 0; i < world.getBlocks().length; i++){
             for(int j = 0; j < world.getBlocks()[i].length; j++){
-                    batch.draw(ViewManager.test0,blockCoordToViewCoordX(i, w2), blockCoordToViewCoordY(j,h2), w2/world.getBlocks().length, h2/world.getBlocks()[i].length);
+                    batch.draw(ViewManager.test0,blockCoordToViewCoordX(i), blockCoordToViewCoordY(j), w2/world.getBlocks().length, h2/world.getBlocks()[i].length);
             }
         }
         batch.draw(ViewManager.test1,originWidth*7/8,(originHeight-h2)/2,originWidth*1/8,h2);
@@ -74,43 +68,35 @@ public class GameView extends View{
             }
             for(int i = 0; i < world.getBlocks().length; i++){
                 for(int j = 0 ; j< world.getBlocks()[i].length ; j++ ) {
+                    System.out.println(world);
+                    System.out.println(world.getBlocks()[i][j].getContent());
                     if(world.getBlocks()[i][j].getContent().getType() == TowerType.DUMMY){
 
                     }else{
-                        batch.draw(ViewManager.mgTurret,blockCoordToViewCoordX(i, w2), blockCoordToViewCoordY(j, h2), w2/world.getBlocks().length, h2/world.getBlocks()[i].length);
-
+                        GameObject o = world.getBlocks()[i][j].getContent();
+                        float angle = 0;
+                        if(((Tower)o).getTarget() != null)
+                            angle = Utility.calculateAngleBetweenTwoPoints(o.getX() + o.getRadius() / 2, o.getY() + o.getRadius() / 2, ((Tower) o).getTarget().getX() + ((Tower) o).getTarget().getRadius() / 2, ((Tower) o).getTarget().getY() + ((Tower) o).getTarget().getRadius() / 2);
+                        float oX = blockCoordToViewCoordX(i);
+                        float oY = blockCoordToViewCoordY(j);
+                        float oW = w2/world.getBlocks().length;
+                        float oH = h2/world.getBlocks()[i].length;
+                        batch.draw(ViewManager.mgTurret, oX, oY, oW ,oH , oW/2,oH/2, angle, 1f,1f,1f,1f);
                     }
                 }
             }
         }
-
-
-
         //batch.draw(ViewManager.world1,originWidth * 7 / 8 / 2- w2 / 2, 0, w2, h2);
         /**
          * Alles Was mit dem Towersetzen zu tun hat
          */
         for(int i = 0; i < towerButtons.length; i++){
             towerButtons[i].draw(batch,h2/towerButtons.length *i + (originHeight-h2)/2);
-            if(setTower == null){
-                if(towerButtons[i].buttonPressed()){
-                    setTower = new Tower(towerButtons[i].getTowerType(), 0, "Tower" + i,Mouse.getX(),originHeight- Mouse.getY(),h2/world.getBlocks().length);
-                }
-            }
-        }
-        if(setTower != null){
-            batch.draw(ViewManager.mgTurret,Mouse.getX()-setTower.getRadius()/2,originHeight-Mouse.getY()-setTower.getRadius()/2,setTower.getRadius(),setTower.getRadius());
-            if(Mouse.isButtonDown(1))
-                setTower = null;
-            if(getBlockIDOfMouse(w2,h2) != null){
-
-                if(Mouse.isButtonDown(0)){
-                    world.getBlocks()[(int)getBlockIDOfMouse(w2,h2).getCoords()[0]][(int)getBlockIDOfMouse(w2,h2).getCoords()[1]].setContent(setTower);
-                    setTower = null;
-                }
-            }
         }
 
+        if(setTower != null) {
+            batch.draw(ViewManager.mgTurret, Mouse.getX() - setTower.getRadius() / 2, originHeight - Mouse.getY() - setTower.getRadius() / 2, setTower.getRadius(), setTower.getRadius());
+        }
     }
 
 
@@ -126,24 +112,24 @@ public class GameView extends View{
         }
     }
 
-    public Vector2 getBlockIDOfMouse(float w2, float h2){
+    public Vector2 getBlockIDOfMouse(float mouseX,float mouseY){
 
         float x = ((originWidth * 7 / 8) / 2 - w2 / 2);
         float y = 0;
         float w = x + w2;
         float h = y + h2;
-        if(Mouse.getX() > x && Mouse.getY() > y && Mouse.getX() < w && Mouse.getY() < h) {
-            System.out.println((Mouse.getX() - (originWidth * 7 / 8 - w2) / 2 )*world.getBlocks().length/ w2 +" "+ (originHeight-Mouse.getY() - (originHeight  - h2) / 2 )*world.getBlocks().length/ h2);
-            return  new Vector2((Mouse.getX() - (originWidth * 7 / 8 - w2) / 2 )*world.getBlocks().length/ w2,(originHeight-Mouse.getY() - (originHeight  - h2) / 2 )*world.getBlocks().length/ h2);
+        if(mouseX > x && mouseY > y && mouseX < w &&mouseY < h) {
+            //System.out.println((mouseX - (originWidth * 7 / 8 - w2) / 2 )*world.getBlocks().length/ w2 +" "+ (mouseY - (originHeight  - h2) / 2 )*world.getBlocks().length/ h2);
+            return  new Vector2((mouseX - (originWidth * 7 / 8 - w2) / 2 )*world.getBlocks().length/ w2,(mouseY - (originHeight  - h2) / 2 )*world.getBlocks().length/ h2);
         }
         return null;
     }
 
-    private float blockCoordToViewCoordX(float coord, float w2){
+    private float blockCoordToViewCoordX(float coord){
         return w2/world.getBlocks().length * coord+ (originWidth*7/8-w2) / 2;
     }
 
-    private float blockCoordToViewCoordY(float coord, float h2){
+    private float blockCoordToViewCoordY(float coord){
         return h2/world.getBlocks().length * coord+ (originHeight-h2) / 2;
     }
 
@@ -155,6 +141,31 @@ public class GameView extends View{
     @Override
     public void onMouseDown(int button, int mouseX, int mouseY) {
         super.onMouseDown(button, mouseX, mouseY);
+
+        if(setTower != null) {
+            if (button == 1) {
+                viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);
+                setTower = null;
+            }
+        }
+        if (getBlockIDOfMouse(mouseX, mouseY) != null) {
+
+            if (button == 0){
+                if (world.CanSetTowerInBlocks((int) getBlockIDOfMouse(mouseX, mouseY).getCoords()[0], (int) getBlockIDOfMouse(mouseX, mouseY).getCoords()[1], (setTower))) {
+                    viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);
+                    setTower = null;
+                }
+            }
+        }
+        for(int i = 0; i < towerButtons.length; i++) {
+            if (setTower == null) {
+                if (towerButtons[i].buttonPressed()) {
+                    System.out.println("pressed");
+                    viewManager.getPostProcessingManager().enableEffect(PostProcessingManager.Effect.RadialBlur);
+                    setTower = new Tower(towerButtons[i].getTowerType(), 0, "Tower" + i, mouseX, mouseY, h2 / world.getBlocks().length);
+                }
+            }
+        }
     }
 
     @Override
