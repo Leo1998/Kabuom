@@ -133,7 +133,7 @@ public class GameView extends View{
         float w = x + w2;
         float h = y + h2;
         if(Mouse.getX() > x && Mouse.getY() > y && Mouse.getX() < w && Mouse.getY() < h) {
-            System.out.println((Mouse.getX() - (originWidth * 7 / 8 - w2) / 2 )*world.getBlocks().length/ w2 +" "+ (originHeight-Mouse.getY() - (originHeight  - h2) / 2 )*world.getBlocks().length/ h2);
+            //System.out.println((Mouse.getX() - (originWidth * 7 / 8 - w2) / 2 )*world.getBlocks().length/ w2 +" "+ (originHeight-Mouse.getY() - (originHeight  - h2) / 2 )*world.getBlocks().length/ h2);
             return  new Vector2((Mouse.getX() - (originWidth * 7 / 8 - w2) / 2 )*world.getBlocks().length/ w2,(originHeight-Mouse.getY() - (originHeight  - h2) / 2 )*world.getBlocks().length/ h2);
         }
         return null;
