@@ -145,6 +145,14 @@ public class ViewManager {
                 int mouseY = Display.getHeight() - Mouse.getEventY();
 
                 currentView.onMouseDown(button, mouseX,mouseY);
+            } else {
+                int button = Mouse.getEventButton();
+                int mouseX = Mouse.getEventX();
+                int mouseY = Display.getHeight() - Mouse.getEventY();
+
+                if (button != -1) {
+                    currentView.onMouseUp(button, mouseX, mouseY);
+                }
             }
         }
         while(Keyboard.next()){
@@ -170,7 +178,11 @@ public class ViewManager {
                         e.printStackTrace();
                     }
                 }
+            } else {
+                int key = Keyboard.getEventKey();
+                char c = Keyboard.getEventCharacter();
 
+                currentView.onKeyUp(key , c);
             }
         }
 

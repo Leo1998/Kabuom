@@ -37,4 +37,9 @@ public abstract class ViewComponent {
     public void setWidth(float width) {this.width = width;}
 
     public void setHeight(float height) {this.height = height;}
+
+    public void onKeyDown(int key, char c){}
+    public void onKeyUp(int key, char c){}
+    public void onMouseDown(int button, int mouseX, int mouseY){}
+    public void onMouseUp(int button, int mouseX, int mouseY){}
 }
