@@ -4,18 +4,18 @@ import java.nio.FloatBuffer;
 
 public interface VertexData {
 
-    public void bind();
-    public void draw(int geom, int first, int count);
-    public void unbind();
+    void bind();
+    void draw(int geom, int first, int count);
+    void unbind();
 
-    public VertexData clear();
-    public VertexData flip();
-    public VertexData put(float[] verts, int offset, int length);
-    public VertexData put(float v);
+    VertexData clear();
+    VertexData flip();
+    VertexData put(float[] verts, int offset, int length);
+    VertexData put(float v);
 
-    public FloatBuffer buffer();
+    FloatBuffer buffer();
 
-    public int getTotalNumComponents();
-    public int getVertexCount();
+    int getTotalNumComponents();
+    int getVertexCount();
 
 }

@@ -78,10 +78,7 @@ public class World {
      * Prüft, ob an den Blockkoordinaten i und j ein Tower vorhanden ist
      */
     public boolean isTowerAtCoords(int i, int j){
-        if(blocks[i][j].getContent().getType() == TowerType.DUMMY){
-            return false;
-        }
-        return true;
+        return blocks[i][j].getContent().getType() != TowerType.DUMMY;
     }
     /**
      * Die Anfrage liefert die Schwierigkeit der Welt als Integer.

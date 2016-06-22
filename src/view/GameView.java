@@ -32,7 +32,7 @@ public class GameView extends View{
         this.world = world;
         towerButtons = new TowerButton[TowerType.values().length];
         for(int i= 0 ; i < TowerType.values().length; i++){
-            final TowerButton towerButton = new TowerButton(width * 7/8, i * height/TowerType.values().length,width* 1/8,height/TowerType.values().length, this, null, viewManager.mgTurretGreen,viewManager.mgTurretRed,TowerType.values()[i]);
+            final TowerButton towerButton = new TowerButton(width * 7/8, i * height/TowerType.values().length,width* 1/8,height/TowerType.values().length, this, null, ViewManager.mgTurretGreen, ViewManager.mgTurretRed,TowerType.values()[i]);
 
             towerButtons[i] = towerButton;
             this.components.add(towerButton);
