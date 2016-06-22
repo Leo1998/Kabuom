@@ -26,9 +26,15 @@ public class EnemyHandler {
      * @param enemies Liste aller Gegner
      * @param targetID ID des Ziel-Vertex
      * @param graph Der Graph
-     * @param recalculate Ist true, wenn in dem Frame ein Turm geädnert wurde
+     * @param recalculate Ist true, wenn in dem Frame ein Turm geädnert oder Drunk aktiviert wurde (einmalig)
+     * @param drunk Ist true, wenn Drunk aktiv ist
      */
     public void handleEnemies(float dt, ArrayList<Enemy> enemies,String targetID, Graph graph, boolean recalculate,boolean drunk){
+        for(Enemy currEnemy:enemies){
+            if (currEnemy.getHp() <= 0){
+                enemies.remove(currEnemy);
+            }
+        }
         Random random = new Random();
         if(!drunk) {
             if (recalculate) {
@@ -76,7 +82,7 @@ public class EnemyHandler {
      */
     private void handleEnemy(float dt,Graph graph,Enemy enemy,boolean drunk,Random random){
         enemy.setAttackCooldown(enemy.getAttackCooldown()+dt);
-        Tower tower = checkCollision(enemy);
+        Tower tower = checkCollision(enemy,graph);
         if(tower != null && (!drunk || random.nextDouble()<0.3 || tower.getType() == TowerType.BARRICADE)){  //Attack
             float[] move = {0,0};
             enemy.setMovement(move);
@@ -95,7 +101,7 @@ public class EnemyHandler {
      * @param graph Der Graph
      */
     private void move(Enemy enemy, float moveableDist, Graph graph,float dt){
-        if(checkCollision(enemy) != null) {
+        if(checkCollision(enemy,graph) != null) {
             float[] pos = {enemy.getX(), enemy.getY()};
             VertexData vd = (VertexData) enemy.getPath().front().getContent();
             float[] target = {vd.x, vd.y};
@@ -106,7 +112,9 @@ public class EnemyHandler {
                 moveableDist = moveableDist - dist;
                 enemy.setPos(graph.getVertex(enemy.getPath().front().getID()));
                 enemy.getPath().dequeue();
-                move(enemy, moveableDist, graph,dt);
+                if(checkCollision(enemy,graph) != null) {
+                    move(enemy, moveableDist, graph, dt);
+                }
             } else {
                 float q = moveableDist / dist;
                 float nX = pos[0] + ((pos[0] - target[0]) * q);
@@ -122,18 +130,25 @@ public class EnemyHandler {
 
     /**
      * Überprüft, ob der Gegner mit einem Turm kollidiert.
+     * Überprüft den Turm, von dem der Gegner kommt und den Turm, auf den sich der Gegner zubewegt
      * @param enemy Der Gegner, für den die Kollision überprüft werden soll
      * @return Ist null, wenn der Gegner mit keinem Turm kollidiert. Gibt sonst den Turm mit den der Gegner kollidiert zurück
      */
-    private Tower checkCollision(Enemy enemy){
-        Vertex<Tower> towerVertex = enemy.getPos();
-        if(towerVertex.getContent().getHp() > 0){
-            Tower tower = towerVertex.getContent();
-            if(calcDist(tower.getX(),tower.getY(),enemy.getX(),enemy.getY()) < tower.getRadius() + enemy.getRadius()){
-                return tower;
+    private Tower checkCollision(Enemy enemy,Graph graph){
+        Tower collidingTower = null;
+        Tower currTower = (Tower)enemy.getPos().getContent();
+        if(currTower.getHP() > 0){
+            if(calcDist(currTower.getX(),currTower.getY(),enemy.getX(),enemy.getY()) < currTower.getRadius() + enemy.getRadius()){
+                collidingTower = currTower;
             }
         }
-        return null;
+        currTower = (Tower)graph.getVertex(enemy.getPath().front().getID()).getContent();
+        if(currTower.getHP() > 0){
+            if(calcDist(currTower.getX(),currTower.getY(),enemy.getX(),enemy.getY()) < currTower.getRadius() + enemy.getRadius()){
+                collidingTower = currTower;
+            }
+        }
+        return collidingTower;
     }
 
     /**
