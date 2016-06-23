@@ -1,5 +1,6 @@
 package view;
 
+import controller.Controller;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -46,12 +47,15 @@ public class ViewManager {
         }
     }
 
+    private Controller ctrl = new Controller();
     private View currentView;
     private PostProcessingManager ppManager;
     private ParticleManager particleManager;
     private boolean fullscreen = false;
 
-    public ViewManager() {
+    public ViewManager(Controller ctrl) {
+        this.ctrl = ctrl;
+
         try {
             setDisplayMode(800, 600, false);
 
@@ -234,4 +238,6 @@ public class ViewManager {
     public void setCurrentView(View currentView) {
         this.currentView = currentView;
     }
+
+    public Controller getCtrl(){return ctrl;}
 }

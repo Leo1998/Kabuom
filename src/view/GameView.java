@@ -13,6 +13,7 @@ import view.components.ButtonListener;
 import view.components.TowerButton;
 import view.components.ViewComponent;
 import view.rendering.Batch;
+import view.rendering.ITexture;
 import view.rendering.PostProcessingManager;
 import world.World;
 
@@ -26,9 +27,14 @@ public class GameView extends View{
     private TowerButton[] towerButtons;
     private Tower setTower;
     private float w2,h2;
+    private ITexture blockTexture,towerButtonBackgroundTexture;
 
     public GameView(float width, float height, final ViewManager viewManager, World world){
         super(width,height, viewManager);
+
+        blockTexture = ViewManager.test2;
+        towerButtonBackgroundTexture = ViewManager.test1;
+
         this.world = world;
         towerButtons = new TowerButton[TowerType.values().length];
         for(int i= 0 ; i < TowerType.values().length; i++){
@@ -63,9 +69,12 @@ public class GameView extends View{
 
     @Override
     public void render(float deltaTime, Batch batch) {
-        batch.draw(ViewManager.test1,originWidth*7/8,(originHeight-h2)/2,originWidth*1/8,h2);
+
+        //Hintergrund für die TowerButtons am Rechten Rand
+        batch.draw(towerButtonBackgroundTexture,originWidth*7/8,(originHeight-h2)/2,originWidth*1/8,h2);
 
         super.render(deltaTime, batch);
+
 
         if(originHeight < originWidth * 7/8) {
             h2 = originHeight;
@@ -76,7 +85,7 @@ public class GameView extends View{
         }
         for(int i = 0; i < world.getBlocks().length; i++){
             for(int j = 0; j < world.getBlocks()[i].length; j++){
-                    batch.draw(ViewManager.test0,blockCoordToViewCoordX(i), blockCoordToViewCoordY(j), w2/world.getBlocks().length, h2/world.getBlocks()[i].length);
+                    batch.draw(blockTexture,blockCoordToViewCoordX(i), blockCoordToViewCoordY(j), w2/world.getBlocks().length, h2/world.getBlocks()[i].length);
             }
         }
 
@@ -99,6 +108,7 @@ public class GameView extends View{
                             float oW = w2 / world.getBlocks().length;
                             float oH = h2 / world.getBlocks()[i].length;
                             batch.draw(ViewManager.mgTurret, oX, oY, oW, oH, oW / 2, oH / 2, angle, 1f, 1f, 1f, 1f);
+                            //TODO : TowerType.getTexture, nur in schön
                         }
                 }
             }
@@ -113,6 +123,8 @@ public class GameView extends View{
             setTower.setY(originHeight - Mouse.getY() - setTower.getRadius() / 2);
             setTower.setRadius(h2/world.getBlocks().length);
             batch.draw(ViewManager.mgTurret, setTower.getX(),setTower.getY(), setTower.getRadius(), setTower.getRadius());
+            //TODO : TowerType.getTexture, nut in schön
+
         }
     }
 
@@ -129,6 +141,9 @@ public class GameView extends View{
         }
     }
 
+    /**
+     * Rechnet aus den MouseKoordinaten die ID des Blockes aus
+     */
     public Vector2 getBlockIDOfMouse(float mouseX,float mouseY){
         float x = ((originWidth * 7 / 8) / 2 - w2 / 2);
         float y = 0;
@@ -136,11 +151,14 @@ public class GameView extends View{
         float h = y + h2;
 
         if(mouseX > x && mouseY > y && mouseX < w &&mouseY < h) {
-            //System.out.println((mouseX - (originWidth * 7 / 8 - w2) / 2 )*world.getBlocks().length/ w2 +" "+ (mouseY - (originHeight  - h2) / 2 )*world.getBlocks().length/ h2);
-            return  new Vector2((mouseX - (originWidth * 7 / 8 - w2) / 2 )*world.getBlocks().length/ w2,(mouseY - (originHeight  - h2) / 2 )*world.getBlocks().length/ h2);
+            return  new Vector2((mouseX - x) * world.getBlocks().length / w2,(mouseY - (originHeight  - h2) / 2 ) * world.getBlocks().length / h2);
         }
         return null;
     }
+
+    /**
+     * Rechnet die Block Koordinate in eine View Koordinate um
+     */
 
     private float blockCoordToViewCoordX(float coord){
         return w2/world.getBlocks().length * coord+ (originWidth*7/8-w2) / 2;

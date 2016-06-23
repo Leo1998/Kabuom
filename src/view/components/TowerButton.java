@@ -6,9 +6,6 @@ import view.ViewManager;
 import view.rendering.Batch;
 import view.rendering.ITexture;
 
-/**
- * Created by Hinke on 17.06.2016.
- */
 public class TowerButton extends Button{
 
     private TowerType towerType;
