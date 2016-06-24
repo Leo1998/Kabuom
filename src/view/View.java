@@ -42,9 +42,25 @@ public abstract class View {
         return viewManager;
     }
 
-    public abstract void onKeyDown(int key, char c);
+    public void onKeyDown(int key, char c){
+        for (ViewComponent v : components) {
+            v.onKeyDown(key, c);
+        }
+    }
+    public void onKeyUp(int key, char c){
+        for (ViewComponent v : components) {
+            v.onKeyUp(key, c);
+        }
+    }
     public void onMouseDown(int button, int mouseX, int mouseY){
-
+        for (ViewComponent v : components) {
+            v.onMouseDown(button, mouseX, mouseY);
+        }
+    }
+    public void onMouseUp(int button, int mouseX, int mouseY){
+        for (ViewComponent v : components) {
+            v.onMouseUp(button, mouseX, mouseY);
+        }
     }
 
 

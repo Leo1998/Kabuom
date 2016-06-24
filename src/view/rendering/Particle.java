@@ -6,15 +6,15 @@ import java.util.Random;
 public class Particle {
 
     public interface ParticleRandomizer {
-        public float randomizeDir(float dir);
+        float randomizeDir(float dir);
 
-        public float randomizeSpeed(float speed);
+        float randomizeSpeed(float speed);
 
-        public float randomizeSize(float size);
+        float randomizeSize(float size);
 
-        public float randomizeLifeTime(float lifeTime);
+        float randomizeLifeTime(float lifeTime);
 
-        public float[] randomizeColor(float[] color);
+        float[] randomizeColor(float[] color);
     }
 
     public static final ParticleRandomizer identityRandomizer = new ParticleRandomizer() {

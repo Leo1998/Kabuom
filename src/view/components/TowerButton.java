@@ -6,9 +6,6 @@ import view.ViewManager;
 import view.rendering.Batch;
 import view.rendering.ITexture;
 
-/**
- * Created by Hinke on 17.06.2016.
- */
 public class TowerButton extends Button{
 
     private TowerType towerType;
@@ -24,10 +21,6 @@ public class TowerButton extends Button{
 
     public void draw(Batch batch,float height){
         batch.draw(getTexture(),(getX()),(height),(getWidth()),(getHeight()),getWidth()/2,getHeight()/2,(float) Math.toRadians(270),1f,1f,1f,1f);
-    }
-    @Override
-    public boolean buttonPressed() {
-        return super.buttonPressed();
     }
 
     public TowerType getTowerType(){

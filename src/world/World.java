@@ -66,7 +66,7 @@ public class World {
      * Setzt einen Tower in den angegebenen Vertex, wenn dieser frei ist
      * Gibt zürück, ob dies möglich war oder nicht
      */
-    public boolean CanSetTowerInBlocks(int i, int j, Tower setTower){
+    public boolean setTowerInBlocks(int i, int j, Tower setTower){
         if(!isTowerAtCoords(i,j)&& setTower != null){
             blocks[i][j].setContent(setTower);
             return true;
@@ -78,10 +78,7 @@ public class World {
      * Prüft, ob an den Blockkoordinaten i und j ein Tower vorhanden ist
      */
     public boolean isTowerAtCoords(int i, int j){
-        if(blocks[i][j].getContent().getType() == TowerType.DUMMY){
-            return false;
-        }
-        return true;
+        return blocks[i][j].getContent().getType() != TowerType.DUMMY;
     }
     /**
      * Die Anfrage liefert die Schwierigkeit der Welt als Integer.
