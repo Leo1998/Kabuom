@@ -36,6 +36,7 @@ public abstract class View {
         originHeight = height;
         originWidth = width;
     }
+
     public List<ViewComponent> getComponents(){return components;}
 
     public ViewManager getViewManager() {
@@ -47,16 +48,19 @@ public abstract class View {
             v.onKeyDown(key, c);
         }
     }
+
     public void onKeyUp(int key, char c){
         for (ViewComponent v : components) {
             v.onKeyUp(key, c);
         }
     }
+
     public void onMouseDown(int button, int mouseX, int mouseY){
         for (ViewComponent v : components) {
             v.onMouseDown(button, mouseX, mouseY);
         }
     }
+
     public void onMouseUp(int button, int mouseX, int mouseY){
         for (ViewComponent v : components) {
             v.onMouseUp(button, mouseX, mouseY);

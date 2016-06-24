@@ -8,16 +8,31 @@ import view.View;
 import view.ViewManager;
 import world.World;
 
+import java.io.File;
+
 public class Controller {
 
     public static void main(String[] args) {
         new Controller().mainLoop();
     }
 
+    private Config config;
     private ViewManager viewManager;
     private World world;
 
     public void mainLoop() {
+        new File("save").mkdir();
+
+        this.config = new Config(new File("save/config.json"));
+        System.out.println(this.config.toString());
+
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                config.save();
+            }
+        }));
+
         viewManager = new ViewManager(this);
 
         View view = new MenuView(Display.getWidth(),Display.getHeight(), viewManager);
@@ -45,7 +60,7 @@ public class Controller {
         viewManager.dispose();
     }
 
-    public World getNewWorld(){
+    public World createNewWorld(){
         return new World(20,20,9000);
     }
 

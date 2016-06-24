@@ -36,4 +36,8 @@ public class ParticleManager {
         }
     }
 
+    public void clearParticles() {
+        particles.clear();
+    }
+
 }

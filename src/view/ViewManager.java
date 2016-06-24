@@ -211,7 +211,7 @@ public class ViewManager {
         batch.resize(Display.getWidth(), Display.getHeight());
         ppManager.resize(Display.getWidth(), Display.getHeight());
         if(currentView!= null)
-            currentView.layout(width,height);
+            currentView.layout(Display.getWidth(), Display.getHeight());
 
     }
 
@@ -237,6 +237,9 @@ public class ViewManager {
 
     public void setCurrentView(View currentView) {
         this.currentView = currentView;
+        this.currentView.layout(Display.getWidth(), Display.getHeight());
+
+        this.particleManager.clearParticles();
     }
 
     public Controller getCtrl(){return ctrl;}
