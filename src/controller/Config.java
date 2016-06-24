@@ -9,7 +9,7 @@ import java.io.FileWriter;
 
 public class Config {
 
-    private enum GraphicMode {
+    public enum GraphicMode {
         Low, High;
     }
 
@@ -52,6 +52,14 @@ public class Config {
         } catch(Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public GraphicMode getGraphicMode() {
+        return graphicMode;
+    }
+
+    public void setGraphicMode(GraphicMode graphicMode) {
+        this.graphicMode = graphicMode;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package view.rendering;
 
+import controller.Config;
+import controller.Controller;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
@@ -25,7 +27,6 @@ public class PostProcessingManager {
     }
 
     private Batch batch;
-    private boolean enabled = true;
 
     private float totalTime = 0;
 
@@ -135,10 +136,7 @@ public class PostProcessingManager {
     }
 
     public boolean isEnabled() {
-        return enabled && isSupported();
+        return Controller.instance.getConfig().getGraphicMode() == Config.GraphicMode.High && isSupported();
     }
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
 }

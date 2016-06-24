@@ -12,8 +12,11 @@ import java.io.File;
 
 public class Controller {
 
+    public static Controller instance;
+
     public static void main(String[] args) {
-        new Controller().mainLoop();
+        instance = new Controller();
+        instance.mainLoop();
     }
 
     private Config config;
@@ -64,4 +67,15 @@ public class Controller {
         return new World(20,20,9000);
     }
 
+    public Config getConfig() {
+        return config;
+    }
+
+    public ViewManager getViewManager() {
+        return viewManager;
+    }
+
+    public World getWorld() {
+        return world;
+    }
 }

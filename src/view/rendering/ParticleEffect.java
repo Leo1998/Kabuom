@@ -5,8 +5,8 @@ import java.awt.*;
 public class ParticleEffect {
 
     private int count;
-    private int x;
-    private int y;
+    private float x;
+    private float y;
     private float dir;
     private float speed;
     private float size;
@@ -14,7 +14,7 @@ public class ParticleEffect {
     private float[] color;
     private Particle.ParticleRandomizer randomizer;
 
-    public ParticleEffect(int count, int x, int y, float dir, float speed, float size, float lifeTime, float[] color, Particle.ParticleRandomizer randomizer) {
+    public ParticleEffect(int count, float x, float y, float dir, float speed, float size, float lifeTime, float[] color, Particle.ParticleRandomizer randomizer) {
         this.count = count;
         this.x = x;
         this.y = y;
@@ -30,11 +30,11 @@ public class ParticleEffect {
         return count;
     }
 
-    public int getX() {
+    public float getX() {
         return x;
     }
 
-    public int getY() {
+    public float getY() {
         return y;
     }
 
