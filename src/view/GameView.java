@@ -59,7 +59,7 @@ public class GameView extends View{
 
     public void drawGameObject(GameObject o,Batch batch){
          if( o instanceof Enemy){
-            batch.draw(o.getTexture(), o.getX(),o.getY(),o.getRadius(),o.getRadius());
+            batch.draw(o.getTexture(), blockCoordToViewCoordX(o.getX()),blockCoordToViewCoordY(o.getY()),o.getRadius(),o.getRadius());
 
         }else if( o instanceof Projectile){
             batch.draw(o.getTexture(), o.getX(),o.getY(),o.getRadius(),o.getRadius());

@@ -27,6 +27,7 @@ public class ViewManager {
 
     public static void load (){
         try {
+            System.out.println((Math.PI-1)/Math.PI);
             font = new BitmapFont(ViewManager.class.getResource("/font/font.fnt"), ViewManager.class.getResource("/font/font.png"));
 
             test0 = new Texture(ViewManager.class.getResource("/textures/test0.png"));
