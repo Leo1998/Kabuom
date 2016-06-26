@@ -11,7 +11,7 @@ public enum TowerType{
     TESLACOIL(50,0.001f,150,500,ProjectileType.LIGHTNING),
     FLAMETHROWER(60,0.001f,200,300,ProjectileType.FLAME),
     SNIPER(20,4,2000,250,ProjectileType.PIERCINGBULLET),
-    MORTAR(40,6,1500,750,ProjectileType.FRAGGRANADE),
+    MORTAR(40,6,1500,750,ProjectileType.FRAGGRENADE),
     BARRICADE(250,0,0,50,null),
     MAINTOWER(1000,0,0,0,null),
     DUMMY(0,0,0,0,null);
