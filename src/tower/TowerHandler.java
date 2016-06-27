@@ -12,7 +12,7 @@ public class TowerHandler {
         for (int i = 0; i < towers.size(); i++) {
             Tower curTower = towers.get(i);
             if (curTower.getTarget() == null) {
-                aim(curTower, enemies, mainTower);
+                aim(curTower, enemies);
             }
             if (curTower.getTarget() != null && curTower.getCooldown() <= 0) {
                 shoot(curTower);
@@ -23,25 +23,24 @@ public class TowerHandler {
         }
     }
 
-    public void aim(Tower tower,ArrayList<Enemy> enemies,Tower mainTower) {
-        ArrayList<Enemy> targetList=new ArrayList<>();
-        Enemy target=null;
+    public void aim(Tower tower, ArrayList<Enemy> enemies) {
+        ArrayList<Enemy> targetList = new ArrayList<>();
 
         for (int i = 0; i < enemies.size(); i++) {
             Enemy curEnemy = enemies.get(i);
 
-            if (enemyInRange(curEnemy,tower)){
+            if (enemyInRange(curEnemy, tower)){
                 targetList.add(curEnemy);
             }
         }
 
-        System.out.println(targetList.size());
+        Enemy target = null;
 
         float shortestWay = Float.MAX_VALUE;
         for (int j = 0; j < targetList.size(); j++) {
-            if (new Vector2(mainTower.getX() - targetList.get(j).getX(), mainTower.getY() - targetList.get(j).getY()).getLength() < shortestWay) {
+            if (new Vector2(tower.getX() - targetList.get(j).getX(), tower.getY() - targetList.get(j).getY()).getLength() < shortestWay) {
                 target = targetList.get(j);
-                shortestWay = new Vector2(mainTower.getX() - targetList.get(j).getX(), mainTower.getY() - targetList.get(j).getY()).getLength();
+                shortestWay = new Vector2(tower.getX() - targetList.get(j).getX(), tower.getY() - targetList.get(j).getY()).getLength();
             }
         }
         tower.setTarget(target);
@@ -109,6 +108,6 @@ public class TowerHandler {
                 return true;
             }
         }
-        return true;
+        return false;
     }
 }

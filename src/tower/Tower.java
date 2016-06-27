@@ -42,5 +42,5 @@ public class Tower extends GameObject{
 
     public void setTarget(Enemy newTarget){target=newTarget;}
 
-    public void setCooldown(Float newCooldown){cooldown=newCooldown;}
+    public void setCooldown(float newCooldown){cooldown=newCooldown;}
 }
