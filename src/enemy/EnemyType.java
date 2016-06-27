@@ -1,9 +1,7 @@
 package enemy;
 
-/**
- * Created by 204g11 on 10.06.2016.
- */
 public enum EnemyType {
+
     Cheap (0.2f,25,1,5,10,"Cheap"),
     Tank (1,400,0.5f,5,50,"Tank"),
     Speed (0.1f,50,2,15,10,"Speed"),

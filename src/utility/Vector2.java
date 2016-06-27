@@ -11,7 +11,7 @@ public class Vector2 {
     }
 
     public float getLength(){
-        return (float) Math.sqrt((coords[1]*coords[1])+(coords[2]*coords[2]));
+        return (float) Math.abs(Math.sqrt((coords[0]*coords[0])+(coords[1]*coords[1])));
     }
 
     public float[] getCoords() {

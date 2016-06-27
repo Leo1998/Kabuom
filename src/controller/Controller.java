@@ -57,14 +57,18 @@ public class Controller {
                 totalTime = currentTime;
             }
 
+            if (world != null) {
+                world.update(deltaTime);
+            }
+
             viewManager.render(deltaTime);
         }
 
         viewManager.dispose();
     }
 
-    public World createNewWorld(){
-        return new World(20,20,9000);
+    public void createNewWorld(){
+        this.world = new World(20,20,9000);
     }
 
     public Config getConfig() {

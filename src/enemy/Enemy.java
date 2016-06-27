@@ -19,8 +19,9 @@ public class Enemy extends GameObject{
      * @param y Y-Position des Gegners
      * @param pos Vertex, auf dem sich der Gegner befindet
      */
-    public Enemy(EnemyType enemyType,int level,int x,int y,Vertex pos) {
+    public Enemy(EnemyType enemyType,int level,float x,float y,Vertex pos) {
         super(enemyType.getMaxHP(), level, enemyType.getName(), x, y,enemyType.getRadius());
+        this.path = new Queue<>();
         this.enemyType = enemyType;
         attackCooldown = 0;
         this.pos = pos;

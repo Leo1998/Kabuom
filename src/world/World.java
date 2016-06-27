@@ -2,6 +2,7 @@ package world;
 
 import enemy.Enemy;
 import enemy.EnemyHandler;
+import enemy.EnemyType;
 import graph.*;
 import model.GameObject;
 import projectile.Projectile;
@@ -11,6 +12,7 @@ import tower.*;
 import java.util.ArrayList;
 
 public class World {
+
     private ArrayList<GameObject> objects;
     private Graph graph;
     private Vertex<Tower>[][] blocks;
@@ -19,6 +21,7 @@ public class World {
     private EnemyHandler eH;
     private ProjectileHandler pH;
     private TowerHandler tH;
+    private Tower mainTower;
 
     public World(int width, int height, int difficulty) {
         this.width = width;
@@ -26,13 +29,47 @@ public class World {
         this.difficulty = difficulty;
         timePassed = 0;
 
+        this.graph = new Graph();
+
         this.objects = new ArrayList<>();
         this.blocks = new Vertex[width][height];
         for(int i = 0 ; i< this.blocks.length ; i++ ){
             for(int j = 0 ; j< this.blocks[i].length ; j++ ) {
                 blocks[i][j]= new Vertex<Tower>(i+" "+j);
                 blocks[i][j].setContent(new Tower(TowerType.DUMMY,12,"Leer",i,j,0));
+
+                graph.addVertex(blocks[i][j]);
             }
+        }
+
+        //connectAll(graph);
+
+        this.eH = new EnemyHandler(graph);
+        this.pH = new ProjectileHandler();
+        this.tH = new TowerHandler();
+
+        this.mainTower = new Tower(TowerType.MAINTOWER, 1, "Main Tower", 10, 10, 8);
+        this.setTowerInBlocks(10, 10, mainTower);
+
+        this.spawnEnemy(2, 2, EnemyType.Tank);
+    }
+
+    public void spawnEnemy(float x, float y, EnemyType type) {
+        this.objects.add(new Enemy(type, 1, x, y, blocks[(int) x][(int) y]));
+    }
+
+    private void connectAll(Graph graph) {
+        List<Vertex> l1 = graph.getVertices();
+        List<Vertex> l2 = graph.getVertices();
+
+        l1.toFirst();
+        while(l1.hasAccess()) {
+            l2.toFirst();
+            while(l2.hasAccess()) {
+                graph.addEdge(new Edge(l1.getContent(), l2.getContent(), 1000));
+                l2.next();
+            }
+            l1.next();
         }
     }
 
@@ -57,9 +94,10 @@ public class World {
                 towerList.add((Tower) object);
             }
         }
-        eH.handleEnemies(dt,enemyList,"Ziel ID",graph,false,true);//TODO: ZielID->ID des Zielvektors , recalculate(false)->true,wenn Tower platziert oder drunk aktiviert wurde , drunk(true)->true wenn drunk aktiv ist
+
+        //eH.handleEnemies(dt,enemyList,blocks[10][10].getID(),graph,true,true);//TODO: ZielID->ID des Zielvektors , recalculate(false)->true,wenn Tower platziert oder drunk aktiviert wurde , drunk(true)->true wenn drunk aktiv ist
         pH.handleProjectiles(dt, projectileList, enemyList);
-        tH.handleTowers(dt, towerList, enemyList, null);//TODO: mainTower???????
+        tH.handleTowers(dt, towerList, enemyList, this.mainTower);
     }
 
     /**
@@ -69,6 +107,7 @@ public class World {
     public boolean setTowerInBlocks(int i, int j, Tower setTower){
         if(!isTowerAtCoords(i,j)&& setTower != null){
             blocks[i][j].setContent(setTower);
+            objects.add(setTower);
             return true;
         }
             return false;

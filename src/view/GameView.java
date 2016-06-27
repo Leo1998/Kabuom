@@ -75,7 +75,6 @@ public class GameView extends View{
 
         super.render(deltaTime, batch);
 
-
         if(originHeight < originWidth * 7/8) {
             h2 = originHeight;
             w2 = h2;
@@ -99,15 +98,17 @@ public class GameView extends View{
 
                         } else {
                             GameObject o = world.getBlocks()[i][j].getContent();
-                            float angle = 0;
-                            if (((Tower) o).getTarget() != null) {
-                                angle = Utility.calculateAngleBetweenTwoPoints(o.getX() + o.getRadius() / 2, o.getY() + o.getRadius() / 2, ((Tower) o).getTarget().getX() + ((Tower) o).getTarget().getRadius() / 2, ((Tower) o).getTarget().getY() + ((Tower) o).getTarget().getRadius() / 2);
-                            }
                             float oX = blockCoordToViewCoordX(i);
                             float oY = blockCoordToViewCoordY(j);
                             float oW = w2 / world.getBlocks().length;
                             float oH = h2 / world.getBlocks()[i].length;
-                            batch.draw(ViewManager.mgTurret, oX, oY, oW, oH, oW / 2, oH / 2, angle, 1f, 1f, 1f, 1f);
+                            float angle = 0;
+                            if (((Tower) o).getTarget() != null) {
+                                //angle = Utility.getAngle(o, ((Tower) o).getTarget());
+
+                                angle = Utility.calculateAngleBetweenTwoPoints(oX, oY, blockCoordToViewCoordX(((Tower) o).getTarget().getX()), blockCoordToViewCoordY(((Tower) o).getTarget().getY()));
+                            }
+                            batch.draw(ViewManager.mgTurret, oX, oY, oW, oH, oW / 2, oH / 2, (float)(angle + Math.PI), 1f, 1f, 1f, 1f);
                             //TODO : TowerType.getTexture, nur in schön
                         }
                 }
@@ -117,14 +118,12 @@ public class GameView extends View{
         /**
          * Alles Was mit dem Towersetzen zu tun hat
          */
-
         if(setTower != null) {
             setTower.setX(Mouse.getX() - setTower.getRadius() / 2);
             setTower.setY(originHeight - Mouse.getY() - setTower.getRadius() / 2);
             setTower.setRadius(h2/world.getBlocks().length);
             batch.draw(ViewManager.mgTurret, setTower.getX(),setTower.getY(), setTower.getRadius(), setTower.getRadius());
             //TODO : TowerType.getTexture, nut in schön
-
         }
     }
 
@@ -159,7 +158,6 @@ public class GameView extends View{
     /**
      * Rechnet die Block Koordinate in eine View Koordinate um
      */
-
     private float blockCoordToViewCoordX(float coord){
         return w2/world.getBlocks().length * coord+ (originWidth*7/8-w2) / 2;
     }
@@ -192,8 +190,6 @@ public class GameView extends View{
             }
         }
     }
-
-
 
     @Override
     public void onKeyDown(int key, char c) {

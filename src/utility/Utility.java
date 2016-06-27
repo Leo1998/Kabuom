@@ -66,8 +66,19 @@ public class Utility {
             angle = (float) (Math.atan((deltaX) / (-deltaY))) + Math.PI;
         }
 
-
         return (float) (angle);
+    }
+
+    public static float getAngle(GameObject o1, GameObject o2) {
+        double theta = Math.atan2(o1.getY() - o2.getY(), o1.getX() - o2.getX());
+
+        theta += Math.PI / 2.0;
+
+        if (theta < 0) {
+            theta += Math.PI * 2.0;
+        }
+
+        return (float) theta;
     }
 
     public static boolean viewComponentIsCollidingWithMouse(ViewComponent o1, int mouseX, int mouseY) {

@@ -65,7 +65,7 @@ public class EnemyHandler {
             length++;
             neighbours.next();
         }
-        int pos = random.nextInt(length-1)+1;
+        int pos = random.nextInt(length + 1)-1;
         neighbours.toFirst();
         for(int i = 0;i < pos;i++){
             neighbours.next();
