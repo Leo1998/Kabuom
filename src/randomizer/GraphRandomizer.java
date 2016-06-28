@@ -6,7 +6,6 @@ import graph.Vertex;
 import tower.Tower;
 import tower.TowerType;
 
-import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -15,9 +14,9 @@ import java.util.Random;
 public class GraphRandomizer {
 
     /**
-     * Erstellt einen zufälligen Graphen und gibt diesen zurück
+     * Erstellt einen zufälligen, zusammenhängenden Graphen und gibt diesen zurück
      * @param blocks zweidimensionales Array aus Vertices, legt Größe des Graphen fest und wird mit Vertices gefüllt
-     * @return
+     * @return Erstellter Graph
      */
     public Graph createRandomGraph(Vertex[][] blocks){
         Graph graph = new Graph();
@@ -92,8 +91,6 @@ public class GraphRandomizer {
                                 nData.isNeighbour[currX-i+1][currY-j+1] = true;
                                 currData.grad++;
                                 nData.grad++;
-                                currData.neighbours.add(nData.content);
-                                nData.neighbours.add(currData.content);
 
                                 double weight = (i == currX || j == currY) ? 1 : Math.sqrt(2);
                                 graph.addEdge(new Edge(currData.content,nData.content,weight));
@@ -129,7 +126,6 @@ public class GraphRandomizer {
     private class data {
         boolean discovered;
         int timesVisited,grad,maxGrad;
-        ArrayList<Vertex> neighbours;
         boolean[][] isNeighbour;
         Vertex content;
 
@@ -138,7 +134,6 @@ public class GraphRandomizer {
             timesVisited = 0;
             grad = 0;
             this.maxGrad = maxGrad;
-            neighbours = new ArrayList<>();
             isNeighbour = new boolean[3][3];
             this.content = content;
         }
