@@ -10,6 +10,7 @@ import projectile.ProjectileHandler;
 import tower.*;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class World {
 
@@ -56,21 +57,6 @@ public class World {
 
     public void spawnEnemy(float x, float y, EnemyType type) {
         this.objects.add(new Enemy(type, 1, x, y, blocks[(int) x][(int) y]));
-    }
-
-    private void connectAll(Graph graph) {
-        List<Vertex> l1 = graph.getVertices();
-        List<Vertex> l2 = graph.getVertices();
-
-        l1.toFirst();
-        while(l1.hasAccess()) {
-            l2.toFirst();
-            while(l2.hasAccess()) {
-                graph.addEdge(new Edge(l1.getContent(), l2.getContent(), 1000));
-                l2.next();
-            }
-            l1.next();
-        }
     }
 
     /**

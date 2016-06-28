@@ -317,10 +317,8 @@ public class EnemyHandler {
 
     private void changedTower(Vertex<VertexData> pos,Tower tower){
         VertexData content = pos.getContent();
-        int addDPS;
-        //int dps = tower.getProjectile().getDamage() * tower.getFrequency();
-        //TODO: Projectiletype fehlt
-        int dps = -1; //Platzhalter
+        float addDPS;
+        float dps = tower.getProjectile().getImpactDamage() * tower.getFrequency();
         if(content == null){
             addDPS = dps;
         }else{
@@ -330,7 +328,7 @@ public class EnemyHandler {
         DFS(pos,pos.getContent().x,pos.getContent().y,pos.getContent().attackRange,addDPS);
     }
 
-    private void DFS(Vertex<VertexData> currVertex,float startX,float startY,float range,int dps){
+    private void DFS(Vertex<VertexData> currVertex,float startX,float startY,float range,float dps){
         float currX = currVertex.getContent().x;
         float currY = currVertex.getContent().y;
         if(calcDist(startX,startY,currX,currY) <= range){
@@ -342,6 +340,7 @@ public class EnemyHandler {
                     neighbours.remove();
                 }else{
                     curr.setMark(true);
+                    ((VertexData)(curr.getContent())).dpsInRange=+dps;
                     DFS(curr,startX,startY,range,dps);
                     neighbours.next();
                 }
@@ -446,7 +445,7 @@ public class EnemyHandler {
 
     private class VertexData{
         private String name;
-        private int dps,attackRange,dpsInRange;
+        private float dps,attackRange,dpsInRange;
         private float x,y;
         private double dist;
         private Edge prev;
@@ -459,8 +458,7 @@ public class EnemyHandler {
         }
 
         private void getFromTower(Tower tower){
-            //dps = tower.getProjectile().getDamage() / tower.getFrequency();
-            //TODO: Projectiletype fehlt
+            dps = tower.getProjectile().getImpactDamage() / tower.getFrequency();
             attackRange = tower.getAttackRadius();
             name = tower.getName();
         }
