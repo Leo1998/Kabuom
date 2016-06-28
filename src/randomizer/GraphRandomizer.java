@@ -12,7 +12,7 @@ import java.util.Random;
 /**
  * Created by Daniel on 28.06.2016.
  */
-public class WorldRandomizer {
+public class GraphRandomizer {
 
     /**
      * Erstellt einen zufälligen Graphen und gibt diesen zurück
@@ -26,13 +26,10 @@ public class WorldRandomizer {
         Random random = new Random();
         int currX = blocks.length/2;
         int currY = blocks[0].length/2;
-        boolean[][] discovered = new boolean[blocks.length][blocks[0].length];
-        int[][] timesVisited = new int[blocks.length][blocks[0].length];
         int unvisited = blocks.length * blocks[0].length - 1;
         final int vertexCount = blocks.length * blocks[0].length;
         boolean alwaysAddEdge = false;
-        ArrayList<Vertex>[][] neighbours = new ArrayList[blocks.length][blocks[0].length];
-        discovered[currX][currY] = true;
+        data[][] datas = new data[blocks.length][blocks[0].length];
         int timeSinceLastAdd = 0;
 
         //Fülle Graphen mit Vertices
@@ -43,15 +40,24 @@ public class WorldRandomizer {
                 currVertex.setContent(dummyTower);
                 graph.addVertex(currVertex);
                 blocks[i][j] = currVertex;
-                timesVisited[i][j] = 0;
-                neighbours[i][j] = new ArrayList<>();
+                int maxGrad = 8;
+                if(i == 0||i == blocks.length){
+                    maxGrad =- 2;
+                }
+                if(j == 0||j == blocks[0].length){
+                    maxGrad =-2;
+                }
+                maxGrad = (maxGrad == 4) ? 3 : maxGrad;
+                datas[i][j] = new data(currVertex,maxGrad);
             }
         }
         //------------Schleife des Todes und der finstern Vernichtung----------------
 
         //Diese Schleife kann sehr lange brauchen, wird aber nie unendlich lange brauchen
+        //Dies ist die... ich glaube vierte Version der Schleife.Sie ist besser hinsichtlich Geschwindigkeit als die vorherigen (Und noch komplexer).
         while (unvisited > 0){  //Wiederhole, solange nicht alle Vertices verbunden
-            timesVisited[currY][currX]++;
+            data currData = datas[currX][currY];
+            currData.timesVisited++;
             
             //Erstelle immer eine Kante zu unentdeckten Knoten, wenn maximal 10% unentdeckt
             if(!alwaysAddEdge){
@@ -62,25 +68,8 @@ public class WorldRandomizer {
             
             Vertex currVertex = blocks[currX][currY];
 
-            //Hole alle Nachbarn und bestimme Grad
-            int grad = neighbours[currX][currY].size();
-            boolean[][] isNeighbour = new boolean[blocks.length][blocks[0].length];
-            for(Vertex vertex:neighbours[currX][currY]){
-                Tower tower = (Tower) vertex.getContent(); 
-                isNeighbour[(int) tower.getX()][(int) tower.getY()] = true;
-            }
-
-            //Bestimme maximalen Grad
-            int maxGrad = 8;
-            if(currX == 0||currX == blocks.length){
-                maxGrad =- 2;
-            }
-            if(currY == 0||currY == blocks[0].length){
-                maxGrad =-2;
-            }
-            maxGrad = (maxGrad == 4) ? 3 : maxGrad;
-
             boolean addedEdge = false;
+            data smallest = null;
             int smallestX = -1;
             int smallestY = -1;
             //Traversiere über alle potenziellen Nachbarn von currVertex
@@ -88,29 +77,37 @@ public class WorldRandomizer {
             for(int i = Math.max(0,currX-1); i < Math.min(blocks.length,currX+1);i++){
                 for(int j = Math.max(0,currY-1); j < Math.min(blocks[i].length,currY+1);j++){
                     if(i != currX || j != currY){
-                        if(!isNeighbour[i][j]) {    //Überprüfe, ob blocks[i][j] schon ein Nachbar von currVertex ist
+                        //Setze Data des Nachbarn in nData
+                        data nData = datas[i][j];
+                        if(!currData.isNeighbour[i-currX+1][j-currY+1]) {    //Überprüfe, ob blocks[i][j] schon ein Nachbar von currVertex ist
                             //Mache blocks[i][j] zu Nachbarn, wenn alwaysAddEdge und blocks[i][j] unentdeckt oder Random in Abhängigkeit zum Verhätlnis von Grad und maximalen Grad oder wenn seit 3 Schleifendurchläufen keine neue Kante hinzugefügt wurde
-                            if((alwaysAddEdge && !discovered[i][j])||(timeSinceLastAdd >= 3)||(random.nextFloat() >= grad/maxGrad)){
+                            if((alwaysAddEdge && nData.discovered)||(timeSinceLastAdd >= 3)||(random.nextFloat() >= currData.grad/currData.maxGrad)){
                                 addedEdge = true;
                                 timeSinceLastAdd = 0;
-                                if(!discovered[i][j]) {
-                                    discovered[i][j] = true;
+                                if(!nData.discovered) {
+                                    nData.discovered = true;
                                     unvisited--;
                                 }
-                                isNeighbour[i][j] = true;
-                                neighbours[i][j].add(blocks[currX][currY]);
-                                neighbours[currX][currY].add(blocks[i][j]);
+                                currData.isNeighbour[i-currX+1][j-currY+1] = true;
+                                nData.isNeighbour[currX-i+1][currY-j+1] = true;
+                                currData.grad++;
+                                nData.grad++;
+                                currData.neighbours.add(nData.content);
+                                nData.neighbours.add(currData.content);
+
                                 double weight = (i == currX || j == currY) ? 1 : Math.sqrt(2);
-                                graph.addEdge(new Edge(blocks[i][j],blocks[currX][currY],weight));
+                                graph.addEdge(new Edge(currData.content,nData.content,weight));
                                 //Finde am seltensten besuchten Nachbarn
-                                if (smallestX == -1||smallestY == -1||timesVisited[smallestX][smallestY] < timesVisited[i][j]){
+                                if (smallest == null || smallest.timesVisited < nData.timesVisited){
+                                    smallest = nData;
                                     smallestX = i;
                                     smallestY = j;
                                 }
                             }
                         }else{
                             //Finde am seltensten besuchten Nachbarn
-                            if (smallestX == -1||smallestY == -1||timesVisited[smallestX][smallestY] < timesVisited[i][j]){
+                            if (smallest == null || smallest.timesVisited < nData.timesVisited){
+                                smallest = nData;
                                 smallestX = i;
                                 smallestY = j;
                             }
@@ -127,5 +124,23 @@ public class WorldRandomizer {
             currY = smallestY;
         }
         return graph;
+    }
+
+    private class data {
+        boolean discovered;
+        int timesVisited,grad,maxGrad;
+        ArrayList<Vertex> neighbours;
+        boolean[][] isNeighbour;
+        Vertex content;
+
+        public data(Vertex content,int maxGrad){
+            discovered = false;
+            timesVisited = 0;
+            grad = 0;
+            this.maxGrad = maxGrad;
+            neighbours = new ArrayList<>();
+            isNeighbour = new boolean[3][3];
+            this.content = content;
+        }
     }
 }
