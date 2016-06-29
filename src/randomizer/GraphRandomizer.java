@@ -52,8 +52,7 @@ public class GraphRandomizer {
         }
         //------------Schleife des Todes und der finstern Vernichtung----------------
 
-        //Diese Schleife kann sehr lange brauchen, wird aber nie unendlich lange brauchen
-        //Dies ist die... ich glaube vierte Version der Schleife.Sie ist besser hinsichtlich Geschwindigkeit als die vorherigen (Und noch komplexer).
+        //Obwohl es unmöglich ist, dass diese Schleife unendlich lange durchläuft, kann ihre Laufzeit sehr hoch sein.
         while (unvisited > 0){  //Wiederhole, solange nicht alle Vertices verbunden
             data currData = datas[currX][currY];
             currData.timesVisited++;

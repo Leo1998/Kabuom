@@ -386,8 +386,8 @@ public class EnemyHandler {
             Vertex<VertexData> nVertex = new Vertex(currVertex.getID());
             nVertex.setContent(new VertexData(currVertex.getContent()));
             if(nVertex.getContent().dps > 0){
-                vQueue.enqueue(nVertex);
                 vQueue.enqueue(currVertex);
+                vQueue.enqueue(nVertex);
             }
             adoptedGraph.addVertex(nVertex);
             vList.next();
@@ -419,11 +419,11 @@ public class EnemyHandler {
             Tower currTower = (Tower) nVList.getContent().getContent();
             VertexData currData = (VertexData) oVList.getContent().getContent();
             if(!currData.name.equals(currTower.getName())){
-                vQueue.enqueue(oVList.getContent());
                 vQueue.enqueue(nVList.getContent());
+                vQueue.enqueue(oVList.getContent());
             }
-            nVList.next();
             oVList.next();
+            nVList.next();
         }
         while (oVList.hasAccess()){
             adoptedGraph.removeVertex(oVList.getContent());
@@ -433,14 +433,14 @@ public class EnemyHandler {
     }
 
     private void updateData(Queue<Vertex> vQueue,Graph graph){
-        /*while (!vQueue.isEmpty()){
+        while (!vQueue.isEmpty()){
             Vertex<Tower> towerVertex = vQueue.front();
             vQueue.dequeue();
             Vertex<VertexData> dataVertex = vQueue.front();
             vQueue.dequeue();
             changedTower(dataVertex,towerVertex.getContent());
         }
-        calcEdges(vQueue,graph);*/
+        calcEdges(vQueue,graph);
     }
 
     private class VertexData{
