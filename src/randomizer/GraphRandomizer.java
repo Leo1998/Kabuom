@@ -50,9 +50,9 @@ public class GraphRandomizer {
                 datas[i][j] = new data(currVertex,maxGrad);
             }
         }
-        //------------Schleife des Todes und der finstern Vernichtung----------------
 
-        //Obwohl es unmöglich ist, dass diese Schleife unendlich lange durchläuft, kann ihre Laufzeit sehr hoch sein.
+        //------------Schleife des Todes und der finsteren Vernichtung----------------
+
         while (unvisited > 0){  //Wiederhole, solange nicht alle Vertices verbunden
             data currData = datas[currX][currY];
             currData.timesVisited++;
