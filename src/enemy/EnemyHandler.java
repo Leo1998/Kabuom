@@ -433,14 +433,14 @@ public class EnemyHandler {
     }
 
     private void updateData(Queue<Vertex> vQueue,Graph graph){
-        while (!vQueue.isEmpty()){
+        /*while (!vQueue.isEmpty()){
             Vertex<Tower> towerVertex = vQueue.front();
             vQueue.dequeue();
             Vertex<VertexData> dataVertex = vQueue.front();
             vQueue.dequeue();
             changedTower(dataVertex,towerVertex.getContent());
         }
-        calcEdges(vQueue,graph);
+        calcEdges(vQueue,graph);*/
     }
 
     private class VertexData{

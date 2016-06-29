@@ -25,6 +25,8 @@ public class ViewManager {
     public static ITexture mgTurret, mgTurretGreen, mgTurretRed;
     public static ITexture world1,world2,world3;
 
+    public static Sound clickSound;
+
     public static void load (){
         try {
             System.out.println((Math.PI-1)/Math.PI);
@@ -41,6 +43,8 @@ public class ViewManager {
             world1 = new Texture(ViewManager.class.getResource("/textures/GrundlageWelt.png"));
             world2 = new Texture(ViewManager.class.getResource("/textures/GrundlageWelt2.png"));
             world3 = new Texture(ViewManager.class.getResource("/textures/GrundlageWelt3.png"));
+
+            clickSound = new Sound(ViewManager.class.getResourceAsStream("/sounds/click.wav"));
 
         } catch(IOException e) {
             e.printStackTrace();

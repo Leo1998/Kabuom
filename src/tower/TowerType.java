@@ -12,9 +12,9 @@ public enum TowerType{
     FLAMETHROWER(60,0.001f,200,300,ProjectileType.FLAME),
     SNIPER(20,4,2000,250,ProjectileType.PIERCINGBULLET),
     MORTAR(40,6,1500,750,ProjectileType.FRAGGRENADE),
-    BARRICADE(250,0,0,50,null),
-    MAINTOWER(1000,0,0,0,null),
-    DUMMY(0,0,0,0,null);
+    BARRICADE(250,0,0,50,ProjectileType.BULLET),
+    MAINTOWER(1000,0,0,0,ProjectileType.BULLET),
+    DUMMY(0,0,0,0,ProjectileType.BULLET);
 
     int HP,attackRadius,cost;
     float frequency;
