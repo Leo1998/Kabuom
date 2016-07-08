@@ -4,9 +4,8 @@ import controller.Controller;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.*;
 import org.lwjgl.opengl.DisplayMode;
-import org.lwjgl.opengl.GL11;
 import view.rendering.*;
 
 import java.awt.*;
@@ -64,7 +63,7 @@ public class ViewManager {
         try {
             setDisplayMode(800, 600, false);
 
-            Display.create();
+            Display.create(new PixelFormat(8, 8, 0, 8));
 
             System.out.println("OpenGL context created! Version: " + GL11.glGetString(GL11.GL_VERSION) + ", Vendor: " + GL11.glGetString(GL11.GL_VENDOR) + ", Renderer: " + GL11.glGetString(GL11.GL_RENDERER));
         } catch (LWJGLException e) {
@@ -73,6 +72,8 @@ public class ViewManager {
         }
 
         load();
+
+        GL11.glEnable(GL13.GL_MULTISAMPLE);
 
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
@@ -215,6 +216,7 @@ public class ViewManager {
         GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
         batch.resize(Display.getWidth(), Display.getHeight());
         ppManager.resize(Display.getWidth(), Display.getHeight());
+        particleManager.clearParticles();
         if(currentView!= null)
             currentView.layout(Display.getWidth(), Display.getHeight());
 
