@@ -1,5 +1,6 @@
 package view.rendering;
 
+import controller.Controller;
 import org.lwjgl.LWJGLException;
 import static org.lwjgl.opengl.EXTFramebufferObject.*;
 
@@ -19,27 +20,32 @@ public class FrameBuffer implements ITexture {
         this.texture = texture;
         this.ownsTexture = ownsTexture;
         if (!isSupported()) {
-            throw new LWJGLException("FBO extension not supported in hardware");
+            throw new LWJGLException("FBO extension not supported by hardware");
         }
         texture.bind();
         handle = glGenFramebuffersEXT();
-        glBindFramebufferEXT(GL30.GL_FRAMEBUFFER, handle);
-        glFramebufferTexture2DEXT(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0, texture.getTarget(), texture.getID(), 0);
-        int result = glCheckFramebufferStatusEXT(GL30.GL_FRAMEBUFFER);
-        if (result != GL30.GL_FRAMEBUFFER_COMPLETE) {
-            glBindFramebufferEXT(GL30.GL_FRAMEBUFFER, 0);
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, handle);
+        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, texture.getTarget(), texture.getID(), 0);
+
+        int result = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+        if (result != GL_FRAMEBUFFER_COMPLETE_EXT) {
+            glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
             GL30.glDeleteFramebuffers(handle);
             throw new LWJGLException("exception " + result + " when checking FBO status");
         }
-        glBindFramebufferEXT(GL30.GL_FRAMEBUFFER, 0);
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
     }
 
     public FrameBuffer(Texture texture) throws LWJGLException {
         this(texture, false);
     }
 
+    public FrameBuffer(int width, int height, int filter, int wrap, int samples) throws LWJGLException {
+        this(new Texture(width, height, filter, wrap, samples), true);
+    }
+
     public FrameBuffer(int width, int height, int filter, int wrap) throws LWJGLException {
-        this(new Texture(width, height, filter, wrap), true);
+        this(width, height, filter, wrap, 1);
     }
 
     public FrameBuffer(int width, int height, int filter) throws LWJGLException {

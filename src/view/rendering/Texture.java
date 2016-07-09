@@ -2,8 +2,7 @@ package view.rendering;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.EXTFramebufferObject;
-import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,15 +11,18 @@ import java.nio.ByteBuffer;
 
 public class Texture implements ITexture {
 
+    public static boolean isMultisamplingSupported() {
+        return GLContext.getCapabilities().GL_ARB_multisample;
+    }
+
     protected int handle;
     protected int width;
     protected int height;
+    protected int samples = 1;
+    protected ByteBuffer data;
 
     public static final int DEFAULT_FILTER = GL11.GL_NEAREST;
     public static final int DEFAULT_WRAP = GL11.GL_REPEAT;
-
-    public Texture() {
-    }
 
     public Texture(int width, int height) {
         this(width, height, DEFAULT_FILTER);
@@ -31,17 +33,30 @@ public class Texture implements ITexture {
     }
 
     public Texture(int width, int height, int filter, int wrap) {
+        this(width, height, filter, wrap, 1);
+    }
+
+    public Texture(int width, int height, int filter, int wrap, int samples) {
         GL11.glEnable(getTarget());
         handle = GL11.glGenTextures();
         this.width = width;
         this.height = height;
+
+        if (!isMultisamplingSupported()) {
+            this.samples = 1;
+        } else {
+            this.samples = Math.min(samples, GL11.glGetInteger(ARBTextureMultisample.GL_MAX_COLOR_TEXTURE_SAMPLES));
+        }
+
         bind();
 
         setFilter(filter);
         setWrap(wrap);
 
         ByteBuffer buf = BufferUtils.createByteBuffer(width * height * 4);
-        upload(GL11.GL_RGBA, buf);
+
+        this.data = buf;
+        upload(GL11.GL_RGBA);
     }
 
     public Texture(URL pngRef) {
@@ -78,7 +93,9 @@ public class Texture implements ITexture {
             bind();
             setFilter(minFilter, magFilter);
             setWrap(wrap);
-            upload(GL11.GL_RGBA, buf);
+
+            this.data = buf;
+            upload(GL11.GL_RGBA);
 
             //use EXT since we are targeting 2.0+
             if (genMipmap) {
@@ -97,11 +114,15 @@ public class Texture implements ITexture {
     }
 
     public int getTarget() {
-        return GL11.GL_TEXTURE_2D;
+        return samples > 1 ? ARBTextureMultisample.GL_TEXTURE_2D_MULTISAMPLE : GL11.GL_TEXTURE_2D;
     }
 
     public int getID() {
         return handle;
+    }
+
+    public int getSamples() {
+        return samples;
     }
 
     protected void setUnpackAlignment() {
@@ -109,16 +130,15 @@ public class Texture implements ITexture {
         GL11.glPixelStorei(GL11.GL_PACK_ALIGNMENT, 1);
     }
 
-    public void upload(int dataFormat, ByteBuffer data) {
+    public void upload(int dataFormat) {
         bind();
         setUnpackAlignment();
-        GL11.glTexImage2D(getTarget(), 0, GL11.GL_RGBA, width, height, 0, dataFormat, GL11.GL_UNSIGNED_BYTE, data);
-    }
 
-    public void upload(int x, int y, int width, int height, int dataFormat, ByteBuffer data) {
-        bind();
-        setUnpackAlignment();
-        GL11.glTexSubImage2D(getTarget(), 0, x, y, width, height, dataFormat, GL11.GL_UNSIGNED_BYTE, data);
+        if (samples > 1) {
+            ARBTextureMultisample.glTexImage2DMultisample(getTarget(), samples, GL11.GL_RGBA, width, height, true);
+        } else {
+            GL11.glTexImage2D(getTarget(), 0, GL11.GL_RGBA, width, height, 0, dataFormat, GL11.GL_UNSIGNED_BYTE, data);
+        }
     }
 
     public void setFilter(int filter) {

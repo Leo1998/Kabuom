@@ -63,7 +63,7 @@ public class ViewManager {
         try {
             setDisplayMode(800, 600, false);
 
-            Display.create(new PixelFormat(8, 8, 0, 8));
+            Display.create(new PixelFormat(8, 8, 0, ctrl.getConfig().getFboSamples()));
 
             System.out.println("OpenGL context created! Version: " + GL11.glGetString(GL11.GL_VERSION) + ", Vendor: " + GL11.glGetString(GL11.GL_VENDOR) + ", Renderer: " + GL11.glGetString(GL11.GL_RENDERER));
         } catch (LWJGLException e) {
@@ -71,12 +71,12 @@ public class ViewManager {
             System.exit(0);
         }
 
-        load();
-
         GL11.glEnable(GL13.GL_MULTISAMPLE);
 
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+
+        load();
 
         this.batch = new Batch();
         batch.resize(Display.getWidth(), Display.getHeight());
