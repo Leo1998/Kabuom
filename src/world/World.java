@@ -24,6 +24,12 @@ public class World {
     private TowerHandler tH;
     private Tower mainTower;
 
+    /**
+     * Attribute für den EnemyHandler
+     */
+    private boolean newTurretSet;
+    private boolean isDrunk;
+
     public World(int width, int height, int difficulty) {
         this.width = width;
         this.height = height;
@@ -49,8 +55,8 @@ public class World {
         this.pH = new ProjectileHandler();
         this.tH = new TowerHandler();
 
-        this.mainTower = new Tower(TowerType.MAINTOWER, 1, "Main Tower", 10, 10, 8);
-        this.setTowerInBlocks(10, 10, mainTower);
+        this.mainTower = new Tower(TowerType.MAINTOWER, 1, "Main Tower", 10, height-1, 8);
+        this.setTowerInBlocks((int) mainTower.getX(),(int) mainTower.getY(), mainTower);
 
         this.spawnEnemy(2, 2, EnemyType.Tank);
     }
@@ -81,7 +87,17 @@ public class World {
             }
         }
 
-        //eH.handleEnemies(dt,enemyList,blocks[10][10].getID(),graph,true,true);//TODO: ZielID->ID des Zielvektors , recalculate(false)->true,wenn Tower platziert oder drunk aktiviert wurde , drunk(true)->true wenn drunk aktiv ist
+        boolean recalculate = false;
+        boolean drunk = false ;
+
+        if(newTurretSet){
+           recalculate = true;
+            newTurretSet = false;
+        }
+        if(isDrunk){
+            drunk = true;
+        }
+        eH.handleEnemies(dt,enemyList,getIDOfMainTower(),graph, recalculate, drunk);
         pH.handleProjectiles(dt, projectileList, enemyList);
         tH.handleTowers(dt, towerList, enemyList, this.mainTower);
     }
@@ -132,5 +148,12 @@ public class World {
 
     public ArrayList<GameObject> getObjects() {
         return objects;
+    }
+
+    /**
+     * Die Anfrage liefert Pizza zu dir nach Hause.
+     */
+    public String getIDOfMainTower(){
+        return blocks[(int)mainTower.getX()][(int)mainTower.getY()].getID();
     }
 }
