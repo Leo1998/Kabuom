@@ -59,10 +59,10 @@ public class GameView extends View{
 
     public void drawGameObject(GameObject o,Batch batch){
          if( o instanceof Enemy){
-            batch.draw(o.getTexture(), blockCoordToViewCoordX(o.getX()),blockCoordToViewCoordY(o.getY()),o.getRadius(),o.getRadius());
+            batch.draw(ViewManager.textureIDToTexture(o.getName()), blockCoordToViewCoordX(o.getX()),blockCoordToViewCoordY(o.getY()),o.getRadius(),o.getRadius());
 
         }else if( o instanceof Projectile){
-            batch.draw(o.getTexture(), o.getX(),o.getY(),o.getRadius(),o.getRadius());
+            batch.draw(ViewManager.textureIDToTexture(o.getName()), o.getX(),o.getY(),o.getRadius(),o.getRadius());
         }
     }
 
@@ -82,13 +82,21 @@ public class GameView extends View{
             w2 = originWidth*7/8;
             h2 = w2;
         }
+
+        /**
+         * Zeichnet die Welt (Die einzelnen Blöcke)
+         */
+
         for(int i = 0; i < world.getBlocks().length; i++){
             for(int j = 0; j < world.getBlocks()[i].length; j++){
                     batch.draw(blockTexture,blockCoordToViewCoordX(i), blockCoordToViewCoordY(j), w2/world.getBlocks().length, h2/world.getBlocks()[i].length);
             }
         }
 
-        if(world!=null && world.getObjects()!= null) {
+        /**
+         * Zeichnet die Enemies und Projectiles
+         */
+
             for (int i = 0; i < world.getObjects().size(); i++) {
                 drawGameObject(world.getObjects().get(i), batch);
             }
@@ -108,13 +116,15 @@ public class GameView extends View{
 
                                 angle = Utility.calculateAngleBetweenTwoPoints(oX, oY, blockCoordToViewCoordX(((Tower) o).getTarget().getX()), blockCoordToViewCoordY(((Tower) o).getTarget().getY()));
                             }
-                            batch.draw(ViewManager.mgTurret, oX, oY, oW, oH, oW / 2, oH / 2, (float)(angle + Math.PI), 1f, 1f, 1f, 1f);
-                            //TODO : TowerType.getTexture, nur in schön
+                            batch.draw(ViewManager.textureIDToTexture(o.getTextureID()), oX, oY, oW, oH, oW / 2, oH / 2, (float)(angle + Math.PI), 1f, 1f, 1f, 1f);
                         }
                 }
             }
-        }
+
+
         //batch.draw(ViewManager.world1,originWidth * 7 / 8 / 2- w2 / 2, 0, w2, h2);
+
+
         /**
          * Alles Was mit dem Towersetzen zu tun hat
          */
@@ -122,8 +132,7 @@ public class GameView extends View{
             setTower.setX(Mouse.getX() - setTower.getRadius() / 2);
             setTower.setY(originHeight - Mouse.getY() - setTower.getRadius() / 2);
             setTower.setRadius(h2/world.getBlocks().length);
-            batch.draw(ViewManager.mgTurret, setTower.getX(),setTower.getY(), setTower.getRadius(), setTower.getRadius());
-            //TODO : TowerType.getTexture, nut in schön
+            batch.draw(ViewManager.textureIDToTexture(setTower.getTextureID()), setTower.getX(),setTower.getY(), setTower.getRadius(), setTower.getRadius());
         }
     }
 
@@ -149,7 +158,7 @@ public class GameView extends View{
         float w = x + w2;
         float h = y + h2;
 
-        if(mouseX > x && mouseY > y && mouseX < w &&mouseY < h) {
+        if(mouseX > x && mouseY > y && mouseX < w && mouseY < h) {
             return  new Vector2((mouseX - x) * world.getBlocks().length / w2,(mouseY - (originHeight  - h2) / 2 ) * world.getBlocks().length / h2);
         }
         return null;

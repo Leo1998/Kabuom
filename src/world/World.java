@@ -36,13 +36,16 @@ public class World {
         this.difficulty = difficulty;
         timePassed = 0;
 
+        int mainTowerCoordX = 10;
+        int mainTowerCoordY = height -1;
+
         this.graph = new Graph();
 
         this.objects = new ArrayList<>();
         this.blocks = new Vertex[width][height];
         for(int i = 0 ; i< this.blocks.length ; i++ ){
             for(int j = 0 ; j< this.blocks[i].length ; j++ ) {
-                blocks[i][j]= new Vertex<Tower>(i+" "+j);
+                blocks[i][j]= new Vertex<>(i+" "+j);
                 blocks[i][j].setContent(new Tower(TowerType.DUMMY,12,"Leer",i,j,0));
 
                 graph.addVertex(blocks[i][j]);
@@ -55,7 +58,7 @@ public class World {
         this.pH = new ProjectileHandler();
         this.tH = new TowerHandler();
 
-        this.mainTower = new Tower(TowerType.MAINTOWER, 1, "Main Tower", 10, height-1, 8);
+        this.mainTower = new Tower(TowerType.MAINTOWER, 1, "Main Tower", mainTowerCoordX, mainTowerCoordY , 8);
         this.setTowerInBlocks((int) mainTower.getX(),(int) mainTower.getY(), mainTower);
 
         this.spawnEnemy(2, 2, EnemyType.Tank);
