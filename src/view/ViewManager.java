@@ -41,8 +41,8 @@ public class ViewManager {
             mgTurretGreen = new Texture(ViewManager.class.getResource("/textures/MgTurretGruen.png"));
             mgTurretRed = new Texture(ViewManager.class.getResource("/textures/MgTurretRot.png"));
             missileLauncher = new Texture(ViewManager.class.getResource("/textures/MissileLauncher.png"));
-            missileLauncherGreen = new Texture(ViewManager.class.getResource("/textures/MissileLauncherGreen.png"));
-            missileLauncherRed = new Texture(ViewManager.class.getResource("/textures/MissileLauncherRed.png"));
+            missileLauncherGreen = new Texture(ViewManager.class.getResource("/textures/MissileLauncherGruen.png"));
+            missileLauncherRed = new Texture(ViewManager.class.getResource("/textures/MissileLauncherRot.png"));
             buttonMainTexture = new Texture(ViewManager.class.getResource("/textures/viewTextures/mainButton.png"));
             buttonPressedTexture = new Texture(ViewManager.class.getResource("/textures/viewTextures/pressedButton.png"));
             world1 = new Texture(ViewManager.class.getResource("/textures/GrundlageWelt.png"));
