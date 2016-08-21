@@ -52,7 +52,7 @@ public class World {
             }
         }
 
-        //connectAll(graph);
+        connectAll(blocks,graph);
 
         this.eH = new EnemyHandler(graph);
         this.pH = new ProjectileHandler();
@@ -62,6 +62,24 @@ public class World {
         this.setTowerInBlocks((int) mainTower.getX(),(int) mainTower.getY(), mainTower);
 
         this.spawnEnemy(2, 2, EnemyType.Tank);
+    }
+
+    private void connectAll(Vertex[][] blocks,Graph graph){
+        for(int i = 0;i < blocks.length;i++){
+            for (int j = 0;j < blocks[i].length;j++){
+                createConnection(blocks,graph,i,j,i+1,j);
+                createConnection(blocks,graph,i,j,i,j+1);
+                createConnection(blocks,graph,i,j,i+1,j+1);
+                createConnection(blocks,graph,i,j,i+1,j-1);
+            }
+        }
+    }
+
+    private void createConnection(Vertex[][] blocks,Graph graph,int x1,int y1,int x2,int y2){
+        if(x1 >= 0 && y1 >= 0 && x2 >= 0 && y2 >= 0 && x1 < blocks.length && y1 < blocks[x1].length && x2 < blocks.length && y2 < blocks[x2].length){
+            double length = Math.sqrt(Math.pow(x1-x2,2)+Math.pow(y1-y2,2));
+            graph.addEdge(new Edge(blocks[x1][y1],blocks[x2][y2],length));
+        }
     }
 
     public void spawnEnemy(float x, float y, EnemyType type) {
