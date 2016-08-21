@@ -34,13 +34,30 @@ public class ProjectileHandler {
                     projectiles.get(i).setY(projectiles.get(i).getY() - projectiles.get(i).getSpeed());
                 }
             }
+            //geflogene distanz des projektils wird vergrößert
+            if(projectiles.get(i).getDistance() < projectiles.get(i).getRange()){
+                projectiles.get(i).setDistance(projectiles.get(i).getDistance() + projectiles.get(i).getSpeed());
+            }
+            //wenn die distanz größer als die reichweite ist wird das projektil entfernt
+            if(projectiles.get(i).getDistance() >= projectiles.get(i).getRange()) {
+                projectiles.remove(i);
+            }
         }
 
         // Kollisionen werden überprüft.
         for(int i = 0;i < projectiles.size();i++){
             for(int j = 0;j < enemies.size();i++){
-                if(utility.gameObjectIsCollidingWithGameObject(projectiles.get(i),enemies.get(j))){
+                //falls projektil mit gegner kollidiert und der gegner noch nicht getroffen ist
+                if(utility.gameObjectIsCollidingWithGameObject(projectiles.get(i),enemies.get(j)) && !projectiles.get(i).getHitEnemies().contains(enemies.get(j))){
+                    //verringere die hp des gegners, verringere die hp des projektils, füge gegner zu getroffenen hinzu
                     enemies.get(j).setHp(enemies.get(j).getHp() - projectiles.get(i).getImpactDamage());
+                    projectiles.get(i).setHp(projectiles.get(i).getHp()-1);
+                    projectiles.get(i).addToHitEnemies(enemies.get(j));
+                    //falls hp des projektils == 0 ist
+                    if(projectiles.get(i).getHp()==0){
+                        //lösche das projektil
+                        projectiles.remove(i);
+                    }
                 }
             }
         }

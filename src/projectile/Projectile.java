@@ -64,6 +64,13 @@ public class Projectile extends GameObject{
     }
 
     /**
+     * Die Methode setzt die Distanz zum Ziel des Projektils als float.
+     */
+    public void setDistance(float pDistance){
+        distance = pDistance;
+    }
+
+    /**
      * Die Anfrage liefert die Projektilart des Projektils als ProjectileType.
      */
     public ProjectileType getProjectileType(){
@@ -71,9 +78,16 @@ public class Projectile extends GameObject{
     }
 
     /**
-     * Die Anfrage liefert die bereits getroffenen Ziele des Projektils als ArrayList.
+     * Die Anfrage liefert die bereits getroffenen Gegner des Projektils als ArrayList.
      */
     public ArrayList<Enemy> getHitEnemies(){
         return hitEnemies;
+    }
+
+    /**
+     * Die Methode fügt die bereits getroffenen Gegner des Projektils in eine ArrayList.
+     */
+    public void addToHitEnemies(Enemy pEnemy){
+        hitEnemies.add(pEnemy);
     }
 }
