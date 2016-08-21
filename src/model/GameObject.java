@@ -6,12 +6,12 @@ public class GameObject {
     private int hp,maxHp,level;
     private String name;
     private float x,y,radius;
-    protected ITexture texture;
+    protected String textureID;
 
 
 
 
-    public GameObject(int maxHp, int level, String name, float x, float y, float radius) {
+    public GameObject(int maxHp, int level, String name, float x, float y, float radius, String textureID) {
         this.maxHp = maxHp;
         this.level = level;
         this.name = name;
@@ -19,11 +19,12 @@ public class GameObject {
         this.y = y;
         this.radius = radius;
         hp = maxHp;
+        this.textureID = textureID;
 
 
     }
 
-    public ITexture getTexture(){return texture;}
+    public String getTextureID(){return textureID;}
 
     public float getRadius(){return radius; }
 

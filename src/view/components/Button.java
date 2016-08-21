@@ -46,6 +46,7 @@ public class Button extends ViewComponent{
             down = false;
 
             if (listener != null) {
+                ViewManager.clickSound.start();
                 listener.onClick();
             }
         }

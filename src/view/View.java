@@ -3,6 +3,7 @@ package view;
 import org.lwjgl.opengl.Display;
 import view.components.ViewComponent;
 import view.rendering.Batch;
+import view.rendering.ITexture;
 
 
 import java.util.ArrayList;
@@ -24,6 +25,9 @@ public abstract class View {
         this.viewManager = viewManager;
     }
 
+    /**
+     * zeichnet alle ViewComponents
+     */
     public void render(float deltaTime, Batch batch){
         for(int i = 0; i < components.size(); i++){
             ViewComponent temp = components.get(i);
@@ -36,6 +40,9 @@ public abstract class View {
         originHeight = height;
         originWidth = width;
     }
+
+
+
 
     public List<ViewComponent> getComponents(){return components;}
 

@@ -12,12 +12,12 @@ public class Tower extends GameObject{
     private Enemy target;
 
     public Tower(TowerType type, int level, String name, float x, float y, float radius) {
-        super(type.HP, level, name, x, y, radius);
-        this.projectile = type.projectileType;
-        this.attackRadius = type.attackRadius;
-        this.cost = type.cost;
+        super(type.getHP(), level, name, x, y, radius,type.getName());
+        this.projectile = type.getProjectileType();
+        this.attackRadius = type.getAttackRadius();
+        this.cost = type.getCost();
         this.type = type;
-        this.frequency = type.frequency;
+        this.frequency = type.getFrequency();
     }
 
     public int getAttackRadius() {
@@ -42,5 +42,5 @@ public class Tower extends GameObject{
 
     public void setTarget(Enemy newTarget){target=newTarget;}
 
-    public void setCooldown(Float newCooldown){cooldown=newCooldown;}
+    public void setCooldown(float newCooldown){cooldown=newCooldown;}
 }

@@ -12,7 +12,7 @@ public class Projectile extends GameObject{
     private ArrayList<Enemy> hitEnemies; // Zur Lösung von Kollisionsproblemen beim durchdringen von Gegnern.
 
     public Projectile(ProjectileType projectileType, int level, float x, float y, float targetX, float targetY) {
-        super(projectileType.getMaxHP(), level, projectileType.getName(), x, y,projectileType.getRadius());
+        super(projectileType.getMaxHP(), level, projectileType.getName(), x, y,projectileType.getRadius(),projectileType.getName());
         this.projectileType = projectileType;
         impactDamage = projectileType.getImpactDamage();
         speed = projectileType.getSpeed();
