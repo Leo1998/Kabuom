@@ -35,34 +35,39 @@ public class GameView extends View{
         blockTexture = ViewManager.test2;
         towerButtonBackgroundTexture = ViewManager.test1;
 
+        float towerButtonX = width * 7/8;
+        float towerButtonHeight = height/TowerType.values().length;
+        float towerButtonWidth = width * 1/8;
+        float towerButtonMainTexture, towerButtonPressedTexture;
+
         this.world = world;
         towerButtons = new TowerButton[TowerType.values().length];
-        for(int i= 0 ; i < TowerType.values().length; i++){
-            final TowerButton towerButton = new TowerButton(width * 7/8, i * height/TowerType.values().length,width* 1/8,height/TowerType.values().length, this, null, ViewManager.mgTurretGreen, ViewManager.mgTurretRed,TowerType.values()[i]);
+        for(int i= 0 ; i < TowerType.values().length -1 ; i++){
+                final TowerButton towerButton = new TowerButton(towerButtonX, i * towerButtonHeight, towerButtonWidth, towerButtonHeight, this, null, ViewManager.textureIDToTexture(TowerType.values()[i].getName())[0], ViewManager.textureIDToTexture(TowerType.values()[i].getName())[2], TowerType.values()[i]);
 
-            towerButtons[i] = towerButton;
-            this.components.add(towerButton);
+                towerButtons[i] = towerButton;
+                this.components.add(towerButton);
 
-            towerButton.setListener(new ButtonListener() {
-                @Override
-                public void onClick() {
-                    if (setTower == null) {
-                        viewManager.getPostProcessingManager().enableEffect(PostProcessingManager.Effect.RadialBlur);
-                        setTower = new Tower(towerButton.getTowerType(), 0, "Tower", 0, 0, 0);
-                        //TODO: fix radius
+                towerButton.setListener(new ButtonListener() {
+                    @Override
+                    public void onClick() {
+                        if (setTower == null) {
+                            viewManager.getPostProcessingManager().enableEffect(PostProcessingManager.Effect.RadialBlur);
+                            setTower = new Tower(towerButton.getTowerType(), 0, "Tower", 0, 0, towerButton.getTowerType().getAttackRadius());
+                        }
                     }
-                }
-            });
+                });
+
         }
         u = new Utility();
     }
 
     public void drawGameObject(GameObject o,Batch batch){
          if( o instanceof Enemy){
-            batch.draw(ViewManager.textureIDToTexture(o.getName()), blockCoordToViewCoordX(o.getX()),blockCoordToViewCoordY(o.getY()),o.getRadius(),o.getRadius());
+            batch.draw(ViewManager.textureIDToTexture(o.getName())[0], blockCoordToViewCoordX(o.getX()),blockCoordToViewCoordY(o.getY()),o.getRadius(),o.getRadius());
 
         }else if( o instanceof Projectile){
-            batch.draw(ViewManager.textureIDToTexture(o.getName()), o.getX(),o.getY(),o.getRadius(),o.getRadius());
+            batch.draw(ViewManager.textureIDToTexture(o.getName())[0], o.getX(),o.getY(),o.getRadius(),o.getRadius());
         }
     }
 
@@ -116,7 +121,7 @@ public class GameView extends View{
 
                                 angle = Utility.calculateAngleBetweenTwoPoints(oX, oY, blockCoordToViewCoordX(((Tower) o).getTarget().getX()), blockCoordToViewCoordY(((Tower) o).getTarget().getY()));
                             }
-                            batch.draw(ViewManager.textureIDToTexture(o.getTextureID()), oX, oY, oW, oH, oW / 2, oH / 2, (float)(angle + Math.PI), 1f, 1f, 1f, 1f);
+                            batch.draw(ViewManager.textureIDToTexture(o.getTextureID())[0] , oX, oY, oW, oH, oW / 2, oH / 2, (float)(angle + Math.PI), 1f, 1f, 1f, 1f);
                         }
                 }
             }
@@ -132,7 +137,7 @@ public class GameView extends View{
             setTower.setX(Mouse.getX() - setTower.getRadius() / 2);
             setTower.setY(originHeight - Mouse.getY() - setTower.getRadius() / 2);
             setTower.setRadius(h2/world.getBlocks().length);
-            batch.draw(ViewManager.textureIDToTexture(setTower.getTextureID()), setTower.getX(),setTower.getY(), setTower.getRadius(), setTower.getRadius());
+            batch.draw(ViewManager.textureIDToTexture(setTower.getTextureID())[0], setTower.getX(),setTower.getY(), setTower.getRadius(), setTower.getRadius());
         }
     }
 
@@ -141,7 +146,7 @@ public class GameView extends View{
     @Override
     public void layout(float width, float height) {
         super.layout(width, height);
-        for (int i = 0; i <towerButtons.length ; i++){
+        for (int i = 0; i <towerButtons.length -1 ; i++){
             towerButtons[i].setX(width * 7/8);
             towerButtons[i].setY( i * height/towerButtons.length);
             towerButtons[i].setWidth(width* 1/8);

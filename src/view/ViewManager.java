@@ -23,6 +23,7 @@ public class ViewManager {
     public static ITexture buttonPressedTexture;
     public static ITexture mgTurret, mgTurretGreen, mgTurretRed;
     public static ITexture missileLauncher, missileLauncherGreen, missileLauncherRed;
+    public static ITexture flamethrower, flamethrowerGreen, flamethrowerRed;
     public static ITexture world1,world2,world3;
     public static ITexture missile;
 
@@ -49,7 +50,9 @@ public class ViewManager {
             world2 = new Texture(ViewManager.class.getResource("/textures/GrundlageWelt2.png"));
             world3 = new Texture(ViewManager.class.getResource("/textures/GrundlageWelt3.png"));
             missile = new Texture(ViewManager.class.getResource("/textures/missile.png"));
-
+            flamethrower = new Texture(ViewManager.class.getResource("/textures/Flamethrower.png"));
+            flamethrowerGreen = new Texture(ViewManager.class.getResource("/textures/FlamethrowerGrün.png"));
+            flamethrowerRed = new Texture(ViewManager.class.getResource("/textures/FlamethrowerRot.png"));
             clickSound = new Sound(ViewManager.class.getResourceAsStream("/sounds/click.wav"));
 
         } catch(IOException e) {
@@ -94,69 +97,120 @@ public class ViewManager {
         this.particleManager = new ParticleManager(10000);
     }
 
-    public static ITexture textureIDToTexture(String textureID){
+    public static ITexture[] textureIDToTexture(String textureID){
+        ITexture[] returnArray = new ITexture[3];
         switch(textureID){
             case "MGTurret" :
-                return ViewManager.mgTurret;
+                returnArray[0] = ViewManager.mgTurret;
+                returnArray[1] = ViewManager.mgTurretGreen;
+                returnArray[2] = ViewManager.mgTurretRed;
+                break;
             case "Missilelauncher" :
-                return ViewManager.missileLauncher;
+                returnArray[0] = ViewManager.missileLauncher;
+                returnArray[1] = ViewManager.missileLauncherGreen;
+                returnArray[2] = ViewManager.missileLauncherRed;
+                break;
             case "Poisontower" :
-                return ViewManager.missileLauncherGreen;
+                returnArray[0] = ViewManager.mgTurretGreen;
+                returnArray[1] = ViewManager.mgTurretGreen;
+                returnArray[2] = ViewManager.mgTurretRed;
+                break;
             case "Cyrogun" :
-                return ViewManager.mgTurret;
+                returnArray[0] = ViewManager.mgTurret;
+                returnArray[1] = ViewManager.mgTurretGreen;
+                returnArray[2] = ViewManager.mgTurretRed;
+                break;
             case "Teslacoil" :
-                return ViewManager.mgTurret;
+                returnArray[0] = ViewManager.mgTurret;
+                returnArray[1] = ViewManager.mgTurretGreen;
+                returnArray[2] = ViewManager.mgTurretRed;
+                break;
             case "Flamethrower" :
-                return ViewManager.mgTurret;
+                returnArray[0] = ViewManager.flamethrower;
+                returnArray[1] = ViewManager.flamethrowerGreen;
+                returnArray[2] = ViewManager.flamethrowerRed;
+                break;
             case "Sniper" :
-                return ViewManager.mgTurretRed;
+                returnArray[0] = ViewManager.mgTurret;
+                returnArray[1] = ViewManager.mgTurretGreen;
+                returnArray[2] = ViewManager.mgTurretRed;
+                break;
             case "Mortar" :
-                return ViewManager.mgTurret;
+                returnArray[0] = ViewManager.missileLauncherGreen;
+                returnArray[1] = ViewManager.missileLauncherGreen;
+                returnArray[2] = ViewManager.missileLauncherRed;
+                break;
             case "Barricade" :
-                return ViewManager.mgTurret;
+                returnArray[0] = ViewManager.test1;
+                break;
             case "Maintower" :
-                return ViewManager.mgTurret;
+                returnArray[0] = ViewManager.test2;
+                break;
             case "Dummy" :
-                return null;
+                returnArray[0] = null;
+                break;
             case "BULLET" :
-                return ViewManager.missile;
+                returnArray[0] = ViewManager.missile;
+                break;
             case "MISSILE" :
-                return ViewManager.missile;
+                returnArray[0] = ViewManager.missile;
+                break;
             case "FLAME" :
-                return ViewManager.missile;
+                returnArray[0] = ViewManager.missile;
+                break;
             case "ICE" :
-                return ViewManager.missile;
+                returnArray[0] = ViewManager.missile;
+                break;
             case "LIGHTNING" :
-                return ViewManager.missile;
+                returnArray[0] = ViewManager.missile;
+                break;
             case "PIERCINGBULLET" :
-                return ViewManager.missile;
+                returnArray[0] = ViewManager.missile;
+                break;
             case "FRAGGRENADE" :
-                return ViewManager.missile;
+                returnArray[0] = ViewManager.missile;
+                break;
             case "POISON" :
-                return ViewManager.missile;
+                returnArray[0] = ViewManager.missile;
+                break;
             case "Cheap" :
-                return ViewManager.test1;
+                returnArray[0] = ViewManager.test0;
+                break;
             case "Tank" :
-                return ViewManager.test1;
+                returnArray[0] = ViewManager.test0;
+                break;
             case "Speed" :
-                return ViewManager.test1;
+                returnArray[0] = ViewManager.test0;
+                break;
             case "Damage" :
-                return ViewManager.test1;
+                returnArray[0] = ViewManager.test0;
+                break;
             case "Super" :
-                return ViewManager.test1;
+                returnArray[0] = ViewManager.test0;
+                break;
             case "Troll" :
-                return ViewManager.test1;
+                returnArray[0] = ViewManager.test0;
+                break;
             case "Cheat" :
-                return ViewManager.test1;
+                returnArray[0] = ViewManager.test0;
+                break;
             case "GrassWorld" :
-                return ViewManager.world1;
+                returnArray[0] = ViewManager.world1;
+                break;
             case "MudWorld" :
-                return ViewManager.world2;
+                returnArray[0] = ViewManager.world2;
+                break;
             case "IceWorld" :
-                return ViewManager.world3;
+                returnArray[0] = ViewManager.world3;
+                break;
             default:
-                return ViewManager.test0;
+                returnArray[0] = ViewManager.test0;
         }
+        if(returnArray[1]==null || returnArray[2] == null){
+            returnArray[1] = returnArray[0];
+            returnArray[2] = returnArray[0];
+        }
+        return returnArray;
 
     }
 
