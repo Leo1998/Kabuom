@@ -31,6 +31,7 @@ public class TowerHandler {
 
             if (enemyInRange(curEnemy, tower)){
                 targetList.add(curEnemy);
+                break;
             }
         }
 

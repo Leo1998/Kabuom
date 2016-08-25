@@ -6,7 +6,7 @@ public enum TowerType{
 
     MGTURRET(100, true, 0.1f,250,100,ProjectileType.BULLET, "MGTurret", "MgTurret.png"),
     MISSILELAUNCHER(75,true, 2,400,200,ProjectileType.MISSILE, "Missilelauncher", "MissileLauncher.png"),
-    FLAMETHROWER(60, true, 0.001f,200,300,ProjectileType.FLAME, "Flamethrower", "Flamethrower.png"),
+    FLAMETHROWER(60, true, 0.001f,300,300,ProjectileType.FLAME, "Flamethrower", "Flamethrower.png"),
     POISONTOWER(75, true,3,200,175,ProjectileType.POISON, "Poisontower", "MgTurret.png"),
     CYROGUN(90, true,5,200,350,ProjectileType.ICE, "Cyrogun", "MgTurret.png"),
     TESLACOIL(50, true, 0.001f,150,500,ProjectileType.LIGHTNING, "Teslacoil", "MgTurret.png"),

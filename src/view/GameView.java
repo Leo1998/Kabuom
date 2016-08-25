@@ -113,7 +113,7 @@ public class GameView extends View{
                         float oW = w2 / world.getBlocks().length;
                         float oH = h2 / world.getBlocks()[i].length;
 
-                        float angle = 0;
+                        float angle = (float)Math.PI;
                         if (tower.getTarget() != null && tower.getType().canShoot()) {
                             angle = Utility.calculateAngleBetweenTwoPoints(oX, oY, blockCoordToViewCoordX(tower.getTarget().getX()), blockCoordToViewCoordY(tower.getTarget().getY()));
                             System.out.println(Utility.calculateAngleBetweenTwoPoints(oX, oY, blockCoordToViewCoordX(tower.getTarget().getX()), blockCoordToViewCoordY(tower.getTarget().getY())));
