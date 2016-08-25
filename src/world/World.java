@@ -100,7 +100,7 @@ public class World {
         if(isDrunk){
             drunk = true;
         }
-        eH.handleEnemies(dt,enemyList,getIDOfMainTower(),graph, recalculate, drunk);
+        //eH.handleEnemies(dt,enemyList,getIDOfMainTower(),graph, recalculate, drunk);
         pH.handleProjectiles(dt, projectileList, enemyList);
         tH.handleTowers(dt, towerList, enemyList, this.mainTower);
     }

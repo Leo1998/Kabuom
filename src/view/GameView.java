@@ -74,7 +74,6 @@ public class GameView extends View{
 
     @Override
     public void render(float deltaTime, Batch batch) {
-
         //Hintergrund für die TowerButtons am Rechten Rand
         batch.draw(towerButtonBackgroundTexture,originWidth*7/8,(originHeight-h2)/2,originWidth*1/8,h2);
 
