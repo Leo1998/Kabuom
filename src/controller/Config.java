@@ -10,7 +10,7 @@ import java.io.FileWriter;
 public class Config {
 
     public enum GraphicMode {
-        Low, High;
+        Low, High
     }
 
     private GraphicMode graphicMode = GraphicMode.High;

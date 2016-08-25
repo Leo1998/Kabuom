@@ -3,15 +3,11 @@ package view;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
-import utility.Utility;
 import view.components.Button;
-import view.components.ViewComponent;
 import view.rendering.Batch;
 import view.rendering.Particle;
 import view.rendering.ParticleEffect;
 
-import java.awt.*;
 import java.util.*;
 
 public class TestView extends View {
@@ -70,15 +66,15 @@ public class TestView extends View {
             h2 = w2;
         }
         //batch.draw(ViewManager.mgTurret,0,0,200,200);
-        batch.draw(ViewManager.world1,originWidth*7/8/2-w2/2,0,w2,h2);
+        batch.draw(ViewManager.getTexture("test0.png"),originWidth*7/8/2-w2/2,0,w2,h2);
 
         if(Mouse.isButtonDown(0)) {
             flame();
 
             for (int i = 100; i < 600; i += 50) {
-                batch.draw(ViewManager.test0,(i), (450), (25), (25), 12, 12, rotationRadians, 1f, 1f, 1f, 1f);
+                batch.draw(ViewManager.getTexture("test0.png"),(i), (450), (25), (25), 12, 12, rotationRadians, 1f, 1f, 1f, 1f);
             }
-            ViewManager.font.drawText(batch, "Hallo Kabuom!     abcdefghijklmnopqrstuvwxyzß", (int)(100), (int) (400));
+            ViewManager.font.drawText(batch, "Hallo Kabuom!     abcdefghijklmnopqrstuvwxyzß", 100, 400);
         }
 
         rotationRadians += Math.toRadians(deltaTime * 50);

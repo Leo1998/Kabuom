@@ -32,44 +32,50 @@ public class GameView extends View{
     public GameView(float width, float height, final ViewManager viewManager, World world){
         super(width,height, viewManager);
 
-        blockTexture = ViewManager.test2;
-        towerButtonBackgroundTexture = ViewManager.test1;
+        blockTexture = ViewManager.getTexture("test2.png");
+        towerButtonBackgroundTexture = ViewManager.getTexture("test1.png");
+
+        float towerButtonX = width * 7/8;
+        float towerButtonHeight = height/TowerType.values().length;
+        float towerButtonWidth = width * 1/8;
+        float towerButtonMainTexture, towerButtonPressedTexture;
 
         this.world = world;
         towerButtons = new TowerButton[TowerType.values().length];
-        for(int i= 0 ; i < TowerType.values().length; i++){
-            final TowerButton towerButton = new TowerButton(width * 7/8, i * height/TowerType.values().length,width* 1/8,height/TowerType.values().length, this, null, ViewManager.mgTurretGreen, ViewManager.mgTurretRed,TowerType.values()[i]);
+        for(int i= 0 ; i < TowerType.values().length -1 ; i++){
+                final TowerButton towerButton = new TowerButton(towerButtonX, i * towerButtonHeight, towerButtonWidth, towerButtonHeight, this, null, TowerType.values()[i]);
 
-            towerButtons[i] = towerButton;
-            this.components.add(towerButton);
+                towerButtons[i] = towerButton;
+                this.components.add(towerButton);
 
-            towerButton.setListener(new ButtonListener() {
-                @Override
-                public void onClick() {
-                    if (setTower == null) {
-                        viewManager.getPostProcessingManager().enableEffect(PostProcessingManager.Effect.RadialBlur);
-                        setTower = new Tower(towerButton.getTowerType(), 0, "Tower", 0, 0, 0);
-                        //TODO: fix radius
+                towerButton.setListener(new ButtonListener() {
+                    @Override
+                    public void onClick() {
+                        if (setTower == null) {
+                            viewManager.getPostProcessingManager().enableEffect(PostProcessingManager.Effect.RadialBlur);
+                            setTower = new Tower(towerButton.getTowerType(), 0, 0, 0, 0);
+                        }
                     }
-                }
-            });
+                });
         }
         u = new Utility();
     }
 
     public void drawGameObject(GameObject o,Batch batch){
-         if( o instanceof Enemy){
-            batch.draw(ViewManager.textureIDToTexture(o.getName()), blockCoordToViewCoordX(o.getX()),blockCoordToViewCoordY(o.getY()),o.getRadius(),o.getRadius());
+         if(o instanceof Enemy){
+             Enemy e = (Enemy) o;
 
-        }else if( o instanceof Projectile){
-            batch.draw(ViewManager.textureIDToTexture(o.getName()), o.getX(),o.getY(),o.getRadius(),o.getRadius());
+             batch.draw(ViewManager.getTexture(e.getEnemyType().getTextureID()), blockCoordToViewCoordX(e.getX()),blockCoordToViewCoordY(e.getY()),e.getRadius(),e.getRadius());
+        } else if(o instanceof Projectile){
+             Projectile p = (Projectile) o;
+
+             batch.draw(ViewManager.getTexture(p.getProjectileType().getTextureID()), p.getX(),p.getY(),p.getRadius(),p.getRadius());
         }
     }
 
 
     @Override
     public void render(float deltaTime, Batch batch) {
-
         //Hintergrund für die TowerButtons am Rechten Rand
         batch.draw(towerButtonBackgroundTexture,originWidth*7/8,(originHeight-h2)/2,originWidth*1/8,h2);
 
@@ -86,38 +92,32 @@ public class GameView extends View{
         /**
          * Zeichnet die Welt (Die einzelnen Blöcke)
          */
-
         for(int i = 0; i < world.getBlocks().length; i++){
             for(int j = 0; j < world.getBlocks()[i].length; j++){
-                    batch.draw(blockTexture,blockCoordToViewCoordX(i), blockCoordToViewCoordY(j), w2/world.getBlocks().length, h2/world.getBlocks()[i].length);
+                batch.draw(blockTexture,blockCoordToViewCoordX(i), blockCoordToViewCoordY(j), w2/world.getBlocks().length, h2/world.getBlocks()[i].length);
             }
         }
 
         /**
          * Zeichnet die Enemies und Projectiles
          */
-
             for (int i = 0; i < world.getObjects().size(); i++) {
                 drawGameObject(world.getObjects().get(i), batch);
             }
             for(int i = 0; i < world.getBlocks().length; i++){
                 for(int j = 0 ; j< world.getBlocks()[i].length ; j++ ) {
-                        if (world.getBlocks()[i][j].getContent().getType() == TowerType.DUMMY) {
-
-                        } else {
-                            GameObject o = world.getBlocks()[i][j].getContent();
-                            float oX = blockCoordToViewCoordX(i);
-                            float oY = blockCoordToViewCoordY(j);
-                            float oW = w2 / world.getBlocks().length;
-                            float oH = h2 / world.getBlocks()[i].length;
-                            float angle = 0;
-                            if (((Tower) o).getTarget() != null) {
-                                //angle = Utility.getAngle(o, ((Tower) o).getTarget());
-
-                                angle = Utility.calculateAngleBetweenTwoPoints(oX, oY, blockCoordToViewCoordX(((Tower) o).getTarget().getX()), blockCoordToViewCoordY(((Tower) o).getTarget().getY()));
-                            }
-                            batch.draw(ViewManager.textureIDToTexture(o.getTextureID()), oX, oY, oW, oH, oW / 2, oH / 2, (float)(angle + Math.PI), 1f, 1f, 1f, 1f);
+                    Tower tower = world.getBlocks()[i][j].getContent();
+                    if (tower != null) {
+                        float oX = blockCoordToViewCoordX(i);
+                        float oY = blockCoordToViewCoordY(j);
+                        float oW = w2 / world.getBlocks().length;
+                        float oH = h2 / world.getBlocks()[i].length;
+                        float angle = 0;
+                        if (tower.getTarget() != null) {
+                            angle = Utility.calculateAngleBetweenTwoPoints(oX, oY, blockCoordToViewCoordX(tower.getTarget().getX()), blockCoordToViewCoordY(tower.getTarget().getY()));
                         }
+                        batch.draw(ViewManager.getTexture(tower.getType().getTextureID()), oX, oY, oW, oH, oW / 2, oH / 2, (float) (angle + Math.PI), 1f, 1f, 1f, 1f);
+                    }
                 }
             }
 
@@ -132,7 +132,7 @@ public class GameView extends View{
             setTower.setX(Mouse.getX() - setTower.getRadius() / 2);
             setTower.setY(originHeight - Mouse.getY() - setTower.getRadius() / 2);
             setTower.setRadius(h2/world.getBlocks().length);
-            batch.draw(ViewManager.textureIDToTexture(setTower.getTextureID()), setTower.getX(),setTower.getY(), setTower.getRadius(), setTower.getRadius());
+            batch.draw(ViewManager.getTexture(setTower.getType().getTextureID()), setTower.getX(),setTower.getY(), setTower.getRadius(), setTower.getRadius());
         }
     }
 
@@ -141,7 +141,7 @@ public class GameView extends View{
     @Override
     public void layout(float width, float height) {
         super.layout(width, height);
-        for (int i = 0; i <towerButtons.length ; i++){
+        for (int i = 0; i <towerButtons.length -1 ; i++){
             towerButtons[i].setX(width * 7/8);
             towerButtons[i].setY( i * height/towerButtons.length);
             towerButtons[i].setWidth(width* 1/8);
@@ -168,11 +168,11 @@ public class GameView extends View{
      * Rechnet die Block Koordinate in eine View Koordinate um
      */
     private float blockCoordToViewCoordX(float coord){
-        return w2/world.getBlocks().length * coord+ (originWidth*7/8-w2) / 2;
+        return w2/(float)world.getBlocks().length * coord+ (originWidth*7f/8f-w2) / 2f;
     }
 
     private float blockCoordToViewCoordY(float coord){
-        return h2/world.getBlocks().length * coord+ (originHeight-h2) / 2;
+        return h2/(float)world.getBlocks()[0].length * coord+ (originHeight-h2) / 2f;
     }
 
     @Override

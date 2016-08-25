@@ -34,9 +34,8 @@ public class GraphRandomizer {
         //Fülle Graphen mit Vertices
         for(int i = 0;i < blocks.length;i++){
             for(int j = 0;j < blocks[i].length;j++){
-                Tower dummyTower = new Tower(TowerType.DUMMY,0,i+" "+j,i,j,0);
                 Vertex<Tower> currVertex = new Vertex<>(i+" "+j);
-                currVertex.setContent(dummyTower);
+                currVertex.setContent(null);
                 graph.addVertex(currVertex);
                 blocks[i][j] = currVertex;
                 int maxGrad = 8;

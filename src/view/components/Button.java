@@ -1,10 +1,7 @@
 package view.components;
 
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.Display;
 import utility.Utility;
 import view.rendering.Batch;
-import view.rendering.BitmapFont;
 import view.rendering.ITexture;
 import view.View;
 import view.ViewManager;
@@ -16,6 +13,11 @@ public class Button extends ViewComponent{
     private String buttontext;
     private ITexture texture,buttonMainTexture,buttonPressedTexture;
     private boolean down;
+
+    public Button(float x, float y, float width, float height, View v, String buttontext) {
+        this(x, y, width, height, v, buttontext, ViewManager.getTexture("viewTextures/mainButton.png"), ViewManager.getTexture("viewTextures/pressedButton.png"));
+    }
+
     public Button(float x, float y, float width, float height, View v, String buttontext,ITexture mainTexture, ITexture pressedTexture) {
         super(x, y, width, height, v);
         this.buttontext = buttontext;
