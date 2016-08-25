@@ -13,7 +13,7 @@ public class OptionsView extends BaseMenuView {
 
     public OptionsView(float width, float height, final ViewManager viewManager) {
         super(width, height, viewManager);
-        backButton = new Button(25, 25, width / 8, height / 10, this, "Back", ViewManager.buttonMainTexture,ViewManager.buttonPressedTexture);
+        backButton = new Button(25, 25, width / 8, height / 10, this, "Back");
         this.components.add(backButton);
 
         backButton.setListener(new ButtonListener() {
@@ -23,7 +23,7 @@ public class OptionsView extends BaseMenuView {
             }});
 
         String mode = Controller.instance.getConfig().getGraphicMode().name();
-        graphicsButton = new Button((width / 2) - (width / 6 / 2), (height / 2) - (height / 8 / 2) - (height / 6), width / 4, height / 8, this, "Graphics: " + mode, ViewManager.buttonMainTexture,ViewManager.buttonPressedTexture);
+        graphicsButton = new Button((width / 2) - (width / 6 / 2), (height / 2) - (height / 8 / 2) - (height / 6), width / 4, height / 8, this, "Graphics: " + mode);
         this.components.add(graphicsButton);
 
         graphicsButton.setListener(new ButtonListener() {

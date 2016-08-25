@@ -4,7 +4,7 @@ import graph.*;
 import model.GameObject;
 
 
-public class Enemy extends GameObject{
+public class Enemy extends GameObject {
     private Queue<Vertex> path;
     private float attackCooldown;
     private EnemyType enemyType;
@@ -13,14 +13,15 @@ public class Enemy extends GameObject{
 
     /**
      * Konstruktor des Enemy
-      * @param enemyType Type des Gegners
-     * @param level Level des Gegners (WIP)
-     * @param x X-Position des Gegners
-     * @param y Y-Position des Gegners
-     * @param pos Vertex, auf dem sich der Gegner befindet
+     *
+     * @param enemyType Type des Gegners
+     * @param level     Level des Gegners (WIP)
+     * @param x         X-Position des Gegners
+     * @param y         Y-Position des Gegners
+     * @param pos       Vertex, auf dem sich der Gegner befindet
      */
-    public Enemy(EnemyType enemyType,int level,float x,float y,Vertex pos) {
-        super(enemyType.getMaxHP(), level, enemyType.getName(), x, y,enemyType.getRadius(),enemyType.getName());
+    public Enemy(EnemyType enemyType, int level, float x, float y, Vertex pos) {
+        super(enemyType.getMaxHP(), level, enemyType.getName(), x, y, enemyType.getRadius(), enemyType.getTextureID());
         this.path = new Queue<>();
         this.enemyType = enemyType;
         attackCooldown = 0;
@@ -29,9 +30,10 @@ public class Enemy extends GameObject{
 
     /**
      * Gibt zurück, wie weit sich der Gegner innerhalb einer Millisekunde bewegen kann
+     *
      * @return
      */
-    public float getSpeed(){
+    public float getSpeed() {
         return enemyType.getSpeed();
     }
 
@@ -87,7 +89,7 @@ public class Enemy extends GameObject{
     /**
      * Gibt den Schaden, den der Gegner mit einem Angriff verursacht, zurück
      */
-    public int getDamage(){
+    public int getDamage() {
         return enemyType.getDamage();
     }
 
@@ -103,5 +105,9 @@ public class Enemy extends GameObject{
      */
     public void setMovement(float[] movement) {
         this.movement = movement;
+    }
+
+    public EnemyType getEnemyType() {
+        return enemyType;
     }
 }

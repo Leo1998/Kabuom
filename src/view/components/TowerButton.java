@@ -9,8 +9,8 @@ import view.rendering.ITexture;
 public class TowerButton extends Button{
 
     private TowerType towerType;
-    public TowerButton(float x, float y, float width, float height, View v, String buttontext, ITexture mainTexture, ITexture pressedTexture, TowerType towerType) {
-        super(x, y, width, height, v, buttontext, mainTexture, pressedTexture);
+    public TowerButton(float x, float y, float width, float height, View v, String buttontext, TowerType towerType) {
+        super(x, y, width, height, v, buttontext, ViewManager.getTexture(towerType.getTextureID()), ViewManager.getTexture(towerType.getTextureID()));
         this.towerType = towerType;
     }
 

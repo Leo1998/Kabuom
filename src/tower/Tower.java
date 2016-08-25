@@ -11,8 +11,8 @@ public class Tower extends GameObject{
     private TowerType type;
     private Enemy target;
 
-    public Tower(TowerType type, int level, String name, float x, float y, float radius) {
-        super(type.getHP(), level, name, x, y, radius,type.getName());
+    public Tower(TowerType type, int level, float x, float y, float radius) {
+        super(type.getHP(), level, type.getName(), x, y, radius,type.getTextureID());
         this.projectile = type.getProjectileType();
         this.attackRadius = type.getAttackRadius();
         this.cost = type.getCost();

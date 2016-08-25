@@ -11,9 +11,9 @@ public class MenuView extends BaseMenuView {
 
     public MenuView(float width, float height, final ViewManager viewManager) {
         super(width, height, viewManager);
-        startButton = new Button((width / 2) - (width / 6 / 2), (height / 2) - (height / 8 / 2) - (height / 6), width / 6, height / 8, this, "Start", ViewManager.buttonMainTexture,ViewManager.buttonPressedTexture);
-        optionsButton = new Button((width / 2) - (width / 6 / 2), (height / 2) - (height / 8 / 2), width / 6, height / 8, this, "Options", ViewManager.buttonMainTexture,ViewManager.buttonPressedTexture);
-        exitButton = new Button((width / 2) - (width / 6 / 2), (height / 2) - (height / 8 / 2) + (height / 6), width / 6, height / 8, this, "Exit", ViewManager.buttonMainTexture,ViewManager.buttonPressedTexture);
+        startButton = new Button((width / 2) - (width / 6 / 2), (height / 2) - (height / 8 / 2) - (height / 6), width / 6, height / 8, this, "Start");
+        optionsButton = new Button((width / 2) - (width / 6 / 2), (height / 2) - (height / 8 / 2), width / 6, height / 8, this, "Options");
+        exitButton = new Button((width / 2) - (width / 6 / 2), (height / 2) - (height / 8 / 2) + (height / 6), width / 6, height / 8, this, "Exit");
         this.components.add(startButton);
         this.components.add(optionsButton);
         this.components.add(exitButton);

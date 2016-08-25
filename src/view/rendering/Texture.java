@@ -21,7 +21,7 @@ public class Texture implements ITexture {
     protected int samples = 1;
     protected ByteBuffer data;
 
-    public static final int DEFAULT_FILTER = GL11.GL_NEAREST;
+    public static final int DEFAULT_FILTER = GL11.GL_LINEAR;
     public static final int DEFAULT_WRAP = GL11.GL_REPEAT;
 
     public Texture(int width, int height) {

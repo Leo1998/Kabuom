@@ -10,55 +10,62 @@ import view.rendering.*;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class ViewManager {
 
     private Batch batch;
 
     public static BitmapFont font;
-    public static ITexture test0;
-    public static ITexture test1;
-    public static ITexture test2;
-    public static ITexture buttonMainTexture;
-    public static ITexture buttonPressedTexture;
-    public static ITexture mgTurret, mgTurretGreen, mgTurretRed;
-    public static ITexture missileLauncher, missileLauncherGreen, missileLauncherRed;
-    public static ITexture flamethrower, flamethrowerGreen, flamethrowerRed;
-    public static ITexture world1,world2,world3;
-    public static ITexture missile;
 
     public static Sound clickSound;
 
+    public static final HashMap<String, ITexture> textureMap = new HashMap<>();
+
     public static void load (){
         try {
-            System.out.println((Math.PI-1)/Math.PI);
             font = new BitmapFont(ViewManager.class.getResource("/font/font.fnt"), ViewManager.class.getResource("/font/font.png"));
 
-
-            test0 = new Texture(ViewManager.class.getResource("/textures/test0.png"));
-            test1 = new Texture(ViewManager.class.getResource("/textures/test1.png"));
-            test2 = new Texture(ViewManager.class.getResource("/textures/test2.png"));
-            mgTurret = new Texture(ViewManager.class.getResource("/textures/MgTurret.png"));
-            mgTurretGreen = new Texture(ViewManager.class.getResource("/textures/MgTurretGruen.png"));
-            mgTurretRed = new Texture(ViewManager.class.getResource("/textures/MgTurretRot.png"));
-            missileLauncher = new Texture(ViewManager.class.getResource("/textures/MissileLauncher.png"));
-            missileLauncherGreen = new Texture(ViewManager.class.getResource("/textures/MissileLauncherGruen.png"));
-            missileLauncherRed = new Texture(ViewManager.class.getResource("/textures/MissileLauncherRot.png"));
-            buttonMainTexture = new Texture(ViewManager.class.getResource("/textures/viewTextures/mainButton.png"));
-            buttonPressedTexture = new Texture(ViewManager.class.getResource("/textures/viewTextures/pressedButton.png"));
-            world1 = new Texture(ViewManager.class.getResource("/textures/GrundlageWelt.png"));
-            world2 = new Texture(ViewManager.class.getResource("/textures/GrundlageWelt2.png"));
-            world3 = new Texture(ViewManager.class.getResource("/textures/GrundlageWelt3.png"));
-            missile = new Texture(ViewManager.class.getResource("/textures/missile.png"));
-            flamethrower = new Texture(ViewManager.class.getResource("/textures/Flamethrower.png"));
-            flamethrowerGreen = new Texture(ViewManager.class.getResource("/textures/FlamethrowerGrün.png"));
-            flamethrowerRed = new Texture(ViewManager.class.getResource("/textures/FlamethrowerRot.png"));
             clickSound = new Sound(ViewManager.class.getResourceAsStream("/sounds/click.wav"));
+
+            loadTexture("viewTextures/mainButton.png");
+            loadTexture("viewTextures/pressedButton.png");
+
+            loadTexture("test0.png");
+            loadTexture("test1.png");
+            loadTexture("test2.png");
+            loadTexture("MgTurret.png");
+            loadTexture("MgTurretGruen.png");
+            loadTexture("MgTurretRot.png");
+            loadTexture("MissileLauncher.png");
+            loadTexture("MissileLauncherGruen.png");
+            loadTexture("MissileLauncherRot.png");
+            loadTexture("GrundlageWelt.png");
+            loadTexture("GrundlageWelt2.png");
+            loadTexture("GrundlageWelt3.png");
+            loadTexture("missile.png");
+            loadTexture("Flamethrower.png");
+            loadTexture("FlamethrowerGrün.png");
+            loadTexture("FlamethrowerRot.png");
 
         } catch(IOException e) {
             e.printStackTrace();
             font = null;
         }
+    }
+
+    private static void loadTexture(String id) {
+        ITexture tex = new Texture(ViewManager.class.getResource("/textures/" + id));
+
+        textureMap.put(id, tex);
+    }
+
+    public static ITexture getTexture(String textureID){
+        if (!textureMap.containsKey(textureID)) {
+            loadTexture(textureID);
+        }
+
+        return textureMap.get(textureID);
     }
 
     private Controller ctrl = new Controller();
@@ -97,130 +104,12 @@ public class ViewManager {
         this.particleManager = new ParticleManager(10000);
     }
 
-    public static ITexture[] textureIDToTexture(String textureID){
-        ITexture[] returnArray = new ITexture[3];
-        switch(textureID){
-            case "MGTurret" :
-                returnArray[0] = ViewManager.mgTurret;
-                returnArray[1] = ViewManager.mgTurretGreen;
-                returnArray[2] = ViewManager.mgTurretRed;
-                break;
-            case "Missilelauncher" :
-                returnArray[0] = ViewManager.missileLauncher;
-                returnArray[1] = ViewManager.missileLauncherGreen;
-                returnArray[2] = ViewManager.missileLauncherRed;
-                break;
-            case "Poisontower" :
-                returnArray[0] = ViewManager.mgTurretGreen;
-                returnArray[1] = ViewManager.mgTurretGreen;
-                returnArray[2] = ViewManager.mgTurretRed;
-                break;
-            case "Cyrogun" :
-                returnArray[0] = ViewManager.mgTurret;
-                returnArray[1] = ViewManager.mgTurretGreen;
-                returnArray[2] = ViewManager.mgTurretRed;
-                break;
-            case "Teslacoil" :
-                returnArray[0] = ViewManager.mgTurret;
-                returnArray[1] = ViewManager.mgTurretGreen;
-                returnArray[2] = ViewManager.mgTurretRed;
-                break;
-            case "Flamethrower" :
-                returnArray[0] = ViewManager.flamethrower;
-                returnArray[1] = ViewManager.flamethrowerGreen;
-                returnArray[2] = ViewManager.flamethrowerRed;
-                break;
-            case "Sniper" :
-                returnArray[0] = ViewManager.mgTurret;
-                returnArray[1] = ViewManager.mgTurretGreen;
-                returnArray[2] = ViewManager.mgTurretRed;
-                break;
-            case "Mortar" :
-                returnArray[0] = ViewManager.missileLauncherGreen;
-                returnArray[1] = ViewManager.missileLauncherGreen;
-                returnArray[2] = ViewManager.missileLauncherRed;
-                break;
-            case "Barricade" :
-                returnArray[0] = ViewManager.test1;
-                break;
-            case "Maintower" :
-                returnArray[0] = ViewManager.test2;
-                break;
-            case "Dummy" :
-                returnArray[0] = null;
-                break;
-            case "BULLET" :
-                returnArray[0] = ViewManager.missile;
-                break;
-            case "MISSILE" :
-                returnArray[0] = ViewManager.missile;
-                break;
-            case "FLAME" :
-                returnArray[0] = ViewManager.missile;
-                break;
-            case "ICE" :
-                returnArray[0] = ViewManager.missile;
-                break;
-            case "LIGHTNING" :
-                returnArray[0] = ViewManager.missile;
-                break;
-            case "PIERCINGBULLET" :
-                returnArray[0] = ViewManager.missile;
-                break;
-            case "FRAGGRENADE" :
-                returnArray[0] = ViewManager.missile;
-                break;
-            case "POISON" :
-                returnArray[0] = ViewManager.missile;
-                break;
-            case "Cheap" :
-                returnArray[0] = ViewManager.test0;
-                break;
-            case "Tank" :
-                returnArray[0] = ViewManager.test0;
-                break;
-            case "Speed" :
-                returnArray[0] = ViewManager.test0;
-                break;
-            case "Damage" :
-                returnArray[0] = ViewManager.test0;
-                break;
-            case "Super" :
-                returnArray[0] = ViewManager.test0;
-                break;
-            case "Troll" :
-                returnArray[0] = ViewManager.test0;
-                break;
-            case "Cheat" :
-                returnArray[0] = ViewManager.test0;
-                break;
-            case "GrassWorld" :
-                returnArray[0] = ViewManager.world1;
-                break;
-            case "MudWorld" :
-                returnArray[0] = ViewManager.world2;
-                break;
-            case "IceWorld" :
-                returnArray[0] = ViewManager.world3;
-                break;
-            default:
-                returnArray[0] = ViewManager.test0;
-        }
-        if(returnArray[1]==null || returnArray[2] == null){
-            returnArray[1] = returnArray[0];
-            returnArray[2] = returnArray[0];
-        }
-        return returnArray;
-
-    }
-
     public void setDisplayMode(int width, int height, boolean fullscreen) {
         if ((Display.getDisplayMode().getWidth() == width) &&
                 (Display.getDisplayMode().getHeight() == height) &&
                 (Display.isFullscreen() == fullscreen)) {
             return;
         }
-
 
         try {
             DisplayMode targetDisplayMode = null;

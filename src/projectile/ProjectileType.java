@@ -2,14 +2,14 @@ package projectile;
 
 public enum ProjectileType {
 
-    BULLET (1,50,"BULLET",4,50,50),
-    MISSILE (1,50,"MISSILE",2,50,50),
-    FLAME (1,50,"FLAME",3,50,50),
-    ICE (1,50,"ICE",3,50,50),
-    LIGHTNING (5,50,"LIGHTNING",6,50,50),
-    PIERCINGBULLET (3,50,"PIERCINGBULLET",7,50,50),
-    FRAGGRENADE (1,50,"FRAGGRENADE",50,50,50),
-    POISON (1,50,"POISON",50,50,50);
+    BULLET (1,50,"BULLET",4,50,50, "test0.png"),
+    MISSILE (1,50,"MISSILE",2,50,50, "test0.png"),
+    FLAME (1,50,"FLAME",3,50,50, "test0.png"),
+    ICE (1,50,"ICE",3,50,50, "test0.png"),
+    LIGHTNING (5,50,"LIGHTNING",6,50,50, "test0.png"),
+    PIERCINGBULLET (3,50,"PIERCINGBULLET",7,50,50, "test0.png"),
+    FRAGGRENADE (1,50,"FRAGGRENADE",50,50,50, "test0.png"),
+    POISON (1,50,"POISON",50,50,50, "test0.png");
 
     private final int maxHP;
     private final String name;
@@ -17,14 +17,16 @@ public enum ProjectileType {
     private final float speed;
     private final int impactDamage;
     private final float range;
+    private final String textureID;
 
-    ProjectileType( int maxHP, int radius, String name, float speed, int impactDamage, float range) {
+    ProjectileType( int maxHP, int radius, String name, float speed, int impactDamage, float range, String textureID) {
         this.maxHP = maxHP;
         this.radius = radius;
         this.name = name;
         this.speed = speed;
         this.impactDamage = impactDamage;
         this.range = range;
+        this.textureID = textureID;
     }
 
     /**
@@ -69,7 +71,9 @@ public enum ProjectileType {
         return range;
     }
 
-
+    public String getTextureID() {
+        return textureID;
+    }
 
 
 }
