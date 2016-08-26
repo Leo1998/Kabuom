@@ -1,0 +1,7 @@
+die bilder sind rot wenn sie getroffen werden
+es gibt immer ein bild links und ein bild rechts, diese sollten sich abwechseln,
+damit es aussieht als ob der gegner sich bewegt
+hier könnt ihr nochmal gucken wie ein paar ingame aussahen
+http://www.greenfoot.org/scenarios/13762
+
+ich packe ersmal alle gegner rein und ihr könnt die dann aussuchen
