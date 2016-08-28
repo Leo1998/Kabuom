@@ -3,17 +3,15 @@ package world;
 import enemy.Enemy;
 import enemy.EnemyHandler;
 import enemy.EnemyType;
-import graph.Edge;
-import graph.Graph;
-import graph.Vertex;
+import graph.*;
 import model.GameObject;
 import projectile.Projectile;
 import projectile.ProjectileHandler;
-import tower.Tower;
-import tower.TowerHandler;
-import tower.TowerType;
+import projectile.ProjectileType;
+import tower.*;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class World {
 
@@ -54,11 +52,11 @@ public class World {
             }
         }
 
-        connectAll(blocks,graph);
+        //connectAll(graph);
 
-        this.eH = new EnemyHandler(graph,blocks);
-        this.pH = new ProjectileHandler();
-        this.tH = new TowerHandler();
+        //this.eH = new EnemyHandler(graph);
+        this.pH = new ProjectileHandler(this);
+        this.tH = new TowerHandler(this);
 
         this.mainTower = new Tower(TowerType.MAINTOWER, 1, mainTowerCoordX, mainTowerCoordY , 8);
         this.setTowerInBlocks((int) mainTower.getX(),(int) mainTower.getY(), mainTower);
@@ -66,26 +64,18 @@ public class World {
         this.spawnEnemy(2, 2, EnemyType.Tank);
     }
 
-    private void connectAll(Vertex[][] blocks,Graph graph){
-        for(int i = 0;i < blocks.length;i++){
-            for (int j = 0;j < blocks[i].length;j++){
-                createConnection(blocks,graph,i,j,i+1,j);
-                createConnection(blocks,graph,i,j,i,j+1);
-                createConnection(blocks,graph,i,j,i+1,j+1);
-                createConnection(blocks,graph,i,j,i+1,j-1);
-            }
-        }
-    }
-
-    private void createConnection(Vertex[][] blocks,Graph graph,int x1,int y1,int x2,int y2){
-        if(x1 >= 0 && y1 >= 0 && x2 >= 0 && y2 >= 0 && x1 < blocks.length && y1 < blocks[x1].length && x2 < blocks.length && y2 < blocks[x2].length){
-            double length = Math.sqrt(Math.pow(x1-x2,2)+Math.pow(y1-y2,2));
-            graph.addEdge(new Edge(blocks[x1][y1],blocks[x2][y2],length));
-        }
-    }
-
     public void spawnEnemy(float x, float y, EnemyType type) {
         this.objects.add(new Enemy(type, 1, x, y, blocks[(int) x][(int) y]));
+    }
+
+    public void spawnProjectile(Projectile p) {
+        this.objects.add(p);
+    }
+
+    public void removeGameObject(GameObject o) {
+        this.objects.remove(o);
+
+        //TODO: handle tower remove
     }
 
     /**
@@ -120,7 +110,7 @@ public class World {
         if(isDrunk){
             drunk = true;
         }
-        eH.handleEnemies(dt,enemyList,getIDOfMainTower(),graph, recalculate, drunk);
+        //eH.handleEnemies(dt,enemyList,getIDOfMainTower(),graph, recalculate, drunk);
         pH.handleProjectiles(dt, projectileList, enemyList);
         tH.handleTowers(dt, towerList, enemyList, this.mainTower);
     }

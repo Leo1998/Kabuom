@@ -2,14 +2,14 @@ package projectile;
 
 public enum ProjectileType {
 
-    BULLET (1,50,"BULLET",4,50,50, "test0.png"),
-    MISSILE (1,50,"MISSILE",2,50,50, "test0.png"),
-    FLAME (1,50,"FLAME",3,50,50, "test0.png"),
-    ICE (1,50,"ICE",3,50,50, "test0.png"),
-    LIGHTNING (5,50,"LIGHTNING",6,50,50, "test0.png"),
-    PIERCINGBULLET (3,50,"PIERCINGBULLET",7,50,50, "test0.png"),
-    FRAGGRENADE (1,50,"FRAGGRENADE",50,50,50, "test0.png"),
-    POISON (1,50,"POISON",50,50,50, "test0.png");
+    BULLET (1,50,"BULLET",150,50,500, "test1.png"),
+    MISSILE (1,50,"MISSILE",2,50,50, "test1.png"),
+    FLAME (1,50,"FLAME",3,50,50, "test1.png"),
+    ICE (1,50,"ICE",3,50,50, "test1.png"),
+    LIGHTNING (5,50,"LIGHTNING",6,50,50, "test1.png"),
+    PIERCINGBULLET (3,50,"PIERCINGBULLET",7,50,50, "test1.png"),
+    FRAGGRENADE (1,50,"FRAGGRENADE",50,50,50, "test1.png"),
+    POISON (1,50,"POISON",50,50,50, "test1.png");
 
     private final int maxHP;
     private final String name;
