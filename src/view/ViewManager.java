@@ -147,7 +147,7 @@ public class ViewManager {
 
             Display.setDisplayMode(targetDisplayMode);
             Display.setFullscreen(fullscreen);
-            Display.setResizable(true);
+            Display.setResizable(false);
             Display.setTitle("Kabuom! Tower Defense");
             Display.setVSyncEnabled(true);
 

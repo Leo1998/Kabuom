@@ -83,6 +83,8 @@ public class EnemyHandler {
     private void handleEnemy(float dt,Graph graph,Enemy enemy,boolean drunk,Random random){
         enemy.setAttackCooldown(enemy.getAttackCooldown()+dt);
         Tower tower = checkCollision(enemy,graph);
+        float[] test = enemy.getMovement();
+        System.out.println("Movement: "+test[0]+" "+test[1]);
         if(tower != null && (!drunk || random.nextDouble()<0.3 || tower.getType() == TowerType.BARRICADE)){  //Attack
             float[] move = {0,0};
             enemy.setMovement(move);

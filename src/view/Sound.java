@@ -23,7 +23,6 @@ public class Sound {
 
             audioInputStream.close();
         } catch (Exception e) {
-            e.printStackTrace();
         } finally {
             try {
                 in.close();
@@ -32,20 +31,20 @@ public class Sound {
     }
 
     public void start() {
-        if(clip != null) {
+        if (clip != null) {
             clip.setFramePosition(0);
             clip.start();
         }
     }
 
     public void stop() {
-        if(clip != null) {
+        if (clip != null) {
             clip.stop();
         }
     }
 
     public void loop(int count) {
-        if(clip != null) {
+        if (clip != null) {
             clip.loop(count);
         }
     }
