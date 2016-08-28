@@ -54,7 +54,7 @@ public class World {
 
         //connectAll(graph);
 
-        //this.eH = new EnemyHandler(graph);
+        this.eH = new EnemyHandler(graph);
         this.pH = new ProjectileHandler(this);
         this.tH = new TowerHandler(this);
 
@@ -110,7 +110,7 @@ public class World {
         if(isDrunk){
             drunk = true;
         }
-        //eH.handleEnemies(dt,enemyList,getIDOfMainTower(),graph, recalculate, drunk);
+        eH.handleEnemies(dt,enemyList,getIDOfMainTower(),graph, recalculate, drunk);
         pH.handleProjectiles(dt, projectileList, enemyList);
         tH.handleTowers(dt, towerList, enemyList, this.mainTower);
     }
