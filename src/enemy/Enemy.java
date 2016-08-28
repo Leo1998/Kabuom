@@ -26,6 +26,7 @@ public class Enemy extends GameObject {
         this.enemyType = enemyType;
         attackCooldown = 0;
         this.pos = pos;
+        this.movement = new float[]{0f,0f};
     }
 
     /**
