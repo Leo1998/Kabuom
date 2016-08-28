@@ -112,9 +112,11 @@ public class GameView extends View{
                         float oY = blockCoordToViewCoordY(j);
                         float oW = w2 / world.getBlocks().length;
                         float oH = h2 / world.getBlocks()[i].length;
-                        float angle = 0;
-                        if (tower.getTarget() != null) {
+
+                        float angle = (float)Math.PI;
+                        if (tower.getTarget() != null && tower.getType().canShoot()) {
                             angle = Utility.calculateAngleBetweenTwoPoints(oX, oY, blockCoordToViewCoordX(tower.getTarget().getX()), blockCoordToViewCoordY(tower.getTarget().getY()));
+                            System.out.println(Utility.calculateAngleBetweenTwoPoints(oX, oY, blockCoordToViewCoordX(tower.getTarget().getX()), blockCoordToViewCoordY(tower.getTarget().getY())));
                         }
                         batch.draw(ViewManager.getTexture(tower.getType().getTextureID()), oX, oY, oW, oH, oW / 2, oH / 2, (float) (angle + Math.PI), 1f, 1f, 1f, 1f);
                     }
@@ -168,11 +170,11 @@ public class GameView extends View{
      * Rechnet die Block Koordinate in eine View Koordinate um
      */
     private float blockCoordToViewCoordX(float coord){
-        return w2/(float)world.getBlocks().length * coord+ (originWidth*7f/8f-w2) / 2f;
+        return w2/world.getBlocks().length * coord+ ((originWidth*7f/8f)-w2) / 2f;
     }
 
     private float blockCoordToViewCoordY(float coord){
-        return h2/(float)world.getBlocks()[0].length * coord+ (originHeight-h2) / 2f;
+        return h2/world.getBlocks()[0].length * coord+ (originHeight-h2) / 2f;
     }
 
     @Override
