@@ -17,7 +17,9 @@ public class Sound {
             audioInputStream.read(audio, 0, size);
 
             this.clip = (Clip) AudioSystem.getLine(info);
-            this.clip.open(af, audio, 0, size);
+            if(clip != null) {
+                this.clip.open(af, audio, 0, size);
+            }
 
             audioInputStream.close();
         } catch (Exception e) {
@@ -30,16 +32,22 @@ public class Sound {
     }
 
     public void start() {
-        clip.setFramePosition(0);
-        clip.start();
+        if(clip != null) {
+            clip.setFramePosition(0);
+            clip.start();
+        }
     }
 
     public void stop() {
-        clip.stop();
+        if(clip != null) {
+            clip.stop();
+        }
     }
 
     public void loop(int count) {
-        clip.loop(count);
+        if(clip != null) {
+            clip.loop(count);
+        }
     }
 
 }

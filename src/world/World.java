@@ -3,14 +3,17 @@ package world;
 import enemy.Enemy;
 import enemy.EnemyHandler;
 import enemy.EnemyType;
-import graph.*;
+import graph.Edge;
+import graph.Graph;
+import graph.Vertex;
 import model.GameObject;
 import projectile.Projectile;
 import projectile.ProjectileHandler;
-import tower.*;
+import tower.Tower;
+import tower.TowerHandler;
+import tower.TowerType;
 
 import java.util.ArrayList;
-import java.util.Random;
 
 public class World {
 
@@ -53,7 +56,7 @@ public class World {
 
         connectAll(blocks,graph);
 
-        //this.eH = new EnemyHandler(graph);
+        this.eH = new EnemyHandler(graph,blocks);
         this.pH = new ProjectileHandler();
         this.tH = new TowerHandler();
 
@@ -117,7 +120,7 @@ public class World {
         if(isDrunk){
             drunk = true;
         }
-        //eH.handleEnemies(dt,enemyList,getIDOfMainTower(),graph, recalculate, drunk);
+        eH.handleEnemies(dt,enemyList,getIDOfMainTower(),graph, recalculate, drunk);
         pH.handleProjectiles(dt, projectileList, enemyList);
         tH.handleTowers(dt, towerList, enemyList, this.mainTower);
     }
