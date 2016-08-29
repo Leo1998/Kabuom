@@ -3,6 +3,7 @@ package enemy;
 import graph.*;
 import graph.List;
 import graph.Queue;
+import org.lwjgl.Sys;
 import tower.Tower;
 import tower.TowerType;
 import world.World;
@@ -91,13 +92,13 @@ public class EnemyHandler {
         }
         enemy.setAttackCooldown(enemy.getAttackCooldown()+dt);
         Tower tower = checkCollision(enemy,graph);
-        float[] test = enemy.getMovement();
-        //System.out.println("Movement: "+test[0]+" "+test[1]);
         if(tower != null && (!drunk || random.nextDouble()<0.3 || tower.getType() == TowerType.BARRICADE)){  //Attack
             float[] move = {0,0};
             enemy.setMovement(move);
+            System.out.println(tower.getHP());
             if(enemy.getAttackCooldown() > enemy.getAttackSpeed()){
                 tower.setHp(tower.getHp()-enemy.getDamage());
+                enemy.setAttackCooldown(0);
             }
         }else{              //Move
             move(enemy,enemy.getSpeed()*dt,graph,dt);
@@ -123,9 +124,7 @@ public class EnemyHandler {
                 moveableDist = moveableDist - dist;
                 enemy.setPos(graph.getVertex(enemy.getPath().front().getID()));
                 enemy.getPath().dequeue();
-                if (checkCollision(enemy, graph) != null) {
-                    move(enemy, moveableDist, graph, dt);
-                }
+                move(enemy, moveableDist, graph, dt);
             } else {
                 float q = moveableDist / dist;
                 float nX = pos[0] + ((target[0] - pos[0]) * q);
@@ -146,22 +145,24 @@ public class EnemyHandler {
      * @return Ist null, wenn der Gegner mit keinem Turm kollidiert. Gibt sonst den Turm mit den der Gegner kollidiert zurück
      */
     private Tower checkCollision(Enemy enemy,Graph graph){
-        Tower collidingTower = null;
-        Tower currTower = (Tower)enemy.getPos().getContent();
-        if(currTower != null && currTower.getHP() > 0){
-            if(calcDist(currTower.getX(),currTower.getY(),enemy.getX(),enemy.getY()) < currTower.getRadius() + enemy.getRadius()){
-                collidingTower = currTower;
-            }
-        }
-        if(enemy.getPath().front()!= null) {
-            currTower = (Tower) graph.getVertex(enemy.getPath().front().getID()).getContent();
-            if (currTower != null && currTower.getHP() > 0) {
-                if (calcDist(currTower.getX(), currTower.getY(), enemy.getX(), enemy.getY()) < currTower.getRadius() + enemy.getRadius()) {
-                    collidingTower = currTower;
+        List<Vertex> checkVertex = graph.getNeighbours(enemy.getPos());
+        checkVertex.append(enemy.getPos());
+        checkVertex.toFirst();
+        while (checkVertex.hasAccess()){
+            Tower checkTower = (Tower)checkVertex.getContent().getContent();
+            if(checkTower != null){
+                float dist = calcDist(enemy.getX(),enemy.getY(),checkTower.getX(),checkTower.getY());
+                if(dist < enemy.getRadius()+checkTower.getRadius()){
+                    return checkTower;
                 }
             }
+            checkVertex.next();
         }
-        return collidingTower;
+        return null;
+    }
+
+    private float calcDist(float x1,float y1,float x2,float y2){
+        return (new Double(Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)))).floatValue();
     }
 
     /**
@@ -378,10 +379,6 @@ public class EnemyHandler {
                 }
             }
         }
-    }
-
-    private float calcDist(float x1,float y1,float x2,float y2){
-        return (new Double(Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)))).floatValue();
     }
 
     private void calcAdoptedGraph(Graph graph,Vertex<Tower>[][] blocks){

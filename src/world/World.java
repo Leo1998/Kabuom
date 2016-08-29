@@ -62,7 +62,7 @@ public class World {
         this.mainTower = new Tower(TowerType.MAINTOWER, 1, mainTowerCoordX, mainTowerCoordY , 8);
         this.setTowerInBlocks((int) mainTower.getX(),(int) mainTower.getY(), mainTower);
 
-        this.spawnEnemy(2, 2, EnemyType.Tank);
+        this.spawnEnemy(2, 2, EnemyType.Cheap);
     }
 
     public void spawnEnemy(float x, float y, EnemyType type) {

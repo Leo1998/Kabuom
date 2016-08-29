@@ -8,7 +8,7 @@ public enum EnemyType {
     Damage (0.2f,150,0.8f,60,0.5f,"Damage", "test0.png"),
     Super (0.1f,500,1,70,0.5f,"Super", "test0.png"),
     Troll (1,500,0.2f,0,0.5f,"Troll", "test0.png"),
-    Cheat (0,Integer.MAX_VALUE,Float.MAX_VALUE,Integer.MAX_VALUE,1,"Cheat", "test0.png");
+    Cheat (0,Integer.MAX_VALUE,Float.MAX_VALUE,Integer.MAX_VALUE,0.001f,"Cheat", "test0.png");
 
     private final float attackSpeed;
     private final int maxHP;
