@@ -8,7 +8,7 @@ public class Utility {
 
     public boolean gameObjectIsCollidingWithGameObject(GameObject o1, GameObject o2){
         if(o1!= null && o2 != null){
-            return new Vector2((o1.getX()) - (o2.getX()), (o1.getY()) - (o2.getY())).getLength() >= o1.getRadius() + o2.getRadius();
+            return new Vector2((o1.getX()) - (o2.getX()), (o1.getY()) - (o2.getY())).getLength() <= o1.getRadius() + o2.getRadius();
         }else{
             throw new IllegalArgumentException();
         }

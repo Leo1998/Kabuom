@@ -65,11 +65,11 @@ public class GameView extends View{
          if(o instanceof Enemy){
              Enemy e = (Enemy) o;
 
-             batch.draw(ViewManager.getTexture(e.getEnemyType().getTextureID()), blockCoordToViewCoordX(e.getX()),blockCoordToViewCoordY(e.getY()),e.getRadius(),e.getRadius());
+             batch.draw(ViewManager.getTexture(e.getEnemyType().getTextureID()), blockCoordToViewCoordX(e.getX()),blockCoordToViewCoordY(e.getY()),(h2/world.getBlocks().length),h2/world.getBlocks().length);
         } else if(o instanceof Projectile){
              Projectile p = (Projectile) o;
 
-             batch.draw(ViewManager.getTexture(p.getProjectileType().getTextureID()), p.getX(),p.getY(),p.getRadius(),p.getRadius());
+             batch.draw(ViewManager.getTexture(p.getProjectileType().getTextureID()), blockCoordToViewCoordX(p.getX()), blockCoordToViewCoordY(p.getY()),h2/world.getBlocks().length,h2/world.getBlocks().length);
         }
     }
 
@@ -177,6 +177,14 @@ public class GameView extends View{
         return h2/world.getBlocks()[0].length * coord+ (originHeight-h2) / 2f;
     }
 
+    private float viewCoordToBlockCoordX(float vx){
+        return w2 / world.getBlocks().length / (vx - (originWidth * 7/8 - w2) / 2);
+    }
+
+    private float viewCoordToBlockCoordY(float vy){
+        return h2 / world.getBlocks()[0].length / (vy - (originHeight - h2) / 2);
+    }
+
     @Override
     public List<ViewComponent> getComponents() {
         return super.getComponents();
@@ -191,9 +199,10 @@ public class GameView extends View{
                 viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);
                 setTower = null;
             }
-            if (getBlockIDOfMouse(mouseX, mouseY) != null) {
+            Vector2 mouse = getBlockIDOfMouse(mouseX, mouseY);
+            if (mouse != null) {
                 if (button == 0) {
-                    if (world.setTowerInBlocks((int) getBlockIDOfMouse(mouseX, mouseY).getCoords()[0], (int) getBlockIDOfMouse(mouseX, mouseY).getCoords()[1], (setTower))) {
+                    if (world.setTowerInBlocks((int) mouse.getCoords()[0], (int) mouse.getCoords()[1], (setTower))) {
                         viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);
                         setTower = null;
                     }

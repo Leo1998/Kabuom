@@ -5,6 +5,7 @@ import graph.List;
 import graph.Queue;
 import tower.Tower;
 import tower.TowerType;
+import world.World;
 
 import java.util.*;
 
@@ -13,10 +14,12 @@ public class EnemyHandler {
 
     private Graph adoptedGraph;
     private boolean changed;
+    private World world;
 
-    public EnemyHandler(Graph graph,Vertex<Tower>[][] blocks) {
+    public EnemyHandler(Graph graph,Vertex<Tower>[][] blocks,World world) {
         calcAdoptedGraph(graph,blocks);
         changed = true;
+        this.world = world;
     }
 
 
@@ -30,7 +33,8 @@ public class EnemyHandler {
      * @param drunk Ist true, wenn Drunk aktiv ist
      */
     public void handleEnemies(float dt, ArrayList<Enemy> enemies,String targetID, Graph graph, boolean recalculate,boolean drunk){
-        for(Enemy currEnemy:enemies){
+        for(int i = 0; i < enemies.size(); i++){
+            Enemy currEnemy = enemies.get(i);
             if (currEnemy.getHp() <= 0){
                 enemies.remove(currEnemy);
             }
@@ -42,7 +46,8 @@ public class EnemyHandler {
             }
             calcAllPaths(enemies, targetID);
         }else {
-            for(Enemy currEnemy:enemies){
+            for(int i = 0; i < enemies.size(); i++){
+                Enemy currEnemy = enemies.get(i);
                 if(currEnemy.getPath().isEmpty() || recalculate){
                     currEnemy.getPath().enqueue(getRandomNeighbour(currEnemy.getPos(),random));
                 }
@@ -81,10 +86,13 @@ public class EnemyHandler {
      * @param enemy Gegner, für den dies entschieden werden soll
      */
     private void handleEnemy(float dt,Graph graph,Enemy enemy,boolean drunk,Random random){
+        if(enemy.getHp()<=0){
+            world.removeGameObject(enemy);
+        }
         enemy.setAttackCooldown(enemy.getAttackCooldown()+dt);
         Tower tower = checkCollision(enemy,graph);
         float[] test = enemy.getMovement();
-        System.out.println("Movement: "+test[0]+" "+test[1]);
+        //System.out.println("Movement: "+test[0]+" "+test[1]);
         if(tower != null && (!drunk || random.nextDouble()<0.3 || tower.getType() == TowerType.BARRICADE)){  //Attack
             float[] move = {0,0};
             enemy.setMovement(move);

@@ -21,7 +21,7 @@ public class ProjectileHandler {
         for(int i = 0;i < projectiles.size();i++) {
             Projectile p = projectiles.get(i);
 
-            //System.out.println(p.getTargetX() + "  " + p.getTargetY());
+            //System.out.println(p.getX() + "  " + p.getY());
 
             if(p.getDistance() < p.getRange()){
                 p.setDistance(p.getDistance() + p.getSpeed() * dt);
@@ -31,19 +31,26 @@ public class ProjectileHandler {
                 world.removeGameObject(p);
             }
 
-            //double angle = Math.atan2(p.getTargetY() - p.getY(), p.getTargetX() - p.getX());
-            //double angle = Math.atan2((p.getY() - p.getTargetY()), (p.getX() - p.getTargetX()));
-            double angle = Utility.calculateAngleBetweenTwoPoints(p.getX(), p.getY(), p.getTargetX(), p.getTargetY());
 
-            System.out.println(angle);
+            p.setX(p.getX() + p.getDir().getCoords()[0] * p.getSpeed() * dt);
+            p.setY(p.getY() + p.getDir().getCoords()[1] * p.getSpeed() * dt);
+        }
 
-            angle = 3.14 / 2f;
-
-            p.setX(p.getX() + (float) (Math.sin(angle) * p.getSpeed() * dt));
-            p.setY(p.getY() + (float) (Math.cos(angle) * p.getSpeed() * dt));
-
-            //System.out.println((float) (Math.cos(angle) * p.getSpeed() * dt));
-            //System.out.println((float) (Math.sin(angle) * p.getSpeed() * dt));
+        for(int i = 0;i < projectiles.size();i++){
+            for(int j = 0;j < enemies.size();j++){
+                //falls projektil mit gegner kollidiert und der gegner noch nicht getroffen ist
+                if(utility.gameObjectIsCollidingWithGameObject(projectiles.get(i),enemies.get(j)) && !projectiles.get(i).getHitEnemies().contains(enemies.get(j))){
+                    //verringere die hp des gegners, verringere die hp des projektils, füge gegner zu getroffenen hinzu
+                    enemies.get(j).setHp(enemies.get(j).getHp() - projectiles.get(i).getImpactDamage());
+                    projectiles.get(i).setHp(projectiles.get(i).getHp()-1);
+                    projectiles.get(i).addToHitEnemies(enemies.get(j));
+                    //falls hp des projektils == 0 ist
+                    if(projectiles.get(i).getHp()==0){
+                        //lösche das projektil
+                        world.removeGameObject(projectiles.get(i));
+                    }
+                }
+            }
         }
 
 

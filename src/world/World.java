@@ -55,7 +55,7 @@ public class World {
 
         connectAll(blocks, graph);
 
-        this.eH = new EnemyHandler(graph, blocks);
+        this.eH = new EnemyHandler(graph, blocks,this);
         this.pH = new ProjectileHandler(this);
         this.tH = new TowerHandler(this);
 
@@ -140,6 +140,8 @@ public class World {
      */
     public boolean setTowerInBlocks(int i, int j, Tower setTower){
         if(!isTowerAtCoords(i,j)&& setTower != null){
+            setTower.setX(i);
+            setTower.setY(j);
             blocks[i][j].setContent(setTower);
             objects.add(setTower);
             return true;

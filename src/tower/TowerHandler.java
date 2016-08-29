@@ -21,9 +21,8 @@ public class TowerHandler {
         for (int i = 0; i < towers.size(); i++) {
             Tower curTower = towers.get(i);
             if(curTower.getType().canShoot()) {
-                if (curTower.getTarget() == null) {
-                    aim(curTower, enemies);
-                }
+                aim(curTower, enemies);
+
                 if (curTower.getTarget() != null && curTower.getCooldown() <= 0) {
                     shoot(curTower);
                 }
@@ -67,10 +66,12 @@ public class TowerHandler {
 
         ProjectileType projectile = tower.getProjectile();
 
-        //double alpha = Math.atan((towerEnemyDistanceY) / (towerEnemyDistanceX));
-        double alpha = Utility.calculateAngleBetweenTwoPoints(enemyX, enemyY, towerX, towerY);
+        //System.out.println(enemyX + "   " + enemyY);
 
-        Projectile p = new Projectile(projectile, tower.getLevel(),(float) Math.cos(alpha)*tower.getRadius()+towerX,(float) Math.sin(alpha)*tower.getRadius()+towerY,enemyX,enemyY);
+        Vector2 vec = new Vector2(enemyX - towerX, enemyY - towerY);
+        vec.normalize();
+
+        Projectile p = new Projectile(projectile, tower.getLevel(),towerX,towerY,vec);
 
         world.spawnProjectile(p);
 

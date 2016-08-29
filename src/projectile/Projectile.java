@@ -2,23 +2,25 @@ package projectile;
 
 import enemy.Enemy;
 import model.GameObject;
+import utility.Vector2;
 
 import java.util.ArrayList;
 
 public class Projectile extends GameObject{
     private ProjectileType projectileType;
     private int impactDamage;
-    private float targetX,targetY,distance,speed,range;
+    private float distance,speed,range;
+    private Vector2 dir;
     private ArrayList<Enemy> hitEnemies; // Zur Lösung von Kollisionsproblemen beim durchdringen von Gegnern.
 
-    public Projectile(ProjectileType projectileType, int level, float x, float y, float targetX, float targetY) {
+    public Projectile(ProjectileType projectileType, int level, float x, float y, Vector2 dir) {
         super(projectileType.getMaxHP(), level, projectileType.getName(), x, y,projectileType.getRadius(),projectileType.getTextureID());
         this.projectileType = projectileType;
         impactDamage = projectileType.getImpactDamage();
         speed = projectileType.getSpeed();
         range = projectileType.getRange();
-        this.targetX = targetX;
-        this.targetY = targetY;
+        this.dir = dir;
+        this.hitEnemies = new ArrayList<>();
     }
 
     /**
@@ -42,19 +44,10 @@ public class Projectile extends GameObject{
         return range;
     }
 
-    /**
-     * Die Anfrage liefert die X-Position des Projektils als float.
-     */
-    public float getTargetX(){
-        return targetX;
+    public Vector2 getDir(){
+        return dir;
     }
 
-    /**
-     * Die Anfrage liefert die Y-Position des Projektils als float.
-     */
-    public float getTargetY(){
-        return targetY;
-    }
 
     /**
      * Die Anfrage liefert die Distanz zum Ziel des Projektils als float.
