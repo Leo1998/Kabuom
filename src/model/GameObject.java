@@ -1,6 +1,6 @@
 package model;
 
-public class GameObject {
+public abstract class GameObject {
     private int hp,maxHp,level;
     private String name;
     private float x,y,radius;

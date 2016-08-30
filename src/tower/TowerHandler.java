@@ -20,14 +20,18 @@ public class TowerHandler {
     public void handleTowers(float dt, ArrayList<Tower> towers, ArrayList<Enemy> enemies, Tower mainTower) {
         for (int i = 0; i < towers.size(); i++) {
             Tower curTower = towers.get(i);
-            if(curTower.getType().canShoot()) {
-                aim(curTower, enemies);
+            if(curTower.getHp() <= 0){
+                world.removeGameObject(curTower);
+            }else {
+                if (curTower.getType().canShoot()) {
+                    aim(curTower, enemies);
 
-                if (curTower.getTarget() != null && curTower.getCooldown() <= 0) {
-                    shoot(curTower);
-                }
-                if (curTower.getCooldown() >= 0) {
-                    curTower.setCooldown(curTower.getCooldown() - dt);
+                    if (curTower.getTarget() != null && curTower.getCooldown() <= 0) {
+                        shoot(curTower);
+                    }
+                    if (curTower.getCooldown() >= 0) {
+                        curTower.setCooldown(curTower.getCooldown() - dt);
+                    }
                 }
             }
         }

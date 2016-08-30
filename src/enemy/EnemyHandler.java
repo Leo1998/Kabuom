@@ -83,20 +83,19 @@ public class EnemyHandler {
     private void handleEnemy(float dt,Graph graph,Enemy enemy,boolean drunk,Random random){
         if(enemy.getHp()<=0){
             world.removeGameObject(enemy);
-            return;
-        }
-        enemy.setAttackCooldown(enemy.getAttackCooldown()+dt);
-        Tower tower = checkCollision(enemy,graph);
-        if(tower != null && (!drunk || random.nextDouble()<0.3 || tower.getType() == TowerType.BARRICADE)){  //Attack
-            float[] move = {0,0};
-            enemy.setMovement(move);
-            //System.out.println(tower.getHP());
-            if(enemy.getAttackCooldown() > enemy.getAttackSpeed()){
-                tower.setHp(tower.getHp()-enemy.getDamage());
-                enemy.setAttackCooldown(0);
+        }else {
+            enemy.setAttackCooldown(enemy.getAttackCooldown() + dt);
+            Tower tower = checkCollision(enemy, graph);
+            if (tower != null && (!drunk || random.nextDouble() < 0.3 || tower.getType() == TowerType.BARRICADE)) {  //Attack
+                float[] move = {0, 0};
+                enemy.setMovement(move);
+                if (enemy.getAttackCooldown() > enemy.getAttackSpeed()) {
+                    tower.setHp(tower.getHp() - enemy.getDamage());
+                    enemy.setAttackCooldown(0);
+                }
+            } else {              //Move
+                move(enemy, enemy.getSpeed() * dt, graph, dt);
             }
-        }else{              //Move
-            move(enemy,enemy.getSpeed()*dt,graph,dt);
         }
     }
 
@@ -321,15 +320,15 @@ public class EnemyHandler {
 
     private void changedTower(Vertex<VertexData> pos,Tower tower){
         VertexData content = pos.getContent();
-        float addDPS;
-        float dps = tower.getProjectile().getImpactDamage() * tower.getFrequency();
-        if(content == null){
-            addDPS = dps;
+        float addDPS, dps;
+        if(tower == null){
+            dps = 0;
         }else{
-            addDPS = dps - pos.getContent().dps;
+            dps = tower.getProjectile().getImpactDamage() * tower.getFrequency();
         }
-        pos.getContent().getFromTower(tower);
-        DFS(pos,pos.getContent().x,pos.getContent().y,pos.getContent().attackRange,addDPS);
+        addDPS = dps - content.dps;
+        content.getFromTower(tower);
+        DFS(pos,content.x,content.y,content.attackRange,addDPS);
     }
 
     private void DFS(Vertex<VertexData> currVertex,float startX,float startY,float range,float dps){
@@ -412,22 +411,14 @@ public class EnemyHandler {
         nVList.toFirst();
         oVList.toFirst();
         while (nVList.hasAccess()){
-            while (nVList.getContent().getID() != oVList.getContent().getID()){
-                adoptedGraph.removeVertex(oVList.getContent());
-                oVList.remove();
-            }
             Tower currTower = (Tower) nVList.getContent().getContent();
             VertexData currData = (VertexData) oVList.getContent().getContent();
-            if(!currData.name.equals(currTower.getName())){
+            if((currData.name.equals("dummy") && currTower == null) || !currData.name.equals(currTower.getName())){
                 vQueue.enqueue(nVList.getContent());
                 vQueue.enqueue(oVList.getContent());
             }
             oVList.next();
             nVList.next();
-        }
-        while (oVList.hasAccess()){
-            adoptedGraph.removeVertex(oVList.getContent());
-            oVList.remove();
         }
         updateData(vQueue,graph);
     }

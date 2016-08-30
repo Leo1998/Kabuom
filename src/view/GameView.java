@@ -108,7 +108,7 @@ public class GameView extends View{
                 int y0 = (int) blockCoordToViewCoordY((world.getBlocks()[0].length - block.getCoords()[1]));
 
                 String l1 = t.getName();
-                String l2 = "Health: " + t.getHP();
+                String l2 = "Health: " + t.getHp();
 
                 int w = Math.max(ViewManager.font.getWidth(l1), ViewManager.font.getWidth(l2));
                 int h = ViewManager.font.getLineHeight() * 2;
