@@ -34,12 +34,6 @@ public class EnemyHandler {
      * @param drunk Ist true, wenn Drunk aktiv ist
      */
     public void handleEnemies(float dt, ArrayList<Enemy> enemies,String targetID, Graph graph, boolean recalculate,boolean drunk){
-        for(int i = 0; i < enemies.size(); i++){
-            Enemy currEnemy = enemies.get(i);
-            if (currEnemy.getHp() <= 0){
-                enemies.remove(currEnemy);
-            }
-        }
         Random random = new Random();
         if(!drunk) {
             if (recalculate) {
