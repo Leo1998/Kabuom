@@ -18,6 +18,7 @@ public class Tower extends GameObject{
         this.cost = type.getCost();
         this.type = type;
         this.frequency = type.getFrequency();
+        this.HP = type.getHP();
     }
 
     public int getAttackRadius() {
