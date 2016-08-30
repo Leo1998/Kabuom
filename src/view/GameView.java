@@ -32,7 +32,7 @@ public class GameView extends View{
     public GameView(float width, float height, final ViewManager viewManager, World world){
         super(width,height, viewManager);
 
-        blockTexture = ViewManager.getTexture("test2.png");
+        blockTexture = ViewManager.getTexture("block1.png");
         towerButtonBackgroundTexture = ViewManager.getTexture("test1.png");
 
         float towerButtonX = width * 7/8;
@@ -97,6 +97,27 @@ public class GameView extends View{
                 batch.draw(blockTexture,blockCoordToViewCoordX(i), blockCoordToViewCoordY(j), w2/world.getBlocks().length, h2/world.getBlocks()[i].length);
             }
         }
+        Vector2 block = getBlockIDOfMouse(Mouse.getX(), Mouse.getY());
+        if (block != null) {
+            batch.draw(null,blockCoordToViewCoordX((int)block.getCoords()[0]), blockCoordToViewCoordY((int)(world.getBlocks()[0].length - block.getCoords()[1])), w2/world.getBlocks().length, h2/world.getBlocks()[0].length, 0, 0, 0, 1f, 1f, 1f, 0.45f);
+
+            Tower t = world.getBlocks()[(int)block.getCoords()[0]][(int)(world.getBlocks()[0].length - block.getCoords()[1])].getContent();
+
+            if (t != null) {
+                int x0 = (int) blockCoordToViewCoordX( block.getCoords()[0]);
+                int y0 = (int) blockCoordToViewCoordY((world.getBlocks()[0].length - block.getCoords()[1]));
+
+                String l1 = t.getName();
+                String l2 = "Health: " + t.getHP();
+
+                int w = Math.max(ViewManager.font.getWidth(l1), ViewManager.font.getWidth(l2));
+                int h = ViewManager.font.getLineHeight() * 2;
+
+                batch.draw(ViewManager.getTexture("viewTextures/mainButton.png"), x0, y0, w, h);
+                ViewManager.font.drawText(batch, l1, x0, y0);
+                ViewManager.font.drawText(batch, l2, x0, y0 + (h / 2));
+            }
+        }
 
         /**
          * Zeichnet die Enemies und Projectiles
@@ -123,10 +144,6 @@ public class GameView extends View{
                 }
             }
 
-
-        //batch.draw(ViewManager.world1,originWidth * 7 / 8 / 2- w2 / 2, 0, w2, h2);
-
-
         /**
          * Alles Was mit dem Towersetzen zu tun hat
          */
@@ -135,6 +152,7 @@ public class GameView extends View{
             setTower.setY(originHeight - Mouse.getY() - setTower.getRadius() / 2);
             setTower.setRadius(h2/world.getBlocks().length);
             batch.draw(ViewManager.getTexture(setTower.getType().getTextureID()), setTower.getX(),setTower.getY(), setTower.getRadius(), setTower.getRadius());
+
         }
     }
 

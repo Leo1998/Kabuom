@@ -47,6 +47,7 @@ public class ViewManager {
             loadTexture("Flamethrower.png");
             loadTexture("FlamethrowerGrün.png");
             loadTexture("FlamethrowerRot.png");
+            loadTexture("block1.png");
 
         } catch(IOException e) {
             e.printStackTrace();
@@ -147,7 +148,7 @@ public class ViewManager {
 
             Display.setDisplayMode(targetDisplayMode);
             Display.setFullscreen(fullscreen);
-            Display.setResizable(false);
+            Display.setResizable(true);
             Display.setTitle("Kabuom! Tower Defense");
             Display.setVSyncEnabled(true);
 

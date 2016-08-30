@@ -21,9 +21,11 @@ public class World {
     private Vertex<Tower>[][] blocks;
     private int width, height, difficulty;
     private float timePassed;
+
     private EnemyHandler eH;
     private ProjectileHandler pH;
     private TowerHandler tH;
+
     private Tower mainTower;
 
     /**
@@ -76,7 +78,18 @@ public class World {
     public void removeGameObject(GameObject o) {
         this.objects.remove(o);
 
-        //TODO: handle tower remove
+        if (o instanceof Tower) {
+            for(int i = 0 ; i< this.blocks.length ; i++ ){
+                for(int j = 0 ; j< this.blocks[i].length ; j++ ) {
+                    Vertex v = blocks[i][j];
+
+                    if (v.getContent() == o) {
+                        v.setContent(null);
+                        newTurretSet = true;
+                    }
+                }
+            }
+        }
     }
 
     private void connectAll(Vertex[][] blocks,Graph graph) {
