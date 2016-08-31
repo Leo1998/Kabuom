@@ -13,6 +13,8 @@ import projectile.ProjectileType;
 import tower.*;
 
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.SynchronousQueue;
 
 public class World {
 
@@ -28,6 +30,8 @@ public class World {
 
     private Tower mainTower;
 
+    private float countdown;
+
     /**
      * Attribute für den EnemyHandler
      */
@@ -39,6 +43,7 @@ public class World {
         this.height = height;
         this.difficulty = difficulty;
         timePassed = 0;
+        countdown = 0;
 
         int mainTowerCoordX = 10;
         int mainTowerCoordY = height -1;
@@ -63,8 +68,6 @@ public class World {
 
         this.mainTower = new Tower(TowerType.MAINTOWER, 1, mainTowerCoordX, mainTowerCoordY , 8);
         this.setTowerInBlocks((int) mainTower.getX(),(int) mainTower.getY(), mainTower);
-
-        this.spawnEnemy(2, 2, EnemyType.Cheap);
     }
 
     public void spawnEnemy(float x, float y, EnemyType type) {
@@ -116,6 +119,15 @@ public class World {
      * @param dt
      */
     public void update(float dt){
+        countdown = countdown + dt;
+        timePassed = timePassed + dt;
+        if(countdown >= 1){
+            countdown=-1;
+            Random random = new Random();
+            for(float i = 0;i < timePassed; i= i+7.5f) {
+                this.spawnEnemy(random.nextInt(width-1), 0, EnemyType.Cheap);
+            }
+        }
         ArrayList<Enemy> enemyList = new ArrayList<Enemy>();
         ArrayList<Projectile> projectileList = new ArrayList<Projectile>();
         ArrayList<Tower> towerList = new ArrayList<Tower>();
