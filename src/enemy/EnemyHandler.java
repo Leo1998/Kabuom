@@ -16,6 +16,7 @@ public class EnemyHandler {
     private Graph adoptedGraph;
     private boolean changed;
     private World world;
+    private final float dpsMultiplier = 5;
 
     public EnemyHandler(Graph graph,Vertex<Tower>[][] blocks,World world) {
         calcAdoptedGraph(graph,blocks);
@@ -324,7 +325,7 @@ public class EnemyHandler {
         if(tower == null){
             dps = 0;
         }else{
-            dps = tower.getProjectile().getImpactDamage() * tower.getFrequency();
+            dps = (tower.getProjectile().getImpactDamage() * tower.getFrequency())+dpsMultiplier;
         }
         addDPS = dps - content.dps;
         content.getFromTower(tower);
@@ -413,7 +414,13 @@ public class EnemyHandler {
         while (nVList.hasAccess()){
             Tower currTower = (Tower) nVList.getContent().getContent();
             VertexData currData = (VertexData) oVList.getContent().getContent();
-            if((currData.name.equals("dummy") && currTower == null) || !currData.name.equals(currTower.getName())){
+            System.out.println((currData == null)+" "+(currTower == null));
+            if(currTower == null){
+                if(currData.name.equals("dummy")) {
+                    vQueue.enqueue(nVList.getContent());
+                    vQueue.enqueue(oVList.getContent());
+                }
+            }else if(currData.name.equals(currTower.getName())){
                 vQueue.enqueue(nVList.getContent());
                 vQueue.enqueue(oVList.getContent());
             }
@@ -450,7 +457,7 @@ public class EnemyHandler {
 
         private void getFromTower(Tower tower){
             if(tower != null) {
-                dps = tower.getProjectile().getImpactDamage() / tower.getFrequency();
+                dps = (tower.getProjectile().getImpactDamage() / tower.getFrequency())*dpsMultiplier;
                 attackRange = tower.getAttackRadius();
                 name = tower.getName();
             }else{
