@@ -54,6 +54,33 @@ public class ViewManager {
             loadTexture("Piercingprojektil.png");
             loadTexture("projektil.png");
             loadTexture("flame.png");
+            //Gegner
+            loadTexture("enemyTextures/Gegner1SLinks.png");
+            loadTexture("enemyTextures/Gegner1SLinksHit.png");
+            loadTexture("enemyTextures/Gegner1SRechts.png");
+            loadTexture("enemyTextures/Gegner1SRechtsHit.png");
+            loadTexture("enemyTextures/Gegner2SLinks.png");
+            loadTexture("enemyTextures/Gegner2SLinksHit.png");
+            loadTexture("enemyTextures/Gegner2SRechts.png");
+            loadTexture("enemyTextures/Gegner2SRechtsHit.png");
+            loadTexture("enemyTextures/Gegner3SLinks.png");
+            loadTexture("enemyTextures/Gegner3SLinksHit.png");
+            loadTexture("enemyTextures/Gegner3SRechts.png");
+            loadTexture("enemyTextures/Gegner3SRechtsHit.png");
+            loadTexture("enemyTextures/Endgegner1SLinks.png");
+            loadTexture("enemyTextures/Endgegner1SLinksHit.png");
+            loadTexture("enemyTextures/Endgegner1SRechts.png");
+            loadTexture("enemyTextures/Endgegner1SRechtsHit.png");
+            loadTexture("enemyTextures/Endgegner2SLinks.png");
+            loadTexture("enemyTextures/Endgegner2SLinksHit.png");
+            loadTexture("enemyTextures/Endgegner2SRechts.png");
+            loadTexture("enemyTextures/Endgegner2SRechtsHit.png");
+            loadTexture("enemyTextures/Endgegner3SLinks.png");
+            loadTexture("enemyTextures/Endgegner3SLinksHit.png");
+            loadTexture("enemyTextures/Endgegner3SRechts.png");
+            loadTexture("enemyTextures/Endgegner3SRechtsHit.png");
+
+
 
         } catch(IOException e) {
             e.printStackTrace();
