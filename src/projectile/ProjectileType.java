@@ -1,7 +1,7 @@
 package projectile;
 
 public enum ProjectileType {
-
+    
     BULLET (1,0.05f,"BULLET",5,50,10, "missile.png"),
     MISSILE (1,0.1f,"MISSILE",2,50,50, "missile.png"),
     FLAME (1,0.1f,"FLAME",3,2,50, "test1.png"),
