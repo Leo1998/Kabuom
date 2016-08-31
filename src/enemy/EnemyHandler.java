@@ -167,7 +167,7 @@ public class EnemyHandler {
     private void calcAllPaths(ArrayList<Enemy> enemies,String targetID) {
         ArrayList<Queue<Enemy>> qEList = new ArrayList<>();
         for(Enemy currEnemy:enemies){
-            if(currEnemy.getPath() == null || changed){
+            if(currEnemy.getPath() == null || changed || currEnemy.getPath().isEmpty()){
                 addToList(qEList,currEnemy);
             }
         }
