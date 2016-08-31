@@ -29,34 +29,41 @@ public class GameView extends View{
     private float w2,h2;
     private ITexture blockTexture,towerButtonBackgroundTexture;
 
-    public GameView(float width, float height, final ViewManager viewManager, World world){
+    public GameView(float width, float height, final ViewManager viewManager, final World world){
         super(width,height, viewManager);
 
         blockTexture = ViewManager.getTexture("block1.png");
-        towerButtonBackgroundTexture = ViewManager.getTexture("test1.png");
+        towerButtonBackgroundTexture = ViewManager.getTexture("viewTextures/mainButton.png");
 
         float towerButtonX = width * 7/8;
         float towerButtonHeight = height/TowerType.values().length;
         float towerButtonWidth = width * 1/8;
-        float towerButtonMainTexture, towerButtonPressedTexture;
 
         this.world = world;
         towerButtons = new TowerButton[TowerType.values().length];
-        for(int i= 0 ; i < TowerType.values().length -1 ; i++){
-                final TowerButton towerButton = new TowerButton(towerButtonX, i * towerButtonHeight, towerButtonWidth, towerButtonHeight, this, null, TowerType.values()[i]);
+        for(int i= 0 ; i < towerButtons.length; i++){
+            if (TowerType.values()[i] == TowerType.MAINTOWER) {
+                continue;
+            }
 
-                towerButtons[i] = towerButton;
-                this.components.add(towerButton);
+            final TowerButton towerButton = new TowerButton(towerButtonX, i * towerButtonHeight, towerButtonWidth, towerButtonHeight, this, null, TowerType.values()[i]);
 
-                towerButton.setListener(new ButtonListener() {
-                    @Override
-                    public void onClick() {
-                        if (setTower == null) {
-                            viewManager.getPostProcessingManager().enableEffect(PostProcessingManager.Effect.RadialBlur);
+            towerButtons[i] = towerButton;
+            this.components.add(towerButton);
+
+            towerButton.setListener(new ButtonListener() {
+                @Override
+                public void onClick() {
+                    if (setTower == null) {
+                        viewManager.getPostProcessingManager().enableEffect(PostProcessingManager.Effect.RadialBlur);
+
+                        int cost = towerButton.getTowerType().getCost();
+                        if (world.getCoins() > cost) {
                             setTower = new Tower(towerButton.getTowerType(), 0, 0, 0, 0);
                         }
                     }
-                });
+                }
+            });
         }
         u = new Utility();
     }
@@ -87,6 +94,27 @@ public class GameView extends View{
         }else{
             w2 = originWidth*7/8;
             h2 = w2;
+        }
+
+        for (int i = 0; i < towerButtons.length; i++) {
+            TowerButton b = towerButtons[i];
+
+            if (Utility.viewComponentIsCollidingWithMouse(b, Mouse.getX(), (int) (originHeight - Mouse.getY()))) {
+                TowerType t = b.getTowerType();
+
+                String l1 = t.getName();
+                String l2 = "Cost: " + t.getCost();
+
+                int w = Math.max(ViewManager.font.getWidth(l1), ViewManager.font.getWidth(l2));
+                int h = ViewManager.font.getLineHeight() * 2;
+
+                int x0 = Mouse.getX() - (w / 2);
+                int y0 = (int) (originHeight - Mouse.getY() - (h / 2));
+
+                batch.draw(ViewManager.getTexture("viewTextures/mainButton.png"), x0, y0, w, h);
+                ViewManager.font.drawText(batch, l1, x0, y0);
+                ViewManager.font.drawText(batch, l2, x0, y0 + (h / 2));
+            }
         }
 
         /**
@@ -144,6 +172,9 @@ public class GameView extends View{
                 }
             }
 
+        String message = "Coins: " + world.getCoins();
+        ViewManager.font.drawText(batch, message, (int) (originWidth - ViewManager.font.getWidth(message)), (int) (originHeight - ViewManager.font.getLineHeight()));
+
         /**
          * Alles Was mit dem Towersetzen zu tun hat
          */
@@ -152,7 +183,6 @@ public class GameView extends View{
             setTower.setY(originHeight - Mouse.getY() - setTower.getRadius() / 2);
             setTower.setRadius(h2/world.getBlocks().length);
             batch.draw(ViewManager.getTexture(setTower.getType().getTextureID()), setTower.getX(),setTower.getY(), setTower.getRadius(), setTower.getRadius());
-
         }
     }
 
@@ -220,6 +250,7 @@ public class GameView extends View{
             Vector2 mouse = getBlockIDOfMouse(mouseX, mouseY);
             if (mouse != null) {
                 if (button == 0) {
+                    world.setCoins(world.getCoins() - setTower.getCost());
                     if (world.setTowerInBlocks((int) mouse.getCoords()[0], (int) mouse.getCoords()[1], (setTower))) {
                         viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);
                         setTower = null;

@@ -21,6 +21,7 @@ public class World {
     private Vertex<Tower>[][] blocks;
     private int width, height, difficulty;
     private float timePassed;
+    private int coins = 100000;
 
     private EnemyHandler eH;
     private ProjectileHandler pH;
@@ -41,7 +42,7 @@ public class World {
         timePassed = 0;
 
         int mainTowerCoordX = 10;
-        int mainTowerCoordY = height -1;
+        int mainTowerCoordY = height -5;
 
         this.graph = new Graph();
 
@@ -160,6 +161,14 @@ public class World {
             return true;
         }
             return false;
+    }
+
+    public int getCoins() {
+        return coins;
+    }
+
+    public void setCoins(int coins) {
+        this.coins = coins;
     }
 
     /**

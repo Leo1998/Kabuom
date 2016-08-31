@@ -88,8 +88,7 @@ public class Utility {
                     mouseY >= (o1.getY()) &&
                     mouseY <= (o1.getY()) + (o1.getHeight());
         } else {
-            throw new IllegalArgumentException();
-
+            return false;
         }
     }
     public static void triangleIsCollidingWithGameObject(float triX1Coord, float triY1Coord, float triX2Coord, float triY2Coord, float triX3Coord, float triY3Coord, GameObject o ){

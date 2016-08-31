@@ -2,9 +2,9 @@ package projectile;
 
 public enum ProjectileType {
 
-    BULLET (1,0.5f,"BULLET",5,15,10, "test1.png"),
+    BULLET (1,0.5f,"BULLET",5,50,10, "test1.png"),
     MISSILE (1,0.5f,"MISSILE",2,50,50, "test1.png"),
-    FLAME (1,0.5f,"FLAME",3,50,50, "test1.png"),
+    FLAME (1,0.5f,"FLAME",3,2,50, "test1.png"),
     ICE (1,0.5f,"ICE",3,50,50, "test1.png"),
     LIGHTNING (5,0.5f,"LIGHTNING",6,50,50, "test1.png"),
     PIERCINGBULLET (3,0.5f,"PIERCINGBULLET",7,50,50, "test1.png"),

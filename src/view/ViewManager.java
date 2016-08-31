@@ -30,7 +30,9 @@ public class ViewManager {
 
             loadTexture("viewTextures/mainButton.png");
             loadTexture("viewTextures/pressedButton.png");
-
+            loadTexture("LaserLamp.png");
+            loadTexture("LaserLampGruen.png");
+            loadTexture("LaserLampRot.png");
             loadTexture("test0.png");
             loadTexture("test1.png");
             loadTexture("test2.png");
