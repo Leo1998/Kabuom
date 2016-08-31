@@ -33,12 +33,12 @@ public class Utility {
         if(x2-x1 != 0) {
             deltaX = x2 - x1;
         }else{
-            deltaX = 1;
+            deltaX = 0.00000001;
         }
         if(y2-y1 != 0){
             deltaY = y2 - y1;
         }else{
-            deltaY = 1;
+            deltaY = 0.00000001;
         }
 
         if(x2 < x1) {
