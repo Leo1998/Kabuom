@@ -50,6 +50,9 @@ public class ViewManager {
             loadTexture("FlamethrowerGrün.png");
             loadTexture("FlamethrowerRot.png");
             loadTexture("block1.png");
+            loadTexture("missileKlein.png");
+            loadTexture("Piercingprojektil.png");
+            loadTexture("projektil.png");
 
         } catch(IOException e) {
             e.printStackTrace();
