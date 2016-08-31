@@ -19,6 +19,9 @@ import java.util.concurrent.SynchronousQueue;
 public class World {
 
     private ArrayList<GameObject> objects;
+    private ArrayList<Enemy> enemyList = new ArrayList<Enemy>();
+    private ArrayList<Projectile> projectileList = new ArrayList<Projectile>();
+    private ArrayList<Tower> towerList = new ArrayList<Tower>();
     private Graph graph;
     private Vertex<Tower>[][] blocks;
     private int width, height, difficulty;
@@ -129,10 +132,11 @@ public class World {
                 this.spawnEnemy(random.nextInt(width-1), 0, EnemyType.Cheap);
             }
         }
-        ArrayList<Enemy> enemyList = new ArrayList<Enemy>();
-        ArrayList<Projectile> projectileList = new ArrayList<Projectile>();
-        ArrayList<Tower> towerList = new ArrayList<Tower>();
 
+
+        enemyList.clear();
+        projectileList.clear();
+        towerList.clear();
         for(int i = 0; i < objects.size(); i++){
             GameObject object = objects.get(i);
 
