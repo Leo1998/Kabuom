@@ -8,8 +8,11 @@ import utility.Vector2;
 import world.World;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class TowerHandler {
+
+    private final static Random random = new Random();
 
     private World world;
 
@@ -70,7 +73,10 @@ public class TowerHandler {
 
         ProjectileType projectile = tower.getProjectile();
 
-        //System.out.println(enemyX + "   " + enemyY);
+        if (tower.getType() == TowerType.FLAMETHROWER) {
+            enemyX = enemyX + random.nextFloat() * 4 - 2;
+            enemyY = enemyY + random.nextFloat() * 4 - 2;
+        }
 
         Vector2 vec = new Vector2(enemyX - towerX, enemyY - towerY);
         vec.normalize();

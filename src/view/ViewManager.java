@@ -53,6 +53,7 @@ public class ViewManager {
             loadTexture("missileKlein.png");
             loadTexture("Piercingprojektil.png");
             loadTexture("projektil.png");
+            loadTexture("flame.png");
 
         } catch(IOException e) {
             e.printStackTrace();
