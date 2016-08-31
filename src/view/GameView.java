@@ -10,6 +10,7 @@ import tower.TowerType;
 import utility.Utility;
 import utility.Vector2;
 import view.components.ButtonListener;
+import view.components.Label;
 import view.components.TowerButton;
 import view.components.ViewComponent;
 import view.rendering.Batch;
@@ -28,12 +29,15 @@ public class GameView extends View{
     private Tower setTower;
     private float w2,h2;
     private ITexture blockTexture,towerButtonBackgroundTexture;
+    private Label startCooldown;
 
     public GameView(float width, float height, final ViewManager viewManager, final World world){
         super(width,height, viewManager);
+        startCooldown = new Label(0,0,50,50,this,Integer.toString(world.getStartCooldown()));
 
         blockTexture = ViewManager.getTexture("block1.png");
         towerButtonBackgroundTexture = ViewManager.getTexture("viewTextures/mainButton.png");
+        components.add(startCooldown);
 
         float towerButtonX = width * 7/8;
         float towerButtonHeight = height/TowerType.values().length;
@@ -92,6 +96,18 @@ public class GameView extends View{
     public void render(float deltaTime, Batch batch) {
         //Hintergrund für die TowerButtons am Rechten Rand
         batch.draw(towerButtonBackgroundTexture,originWidth*7/8,(originHeight-h2)/2,originWidth*1/8,h2);
+
+        /**
+         * Anzeigen des StartCooldowns
+         */
+
+        if(!world.isStartCooldownOver()) {
+            if (!startCooldown.getText().equals(Integer.toString(world.getStartCooldown())))
+                startCooldown.setText(Integer.toString(world.getStartCooldown()));
+        }else if(components.contains(startCooldown))
+            components.remove(startCooldown);
+
+
 
         super.render(deltaTime, batch);
 

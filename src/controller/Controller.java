@@ -68,7 +68,7 @@ public class Controller {
     }
 
     public void createNewWorld(){
-        this.world = new World(20,20,9000);
+        this.world = new World(21,21,9000);
     }
 
     public Config getConfig() {

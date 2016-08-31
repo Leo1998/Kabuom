@@ -20,4 +20,12 @@ public class Label extends ViewComponent{
         ViewManager.font.drawText(batch, text , (int)((getX())+ (getWidth())/2 - ViewManager.font.getWidth(text)/2),(int) ((getY()) + (getHeight())/2- ViewManager.font.getLineHeight()/2));
     }
 
+    public String getText(){
+        return text;
+    }
+
+    public void setText(String text){
+        this.text = text;
+    }
+
 }
