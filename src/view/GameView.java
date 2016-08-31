@@ -71,7 +71,7 @@ public class GameView extends View{
     public void drawGameObject(GameObject o,Batch batch){
          if(o instanceof Enemy){
              Enemy e = (Enemy) o;
-
+             
              float percentage = (float) e.getMaxHp() / (float) e.getHp();
 
              batch.draw(ViewManager.getTexture(e.getEnemyType().getTextureID()), blockCoordToViewCoordX(e.getX()),blockCoordToViewCoordY(e.getY()),(h2/world.getBlocks().length),h2/world.getBlocks().length);
