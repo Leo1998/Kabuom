@@ -72,8 +72,13 @@ public class GameView extends View{
          if(o instanceof Enemy){
              Enemy e = (Enemy) o;
 
+             float percentage = (float) e.getHp() / (float) e.getMaxHp();
+
              batch.draw(ViewManager.getTexture(e.getEnemyType().getTextureID()), blockCoordToViewCoordX(e.getX()),blockCoordToViewCoordY(e.getY()),(h2/world.getBlocks().length),h2/world.getBlocks().length);
-        } else if(o instanceof Projectile){
+
+             batch.draw(null, blockCoordToViewCoordX(e.getX()),blockCoordToViewCoordY(e.getY()) + h2/world.getBlocks().length * 1.2f,(h2/world.getBlocks().length),h2/world.getBlocks().length * 0.2f,0.6f,0.6f,0.6f,1.0f);
+             batch.draw(null, blockCoordToViewCoordX(e.getX()),blockCoordToViewCoordY(e.getY()) + h2/world.getBlocks().length * 1.2f,(h2/world.getBlocks().length * percentage),h2/world.getBlocks().length * 0.2f,0.0f,1.0f,0.0f,1.0f);
+         } else if(o instanceof Projectile){
              Projectile p = (Projectile) o;
 
              float angle = Utility.calculateAngleBetweenTwoPoints(p.getX(), p.getY(), p.getX() - p.getDir().getCoords()[0], p.getY() - p.getDir().getCoords()[1]);
