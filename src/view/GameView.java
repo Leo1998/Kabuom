@@ -76,7 +76,7 @@ public class GameView extends View{
         } else if(o instanceof Projectile){
              Projectile p = (Projectile) o;
 
-             float angle = Utility.calculateAngleBetweenTwoPoints(p.getX(), p.getY(), p.getX() + p.getDir().getCoords()[0], p.getY() + p.getDir().getCoords()[1]);
+             float angle = Utility.calculateAngleBetweenTwoPoints(p.getX(), p.getY(), p.getX() - p.getDir().getCoords()[0], p.getY() - p.getDir().getCoords()[1]);
 
              batch.draw(ViewManager.getTexture(p.getProjectileType().getTextureID()), blockCoordToViewCoordX(p.getX()), blockCoordToViewCoordY(p.getY()),h2/world.getBlocks().length,h2/world.getBlocks().length,h2/world.getBlocks().length/2,h2/world.getBlocks().length/2,angle,1,1,1,1);
         }
@@ -98,54 +98,12 @@ public class GameView extends View{
             h2 = w2;
         }
 
-        for (int i = 0; i < towerButtons.length; i++) {
-            TowerButton b = towerButtons[i];
-
-            if (Utility.viewComponentIsCollidingWithMouse(b, Mouse.getX(), (int) (originHeight - Mouse.getY()))) {
-                TowerType t = b.getTowerType();
-
-                String l1 = t.getName();
-                String l2 = "Cost: " + t.getCost();
-
-                int w = Math.max(ViewManager.font.getWidth(l1), ViewManager.font.getWidth(l2));
-                int h = ViewManager.font.getLineHeight() * 2;
-
-                int x0 = Mouse.getX() - (w / 2);
-                int y0 = (int) (originHeight - Mouse.getY() - (h / 2));
-
-                batch.draw(ViewManager.getTexture("viewTextures/mainButton.png"), x0, y0, w, h);
-                ViewManager.font.drawText(batch, l1, x0, y0);
-                ViewManager.font.drawText(batch, l2, x0, y0 + (h / 2));
-            }
-        }
-
         /**
          * Zeichnet die Welt (Die einzelnen Blöcke)
          */
         for(int i = 0; i < world.getBlocks().length; i++){
             for(int j = 0; j < world.getBlocks()[i].length; j++){
                 batch.draw(blockTexture,blockCoordToViewCoordX(i), blockCoordToViewCoordY(j), w2/world.getBlocks().length, h2/world.getBlocks()[i].length);
-            }
-        }
-        Vector2 block = getBlockIDOfMouse(Mouse.getX(), Mouse.getY());
-        if (block != null) {
-            batch.draw(null,blockCoordToViewCoordX((int)block.getCoords()[0]), blockCoordToViewCoordY((int)(world.getBlocks()[0].length - block.getCoords()[1])), w2/world.getBlocks().length, h2/world.getBlocks()[0].length, 0, 0, 0, 1f, 1f, 1f, 0.45f);
-
-            Tower t = world.getBlocks()[(int)block.getCoords()[0]][(int)(world.getBlocks()[0].length - block.getCoords()[1])].getContent();
-
-            if (t != null) {
-                int x0 = (int) blockCoordToViewCoordX( block.getCoords()[0]);
-                int y0 = (int) blockCoordToViewCoordY((world.getBlocks()[0].length - block.getCoords()[1]));
-
-                String l1 = t.getName();
-                String l2 = "Health: " + t.getHp();
-
-                int w = Math.max(ViewManager.font.getWidth(l1), ViewManager.font.getWidth(l2));
-                int h = ViewManager.font.getLineHeight() * 2;
-
-                batch.draw(ViewManager.getTexture("viewTextures/mainButton.png"), x0, y0, w, h);
-                ViewManager.font.drawText(batch, l1, x0, y0);
-                ViewManager.font.drawText(batch, l2, x0, y0 + (h / 2));
             }
         }
 
@@ -176,6 +134,49 @@ public class GameView extends View{
 
         String message = "Coins: " + world.getCoins();
         ViewManager.font.drawText(batch, message, (int) (originWidth - ViewManager.font.getWidth(message)), (int) (originHeight - ViewManager.font.getLineHeight()));
+
+        Vector2 block = getBlockIDOfMouse(Mouse.getX(), Mouse.getY());
+        if (block != null) {
+            batch.draw(null,blockCoordToViewCoordX((int)block.getCoords()[0]), blockCoordToViewCoordY((int)(world.getBlocks()[0].length - block.getCoords()[1])), w2/world.getBlocks().length, h2/world.getBlocks()[0].length, 0, 0, 0, 1f, 1f, 1f, 0.45f);
+
+            Tower t = world.getBlocks()[(int)block.getCoords()[0]][(int)(world.getBlocks()[0].length - block.getCoords()[1])].getContent();
+
+            if (t != null) {
+                int x0 = (int) blockCoordToViewCoordX( block.getCoords()[0]);
+                int y0 = (int) blockCoordToViewCoordY((world.getBlocks()[0].length - block.getCoords()[1]));
+
+                String l1 = t.getName();
+                String l2 = "Health: " + t.getHp();
+
+                int w = Math.max(ViewManager.font.getWidth(l1), ViewManager.font.getWidth(l2));
+                int h = ViewManager.font.getLineHeight() * 2;
+
+                batch.draw(ViewManager.getTexture("viewTextures/mainButton.png"), x0, y0, w, h);
+                ViewManager.font.drawText(batch, l1, x0, y0);
+                ViewManager.font.drawText(batch, l2, x0, y0 + (h / 2));
+            }
+        }
+
+        for (int i = 0; i < towerButtons.length; i++) {
+            TowerButton b = towerButtons[i];
+
+            if (Utility.viewComponentIsCollidingWithMouse(b, Mouse.getX(), (int) (originHeight - Mouse.getY()))) {
+                TowerType t = b.getTowerType();
+
+                String l1 = t.getName();
+                String l2 = "Cost: " + t.getCost();
+
+                int w = Math.max(ViewManager.font.getWidth(l1), ViewManager.font.getWidth(l2));
+                int h = ViewManager.font.getLineHeight() * 2;
+
+                int x0 = Mouse.getX() - (w / 2);
+                int y0 = (int) (originHeight - Mouse.getY() - (h / 2));
+
+                batch.draw(ViewManager.getTexture("viewTextures/mainButton.png"), x0, y0, w, h);
+                ViewManager.font.drawText(batch, l1, x0, y0);
+                ViewManager.font.drawText(batch, l2, x0, y0 + (h / 2));
+            }
+        }
 
         /**
          * Alles Was mit dem Towersetzen zu tun hat
