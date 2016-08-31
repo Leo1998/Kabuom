@@ -129,7 +129,7 @@ public class World {
             countdown=-1;
             Random random = new Random();
             for(float i = 0;i < timePassed; i= i+7.5f) {
-                this.spawnEnemy(random.nextInt(width-1), 0, EnemyType.Cheap);
+                this.spawnEnemy(random.nextInt(width-1), 0, EnemyType.values()[random.nextInt(EnemyType.values().length)]);
             }
         }
 
