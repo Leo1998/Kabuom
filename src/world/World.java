@@ -26,6 +26,11 @@ public class World {
     private Vertex<Tower>[][] blocks;
     private int width, height, difficulty;
     private float timePassed;
+    private float startCooldown;
+
+
+
+    private boolean startCooldownOver;
     private int coins = 100000;
 
     private EnemyHandler eH;
@@ -48,6 +53,8 @@ public class World {
         this.difficulty = difficulty;
         timePassed = 0;
         countdown = 0;
+        startCooldown = 20;
+        startCooldownOver = false;
 
         int mainTowerCoordX = 10;
         int mainTowerCoordY = height -5;
@@ -122,46 +129,54 @@ public class World {
      * muss von jedem handler updaten
      * @param dt
      */
-    public void update(float dt){
-        countdown = countdown + dt;
+    public void update(float dt) {
         timePassed = timePassed + dt;
-        if(countdown >= 1){
-            countdown=-1;
-            Random random = new Random();
-            for(float i = 0;i < timePassed; i= i+7.5f) {
-                this.spawnEnemy(random.nextInt(width-1), 0, EnemyType.values()[random.nextInt(EnemyType.values().length)]);
-            }
-        }
-
-
-        enemyList.clear();
-        projectileList.clear();
-        towerList.clear();
-        for(int i = 0; i < objects.size(); i++){
-            GameObject object = objects.get(i);
-
-            if (object instanceof Enemy){
-                enemyList.add((Enemy) object);
-            } else if(object instanceof Projectile){
-                projectileList.add((Projectile) object);
-            } else if(object instanceof Tower){
-                towerList.add((Tower) object);
-            }
-        }
-
         boolean recalculate = false;
-        boolean drunk = false ;
+        boolean drunk = false;
 
-        if(newTurretSet){
-           recalculate = true;
+        if (newTurretSet) {
+            recalculate = true;
             newTurretSet = false;
         }
-        if(isDrunk){
+        if (isDrunk) {
             drunk = true;
         }
-        eH.handleEnemies(dt,enemyList,getIDOfMainTower(),graph, recalculate, drunk);
-        pH.handleProjectiles(dt, projectileList, enemyList);
-        tH.handleTowers(dt, towerList, enemyList, this.mainTower);
+        System.out.println(timePassed);
+        if (startCooldownOver) {
+            countdown = countdown + dt;
+
+            if (countdown >= 1) {
+                countdown = -1;
+                Random random = new Random();
+                for (float i = 0; i < timePassed; i = i + 10f) {
+                    this.spawnEnemy(random.nextInt(width - 1), 0, EnemyType.values()[random.nextInt(EnemyType.values().length)]);
+                }
+            }
+
+
+            enemyList.clear();
+            projectileList.clear();
+            towerList.clear();
+            for (int i = 0; i < objects.size(); i++) {
+                GameObject object = objects.get(i);
+
+                if (object instanceof Enemy) {
+                    enemyList.add((Enemy) object);
+                } else if (object instanceof Projectile) {
+                    projectileList.add((Projectile) object);
+                } else if (object instanceof Tower) {
+                    towerList.add((Tower) object);
+                }
+            }
+
+
+            eH.handleEnemies(dt, enemyList, getIDOfMainTower(), graph, recalculate, drunk);
+            pH.handleProjectiles(dt, projectileList, enemyList);
+            tH.handleTowers(dt, towerList, enemyList, this.mainTower);
+        }else if(timePassed > startCooldown ) {
+            startCooldownOver = true;
+            timePassed = 0;
+        }
     }
 
     /**
@@ -220,6 +235,18 @@ public class World {
 
     public ArrayList<GameObject> getObjects() {
         return objects;
+    }
+
+    public int getStartCooldown(){
+        return (int) (startCooldown-timePassed);
+    }
+
+    public float getOriginalStartCooldown(){
+        return startCooldown;
+    }
+
+    public boolean isStartCooldownOver() {
+        return startCooldownOver;
     }
 
     /**
