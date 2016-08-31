@@ -7,7 +7,7 @@ public enum ProjectileType {
     FLAME (1,0.5f,"FLAME",3,2,50, "test1.png"),
     ICE (1,0.5f,"ICE",3,50,50, "test1.png"),
     LIGHTNING (5,0.5f,"LIGHTNING",6,1,50, "test1.png"),
-    PIERCINGBULLET (3,0.5f,"PIERCINGBULLET",7,50,50, "Piercingprojektil.png"),
+    PIERCINGBULLET (3,0.5f,"PIERCINGBULLET",15,50,50, "Piercingprojektil.png"),
     FRAGGRENADE (1,0.5f,"FRAGGRENADE",7,50,50, "missile.png"),
     POISON (1,0.5f,"POISON",4,50,50, "test1.png");
 
