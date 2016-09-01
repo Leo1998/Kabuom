@@ -2,14 +2,14 @@ package projectile;
 
 public enum ProjectileType {
     
-    BULLET (1,0.05f,"BULLET",5.5f,/*Damage*/90,10, "projektil.png"),
-    MISSILE (1,0.1f,"MISSILE",2,/*Damage*/200,50, "missileKlein.png"),
-    FLAME (1,0.1f,"FLAME",3,/*Damage*/ 7,50, "flame.png"),
-    ICE (1,0.1f,"ICE",3,/*Damage*/ 50,50, "test1.png"),
-    LIGHTNING (5,0.05f,"LIGHTNING",6,/*Damage*/1,50, "test1.png"),
-    PIERCINGBULLET (3,0.05f,"PIERCINGBULLET",22,/*Damage*/150,50, "Piercingprojektil.png"),
-    FRAGGRENADE (1,0.1f,"FRAGGRENADE",7,/*Damage*/450,50, "missile.png"),
-    POISON (1,0.05f,"POISON",4,/*Damage*/50,50, "test1.png");
+    BULLET (1,0.05f,"BULLET",10f,/*Damage*/90, /*Range*/10, "projektil.png"),
+    MISSILE (1,0.1f,"MISSILE",15,/*Damage*/200, /*Range*/20, "missileKlein.png"),
+    FLAME (1,0.1f,"FLAME",5,/*Damage*/ 5, /*Range*/7, "flame.png"),
+    ICE (1,0.1f,"ICE",3,/*Damage*/ 50, /*Range*/50, "test1.png"),
+    LIGHTNING (5,0.01f,"LIGHTNING",12,/*Damage*/3, /*Range*/ 7, "test1.png"),
+    PIERCINGBULLET (3,0.05f,"PIERCINGBULLET",27,/*Damage*/150, /*Range*/30, "Piercingprojektil.png"),
+    FRAGGRENADE (1,0.1f,"FRAGGRENADE",30,/*Damage*/450, /*Range*/ 50, "missile.png"),
+    POISON (1,0.05f,"POISON",4,/*Damage*/50,/*Range*/ 20, "test1.png");
 
     private final int maxHP;
     private final String name;

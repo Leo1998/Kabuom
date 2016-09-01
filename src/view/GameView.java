@@ -9,10 +9,7 @@ import tower.Tower;
 import tower.TowerType;
 import utility.Utility;
 import utility.Vector2;
-import view.components.ButtonListener;
-import view.components.Label;
-import view.components.TowerButton;
-import view.components.ViewComponent;
+import view.components.*;
 import view.rendering.Batch;
 import view.rendering.ITexture;
 import view.rendering.PostProcessingManager;
@@ -29,19 +26,19 @@ public class GameView extends View{
     private Tower setTower;
     private float w2,h2;
     private ITexture blockTexture,towerButtonBackgroundTexture;
-    private Label startCooldown;
+    private Button startButton;
+
 
     public GameView(float width, float height, final ViewManager viewManager, final World world){
         super(width,height, viewManager);
-        startCooldown = new Label(0,0,50,50,this,Integer.toString(world.getStartCooldown()));
 
         blockTexture = ViewManager.getTexture("block1.png");
         towerButtonBackgroundTexture = ViewManager.getTexture("viewTextures/mainButton.png");
-        components.add(startCooldown);
 
         float towerButtonX = width * 7/8;
-        float towerButtonHeight = height/TowerType.values().length;
+        float towerButtonHeight = (height - ViewManager.font.getLineHeight() - (originHeight / 10))/TowerType.values().length;
         float towerButtonWidth = width * 1/8;
+
 
         this.world = world;
         towerButtons = new TowerButton[TowerType.values().length];
@@ -59,16 +56,25 @@ public class GameView extends View{
                 @Override
                 public void onClick() {
                     if (setTower == null) {
-                        viewManager.getPostProcessingManager().enableEffect(PostProcessingManager.Effect.RadialBlur);
-
                         int cost = towerButton.getTowerType().getCost();
                         if (world.getCoins() > cost) {
+                            viewManager.getPostProcessingManager().enableEffect(PostProcessingManager.Effect.RadialBlur);
+
                             setTower = new Tower(towerButton.getTowerType(), 0, 0, 0, 0);
                         }
                     }
                 }
             });
         }
+        startButton = new Button(width*7/8, height-height/10,width*1/8,height/10,this , "Start");
+        startButton.setListener(new ButtonListener() {
+            @Override
+            public void onClick() {
+                world.startWave();
+            }
+        });
+        components.add(startButton);
+
         u = new Utility();
     }
 
@@ -95,21 +101,18 @@ public class GameView extends View{
     @Override
     public void render(float deltaTime, Batch batch) {
         //Hintergrund für die TowerButtons am Rechten Rand
-        batch.draw(towerButtonBackgroundTexture,originWidth*7/8,(originHeight-h2)/2,originWidth*1/8,h2);
+        //batch.draw(towerButtonBackgroundTexture,originWidth*7/8,(originHeight-h2)/2,originWidth*1/8,h2);
 
         /**
          * Anzeigen des StartCooldowns
          */
 
-        if(!world.isStartCooldownOver()) {
+        /*if(!world.isStartCooldownOver()) {
             if (!startCooldown.getText().equals(Integer.toString(world.getStartCooldown())))
                 startCooldown.setText(Integer.toString(world.getStartCooldown()));
         }else if(components.contains(startCooldown))
             components.remove(startCooldown);
-
-
-
-        super.render(deltaTime, batch);
+        */
 
         if(originHeight < originWidth * 7/8) {
             h2 = originHeight;
@@ -153,8 +156,12 @@ public class GameView extends View{
                 }
             }
 
-        String message = "Coins: " + world.getCoins();
-        ViewManager.font.drawText(batch, message, (int) (originWidth - ViewManager.font.getWidth(message)), (int) (originHeight - ViewManager.font.getLineHeight()));
+
+        String coinsMessage = "Coins: " + world.getCoins();
+        ViewManager.font.drawText(batch, coinsMessage, (int) (originWidth - ViewManager.font.getWidth(coinsMessage)), (int) (originHeight - ViewManager.font.getLineHeight()*2 - (originHeight / 10)));
+
+        String waveMessage = "Wave: " + world.getWave();
+        ViewManager.font.drawText(batch, waveMessage, (int) (originWidth - ViewManager.font.getWidth(waveMessage)), (int) (originHeight - ViewManager.font.getLineHeight() - (originHeight / 10)));
 
         Vector2 block = getBlockIDOfMouse(Mouse.getX(), Mouse.getY());
         if (block != null) {
@@ -198,6 +205,7 @@ public class GameView extends View{
                 ViewManager.font.drawText(batch, l2, x0, y0 + (h / 2));
             }
         }
+        super.render(deltaTime, batch);
 
         /**
          * Alles Was mit dem Towersetzen zu tun hat
@@ -217,10 +225,15 @@ public class GameView extends View{
         super.layout(width, height);
         for (int i = 0; i <towerButtons.length -1 ; i++){
             towerButtons[i].setX(width * 7/8);
-            towerButtons[i].setY( i * height/towerButtons.length);
+            towerButtons[i].setY( i * ((height - ViewManager.font.getLineHeight() - (originHeight / 10))/TowerType.values().length));
             towerButtons[i].setWidth(width* 1/8);
-            towerButtons[i].setHeight(height/towerButtons.length);
+            towerButtons[i].setHeight((height - ViewManager.font.getLineHeight() - (originHeight / 10))/TowerType.values().length);
         }
+
+        startButton.setX(width * 7/8);
+        startButton.setY(height-height/10);
+        startButton.setWidth(width* 1/8);
+        startButton.setHeight(height/10);
     }
 
     /**

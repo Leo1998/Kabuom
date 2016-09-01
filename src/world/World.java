@@ -26,11 +26,11 @@ public class World {
     private Vertex<Tower>[][] blocks;
     private int width, height, difficulty;
     private float timePassed;
-    private float startCooldown;
 
+    private int wave = 1;
+    private boolean spawnWave = false;
+    private  float gameTime;
 
-
-    private boolean startCooldownOver;
     private int coins = 100000;
 
     private EnemyHandler eH;
@@ -38,8 +38,6 @@ public class World {
     private TowerHandler tH;
 
     private Tower mainTower;
-
-    private float countdown;
 
     /**
      * Attribute für den EnemyHandler
@@ -52,12 +50,9 @@ public class World {
         this.height = height;
         this.difficulty = difficulty;
         timePassed = 0;
-        countdown = 0;
-        startCooldown = 20;
-        startCooldownOver = false;
 
-        int mainTowerCoordX = 10;
-        int mainTowerCoordY = height -5;
+        int mainTowerCoordX = width/2;
+        int mainTowerCoordY = height -2;
 
         this.graph = new Graph();
 
@@ -141,42 +136,36 @@ public class World {
         if (isDrunk) {
             drunk = true;
         }
-        System.out.println(timePassed);
-        if (startCooldownOver) {
-            countdown = countdown + dt;
 
-            if (countdown >= 1) {
-                countdown = -1;
-                Random random = new Random();
-                for (float i = 0; i < timePassed; i = i + 10f) {
-                    this.spawnEnemy(random.nextInt(width - 1), 0, EnemyType.values()[random.nextInt(EnemyType.values().length)]);
-                }
+        enemyList.clear();
+        projectileList.clear();
+        towerList.clear();
+        for (int i = 0; i < objects.size(); i++) {
+            GameObject object = objects.get(i);
+
+            if (object instanceof Enemy) {
+                enemyList.add((Enemy) object);
+            } else if (object instanceof Projectile) {
+                projectileList.add((Projectile) object);
+            } else if (object instanceof Tower) {
+                towerList.add((Tower) object);
             }
-
-
-            enemyList.clear();
-            projectileList.clear();
-            towerList.clear();
-            for (int i = 0; i < objects.size(); i++) {
-                GameObject object = objects.get(i);
-
-                if (object instanceof Enemy) {
-                    enemyList.add((Enemy) object);
-                } else if (object instanceof Projectile) {
-                    projectileList.add((Projectile) object);
-                } else if (object instanceof Tower) {
-                    towerList.add((Tower) object);
-                }
-            }
-
-
-            eH.handleEnemies(dt, enemyList, getIDOfMainTower(), graph, recalculate, drunk);
-            pH.handleProjectiles(dt, projectileList, enemyList);
-            tH.handleTowers(dt, towerList, enemyList, this.mainTower);
-        }else if(timePassed > startCooldown ) {
-            startCooldownOver = true;
-            timePassed = 0;
         }
+
+        gameTime = gameTime + dt;
+
+        if(spawnWave) {
+            Random random = new Random();
+            for (int i = 0; i < wave; i++ ){
+                this.spawnEnemy(random.nextInt(width - 1), 0, EnemyType.values()[random.nextInt(EnemyType.values().length)]);
+            }
+            spawnWave = false;
+        }
+
+        eH.handleEnemies(dt, enemyList, getIDOfMainTower(), graph, recalculate, drunk);
+        pH.handleProjectiles(dt, projectileList, enemyList);
+        tH.handleTowers(dt, towerList, enemyList, this.mainTower);
+
     }
 
     /**
@@ -200,6 +189,10 @@ public class World {
 
     public void setCoins(int coins) {
         this.coins = coins;
+    }
+
+    public int getWave() {
+        return wave;
     }
 
     /**
@@ -237,22 +230,15 @@ public class World {
         return objects;
     }
 
-    public int getStartCooldown(){
-        return (int) (startCooldown-timePassed);
-    }
-
-    public float getOriginalStartCooldown(){
-        return startCooldown;
-    }
-
-    public boolean isStartCooldownOver() {
-        return startCooldownOver;
-    }
-
     /**
      * Die Anfrage liefert Pizza zu dir nach Hause.
      */
     public String getIDOfMainTower(){
         return blocks[(int)mainTower.getX()][(int)mainTower.getY()].getID();
+    }
+
+    public void startWave() {
+        this.spawnWave = true;
+        this.wave++;
     }
 }

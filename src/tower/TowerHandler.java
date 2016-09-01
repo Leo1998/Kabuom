@@ -74,8 +74,8 @@ public class TowerHandler {
         ProjectileType projectile = tower.getProjectile();
 
         if (tower.getType() == TowerType.FLAMETHROWER) {
-            enemyX = enemyX + random.nextFloat() * 4 - 2;
-            enemyY = enemyY + random.nextFloat() * 4 - 2;
+            enemyX = enemyX + random.nextFloat() * 2 - 1;
+            enemyY = enemyY + random.nextFloat() * 2 - 1;
         }
 
         Vector2 vec = new Vector2(enemyX - towerX, enemyY - towerY);
