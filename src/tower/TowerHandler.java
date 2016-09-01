@@ -29,7 +29,7 @@ public class TowerHandler {
                 if (curTower.getType().canShoot()) {
                     aim(curTower, enemies);
 
-                    if (curTower.getTarget() != null && curTower.getCooldown() <= 0) {
+                    if (curTower.getCooldown() <= 0) {
                         shoot(curTower);
                     }
                     if (curTower.getCooldown() >= 0) {
@@ -64,12 +64,16 @@ public class TowerHandler {
     }
 
     public void shoot(Tower tower) {
+        tower.setCooldown(tower.getFrequency());
+
+        if (tower.getTarget() == null) {
+            return;
+        }
+
         float enemyX = tower.getTarget().getX();
         float enemyY = tower.getTarget().getY();
         float towerX = tower.getX();
         float towerY = tower.getY();
-
-        tower.setCooldown(tower.getFrequency());
 
         ProjectileType projectile = tower.getProjectile();
 

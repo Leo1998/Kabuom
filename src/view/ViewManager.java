@@ -54,6 +54,7 @@ public class ViewManager {
             loadTexture("Piercingprojektil.png");
             loadTexture("projektil.png");
             loadTexture("flame.png");
+            loadTexture("Laser.png");
             //Gegner
             loadTexture("enemyTextures/Gegner1SLinks.png");
             loadTexture("enemyTextures/Gegner1SLinksHit.png");
