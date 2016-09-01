@@ -42,14 +42,15 @@ public class Controller {
         viewManager.setCurrentView(view);
 
         float deltaTime;
-        long startTime = System.currentTimeMillis();
+        long startTime = System.nanoTime();
         long totalTime = startTime;
         int frames = 0;
         while (!viewManager.isCloseRequested()) {
-            long currentTime = System.currentTimeMillis();
-            deltaTime = (float) ((currentTime - startTime) / 1000D);
+            long currentTime = System.nanoTime();
+            deltaTime = (float) ((currentTime - startTime) / 1000000000D);
             startTime = currentTime;
             frames++;
+            System.out.println("deltaTime: " + deltaTime);
             if (currentTime - totalTime > 1000) {
                 System.out.println("fps: " + frames);
                 frames = 0;
