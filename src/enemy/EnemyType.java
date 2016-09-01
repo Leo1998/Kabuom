@@ -4,7 +4,7 @@ public enum EnemyType {
 
 
     Cheap (0.2f,25,2,5,0.5f,"Cheap", "enemyTextures/Gegner1SLinks.png"),
-    Tank (1,400,1.5f,5,0.5f,"Tank", "enemyTextures/Gegner2SLinks.png"),
+    Tank (1,400,1f,5,0.5f,"Tank", "enemyTextures/Gegner2SLinks.png"),
     Speed (0.1f,50,3,15,0.5f,"Speed", "enemyTextures/Gegner3SLinks.png"),
     Damage (0.2f,150,2,60,0.5f,"Damage", "enemyTextures/Endgegner1SLinks.png"),
     Super (0.1f,500,1f,70,0.5f,"Super", "enemyTextures/Endgegner2SLinks.png"),

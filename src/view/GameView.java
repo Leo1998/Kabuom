@@ -277,7 +277,8 @@ public class GameView extends View{
                     world.setCoins(world.getCoins() - setTower.getCost());
                     if (world.setTowerInBlocks((int) mouse.getCoords()[0], (int) mouse.getCoords()[1], (setTower))) {
                         viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);
-                        setTower = null;
+                        //setTower = null;
+                        setTower = new Tower(setTower.getType(),0,0,0,0);
                     }
                 }
             }
