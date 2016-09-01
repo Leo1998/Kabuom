@@ -50,8 +50,7 @@ public class Controller {
             deltaTime = (float) ((currentTime - startTime) / 1000000000D);
             startTime = currentTime;
             frames++;
-            System.out.println("deltaTime: " + deltaTime);
-            if (currentTime - totalTime > 1000) {
+            if (currentTime - totalTime > 1000000000) {
                 System.out.println("fps: " + frames);
                 frames = 0;
 
