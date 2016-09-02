@@ -1,10 +1,12 @@
 package projectile;
 
 import enemy.Enemy;
+import tower.TowerType;
 import utility.*;
 import world.World;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class ProjectileHandler {
 
@@ -16,7 +18,6 @@ public class ProjectileHandler {
 
     // Projektile bewegen & Kollisionen mit Gegner überprüfen -> schaden
     public void handleProjectiles(float dt, ArrayList<Projectile> projectiles, ArrayList<Enemy> enemies) {
-        Utility utility = new Utility();
 
         for(int i = 0;i < projectiles.size();i++) {
             Projectile p = projectiles.get(i);
@@ -39,7 +40,7 @@ public class ProjectileHandler {
         for(int i = 0;i < projectiles.size();i++){
             for(int j = 0;j < enemies.size();j++){
                 //falls projektil mit gegner kollidiert und der gegner noch nicht getroffen ist
-                if(utility.gameObjectIsCollidingWithGameObject(projectiles.get(i),enemies.get(j)) && !projectiles.get(i).getHitEnemies().contains(enemies.get(j))){
+                if(Utility.gameObjectIsCollidingWithGameObject(projectiles.get(i),enemies.get(j)) && !projectiles.get(i).getHitEnemies().contains(enemies.get(j))){
                     //verringere die hp des gegners, verringere die hp des projektils, füge gegner zu getroffenen hinzu
                     enemies.get(j).setHp(enemies.get(j).getHp() - projectiles.get(i).getImpactDamage());
                     projectiles.get(i).setHp(projectiles.get(i).getHp()-1);
@@ -47,7 +48,18 @@ public class ProjectileHandler {
                     //falls hp des projektils == 0 ist
                     if(projectiles.get(i).getHp()==0){
                         //lösche das projektil
+                        if(projectiles.get(i).getProjectileType() == ProjectileType.POISON){
+                            Random random = new Random();
+                            for(int w = 0; w < 15 ; w++){
+                                float alpha = random.nextFloat()*(float)(Math.PI * 2);
+                                float distance = random.nextFloat()*2;
+                                float y = projectiles.get(i).getY()-(float)(Math.sin(alpha) * distance);
+                                float x = projectiles.get(i).getX()-(float)(Math.cos(alpha) * distance);
+                                world.spawnProjectile(new Projectile(ProjectileType.POISONTRAIL,projectiles.get(i).getLevel(),x,y,projectiles.get(i).getDir()));
+                            }
+                        }
                         world.removeGameObject(projectiles.get(i));
+
                     }
                 }
             }

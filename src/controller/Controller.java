@@ -71,6 +71,12 @@ public class Controller {
         this.world = new World(19,19,9000);
     }
 
+    public void endGame() {
+        world = null;
+        
+        viewManager.setCurrentView(new MenuView(Display.getWidth(), Display.getHeight(), viewManager));
+    }
+
     public Config getConfig() {
         return config;
     }

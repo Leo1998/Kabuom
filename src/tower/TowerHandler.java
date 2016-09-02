@@ -82,12 +82,28 @@ public class TowerHandler {
             enemyY = enemyY + random.nextFloat() * 2 - 1;
         }
 
+
+
         Vector2 vec = new Vector2(enemyX - towerX, enemyY - towerY);
         vec.normalize();
 
         Projectile p = new Projectile(projectile, tower.getLevel(),towerX,towerY,vec);
-
         world.spawnProjectile(p);
+
+        if(tower.getType()== TowerType.CYROGUN){
+            float alpha = (float)(Utility.calculateAngleBetweenTwoPoints(towerX,towerY,enemyX,enemyY) + 1/4 * Math.PI);
+            float beta = (float)(Utility.calculateAngleBetweenTwoPoints(towerX,towerY,enemyX,enemyY) - 1/4 * Math.PI);
+            Vector2 vec_A = new Vector2((float)(Math.cos(alpha)+vec.getCoords()[0]),(float)(Math.sin(alpha)+vec.getCoords()[1]));
+            vec_A.normalize();
+            Vector2 vec_B = new Vector2((float)(vec.getCoords()[0]-Math.cos(beta)),(float)(vec.getCoords()[1]-Math.sin(beta)));
+            vec_B.normalize();
+            Projectile a = new Projectile(projectile, tower.getLevel(), towerX,towerY,vec_A);
+            Projectile b = new Projectile(projectile, tower.getLevel(), towerX,towerY,vec_B);
+
+            world.spawnProjectile(a);
+            world.spawnProjectile(b);
+
+        }
 
         /*if (tower.getType() == TowerType.MGTURRET){
             //main idea
