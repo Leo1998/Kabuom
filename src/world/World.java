@@ -1,5 +1,6 @@
 package world;
 
+import controller.Controller;
 import enemy.Enemy;
 import enemy.EnemyHandler;
 import enemy.EnemyType;
@@ -9,12 +10,10 @@ import graph.Vertex;
 import model.GameObject;
 import projectile.Projectile;
 import projectile.ProjectileHandler;
-import projectile.ProjectileType;
 import tower.*;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.SynchronousQueue;
 
 public class World {
 
@@ -94,6 +93,11 @@ public class World {
     }
 
     public void removeGameObject(GameObject o) {
+        if (o == mainTower) {
+            Controller.instance.endGame();
+
+            return;
+        }
         this.objects.remove(o);
 
         if (o instanceof Tower) {
@@ -250,5 +254,8 @@ public class World {
     public void startWave() {
         this.spawnWave = true;
         this.wave++;
+        if (wave > Controller.instance.getConfig().getMaxWave()) {
+            Controller.instance.getConfig().setMaxWave(wave);
+        }
     }
 }

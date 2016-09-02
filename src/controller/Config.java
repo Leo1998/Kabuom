@@ -15,6 +15,7 @@ public class Config {
 
     private GraphicMode graphicMode = GraphicMode.High;
     private int fboSamples = 1;
+    private int maxWave = 0;
 
     private File configFile;
 
@@ -27,6 +28,7 @@ public class Config {
 
                 this.graphicMode = GraphicMode.valueOf(obj.getString("graphicMode"));
                 this.fboSamples = obj.getInt("fboSamples");
+                this.maxWave = obj.getInt("maxWave");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -45,6 +47,7 @@ public class Config {
 
             obj.put("graphicMode", this.graphicMode);
             obj.put("fboSamples", this.fboSamples);
+            obj.put("maxWave", this.maxWave);
 
             String json = obj.toString();
 
@@ -74,11 +77,20 @@ public class Config {
         this.fboSamples = fboSamples;
     }
 
+    public int getMaxWave() {
+        return maxWave;
+    }
+
+    public void setMaxWave(int maxWave) {
+        this.maxWave = maxWave;
+    }
+
     @Override
     public String toString() {
         return "Config{" +
                 "graphicMode=" + graphicMode +
                 ", fboSamples=" + fboSamples +
+                ", maxWave=" + maxWave +
                 '}';
     }
 }
