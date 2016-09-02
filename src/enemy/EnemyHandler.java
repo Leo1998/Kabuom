@@ -17,11 +17,14 @@ public class EnemyHandler {
     private boolean changed;
     private World world;
     private final float dpsMultiplier = 5;
+    private int maxCalc, calced;
 
     public EnemyHandler(Graph graph,Vertex<Tower>[][] blocks,World world) {
         calcAdoptedGraph(graph,blocks);
         changed = true;
         this.world = world;
+        maxCalc = 5;
+        calced = 0;
     }
 
 
@@ -35,6 +38,7 @@ public class EnemyHandler {
      * @param drunk Ist true, wenn Drunk aktiv ist
      */
     public void handleEnemies(float dt, ArrayList<Enemy> enemies,String targetID, Graph graph, boolean recalculate,boolean drunk){
+        calced = 0;
         Random random = new Random();
         if(!drunk) {
             if (recalculate) {
@@ -93,6 +97,9 @@ public class EnemyHandler {
                 if (enemy.getAttackCooldown() > enemy.getAttackSpeed()) {
                     tower.setHp(tower.getHp() - enemy.getDamage());
                     enemy.setAttackCooldown(0);
+                    if(tower.getType() == TowerType.BARRICADE){
+                        enemy.setHp(Math.round(enemy.getHp()-(enemy.getDamage()*0.5f)));
+                    }
                 }
             } else {              //Move
                 move(enemy, enemy.getSpeed() * dt, graph, dt);
@@ -147,7 +154,7 @@ public class EnemyHandler {
             Tower checkTower = (Tower)checkVertex.getContent().getContent();
             if(checkTower != null){
                 float dist = calcDist(enemy.getX(),enemy.getY(),checkTower.getX(),checkTower.getY());
-                if(dist < enemy.getRadius()+checkTower.getRadius()){
+                if(dist < new Double(Math.sqrt(2)).floatValue()){
                     return checkTower;
                 }
             }
@@ -213,9 +220,12 @@ public class EnemyHandler {
             }
         }
         if(!added){
-            Queue<Enemy> eQueue = new Queue<>();
-            eQueue.enqueue(enemy);
-            pList.add(eQueue);
+            if(calced < maxCalc) {
+                calced++;
+                Queue<Enemy> eQueue = new Queue<>();
+                eQueue.enqueue(enemy);
+                pList.add(eQueue);
+            }
         }
         return pList;
     }

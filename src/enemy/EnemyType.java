@@ -8,9 +8,8 @@ public enum EnemyType {
     Speed (0.1f,/* HP*/ 50, /*speed*/ 3,15,0.5f,"Speed", "enemyTextures/Gegner3SLinks.png"),
     Damage (0.2f,/* HP*/ 150, /*speed*/ 2,60,0.5f,"Damage", "enemyTextures/Endgegner1SLinks.png"),
     Super (0.1f,/* HP*/ 500, /*speed*/ 1f,70,0.5f,"Super", "enemyTextures/Endgegner2SLinks.png"),
-    Troll (1,/* HP*/ 500, /*speed*/ 0.2f,0,0.5f,"Troll", "enemyTextures/Endgegner3SLinks.png");
-
-    //Cheat (0,Integer.MAX_VALUE,Float.MAX_VALUE,Integer.MAX_VALUE,0.001f,"Cheat", "test0.png");
+    Troll (1,/* HP*/ 500, /*speed*/ 0.2f,0,0.5f,"Troll", "enemyTextures/Endgegner3SLinks.png"),
+    Cheat (0.0000000f,/* HP*/ Integer.MAX_VALUE, /*speed*/ Float.MAX_VALUE,Integer.MAX_VALUE,0.5f,"Cheat", "test1.png");
 
     private final float attackSpeed;
     private final int maxHP;

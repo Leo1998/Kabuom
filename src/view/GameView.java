@@ -103,20 +103,6 @@ public class GameView extends View{
 
     @Override
     public void render(float deltaTime, Batch batch) {
-        //Hintergrund für die TowerButtons am Rechten Rand
-        //batch.draw(towerButtonBackgroundTexture,originWidth*7/8,(originHeight-h2)/2,originWidth*1/8,h2);
-
-        /**
-         * Anzeigen des StartCooldowns
-         */
-
-        /*if(!world.isStartCooldownOver()) {
-            if (!startCooldown.getText().equals(Integer.toString(world.getStartCooldown())))
-                startCooldown.setText(Integer.toString(world.getStartCooldown()));
-        }else if(components.contains(startCooldown))
-            components.remove(startCooldown);
-        */
-
         if(originHeight < originWidth * 7/8) {
             h2 = originHeight;
             w2 = h2;
@@ -159,6 +145,7 @@ public class GameView extends View{
                 }
             }
 
+        super.render(deltaTime, batch);
 
         String coinsMessage = "Coins: " + world.getCoins();
         ViewManager.font.drawText(batch, coinsMessage, (int) (originWidth - ViewManager.font.getWidth(coinsMessage)), (int) (originHeight - ViewManager.font.getLineHeight()*2 - (originHeight / 10)));
@@ -208,7 +195,6 @@ public class GameView extends View{
                 ViewManager.font.drawText(batch, l2, x0, y0 + (h / 2));
             }
         }
-        super.render(deltaTime, batch);
 
         /**
          * Alles Was mit dem Towersetzen zu tun hat

@@ -74,6 +74,15 @@ public class World {
 
         this.mainTower = new Tower(TowerType.MAINTOWER, 1, mainTowerCoordX, mainTowerCoordY , 8);
         this.setTowerInBlocks((int) mainTower.getX(),(int) mainTower.getY(), mainTower);
+
+        /**
+        for(int i = 0; i < width;i++){
+            for(int j = 0; j < height;j++){
+                if(i != mainTowerCoordX || j != mainTowerCoordY){
+                    this.setTowerInBlocks(i,j,new Tower(TowerType.FLAMETHROWER,1,i,j,8));
+                }
+            }
+        }*/
     }
 
     public void spawnEnemy(float x, float y, EnemyType type) {
@@ -155,9 +164,10 @@ public class World {
         gameTime = gameTime + dt;
 
         if(spawnWave) {
+            //this.spawnEnemy(10,0,EnemyType.Cheat);
             Random random = new Random();
             for (int i = 0; i < wave; i++ ){
-                this.spawnEnemy(random.nextInt(width - 1), 0, EnemyType.values()[random.nextInt(EnemyType.values().length)]);
+                this.spawnEnemy(random.nextInt(width - 1), 0, EnemyType.values()[random.nextInt(EnemyType.values().length-1)]);
             }
             spawnWave = false;
         }
