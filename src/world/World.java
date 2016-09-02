@@ -30,7 +30,7 @@ public class World {
     private boolean spawnWave = false;
     private  float gameTime;
 
-    private int coins = 100000;
+    private int coins = 1000;
 
     private EnemyHandler eH;
     private ProjectileHandler pH;
@@ -98,6 +98,10 @@ public class World {
 
             return;
         }
+        if(o instanceof  Enemy) {
+            coins += 25-(25-3-(10)*Math.pow(Math.E,(-1/32*(wave-45))));
+        }
+
         this.objects.remove(o);
 
         if (o instanceof Tower) {
