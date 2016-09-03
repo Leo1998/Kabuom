@@ -1,16 +1,18 @@
 package projectile;
 
+import tower.TowerType;
+
 public enum ProjectileType {
     
-    BULLET (1,0.05f,"BULLET",25f,/*Damage*/10, /*Range*/10, "projektil.png"),
-    MISSILE (1,0.1f,"MISSILE",15,/*Damage*/200, /*Range*/20, "missileKlein.png"),
-    FLAME (3,0.1f,"FLAME",5,/*Damage*/ 8, /*Range*/7, "flame.png"),
-    ICE (1,0.1f,"ICE",3,/*Damage*/ 75, /*Range*/50, "test1.png"),
-    LIGHTNING (5,0.01f,"LIGHTNING",12,/*Damage*/3, /*Range*/ 7, "Laser.png"),
+    BULLET (1,0.05f,"BULLET",25f,/*Damage*/8, /*Range*/  8, "projektil.png"),
+    MISSILE (1,0.1f,"MISSILE",15,/*Damage*/200, /*Range*/14, "missileKlein.png"),
+    FLAME (3,0.1f,"FLAME",5,/*Damage*/ 8, /*Range*/ 7, "flame.png"),
+    ICE (1,0.1f,"ICE",5,/*Damage*/ 200, /*Range*/ 10, "test1.png"),
+    LIGHTNING (5,0.01f,"LIGHTNING",12,/*Damage*/1, /*Range*/ 7, "Laser.png"),
     PIERCINGBULLET (3,0.05f,"PIERCINGBULLET",27,/*Damage*/150, /*Range*/30, "Piercingprojektil.png"),
-    FRAGGRENADE (1,0.1f,"FRAGGRENADE",30,/*Damage*/450, /*Range*/ 50, "missile.png"),
-    POISON (1,0.05f,"POISON",3,/*Damage*/25,/*Range*/ 20, "test1.png"),
-    POISONTRAIL(1,0.05f,"POISON",0.002f,/*Damage*/10,/*Range*/ 0.01f, "test1.png");
+    FRAGGRENADE (1,0.1f,"FRAGGRENADE",30,/*Damage*/470, /*Range*/ 20, "missile.png"),
+    POISON (1,0.05f,"POISON",5,/*Damage*/25,/*Range*/ 10, "test1.png"),
+    POISONTRAIL(1,0.05f,"POISON",0.002f,/*Damage*/15,/*Range*/ 0.01f, "test1.png");
 
     private final int maxHP;
     private final String name;

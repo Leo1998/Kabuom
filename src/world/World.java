@@ -26,7 +26,7 @@ public class World {
     private int width, height, difficulty;
     private float timePassed;
 
-    private int wave = 1;
+    private int wave = 0;
     private boolean spawnWave = false;
     private  float gameTime;
 
@@ -99,7 +99,7 @@ public class World {
             return;
         }
         if(o instanceof  Enemy) {
-            coins += 25-(25-3-(10)*Math.pow(Math.E,(-1/32*(wave-45))));
+            coins += (25-(25-1-(5)*Math.pow(Math.E,((-1f/16f)*(wave-24f)))));
         }
 
         this.objects.remove(o);
@@ -174,7 +174,7 @@ public class World {
         if(spawnWave) {
             //this.spawnEnemy(10,0,EnemyType.Cheat);
             Random random = new Random();
-            for (int i = 0; i < wave; i++ ){
+            for (int i = 0; i < Math.pow(1+wave,3)/100 + 5 ; i++ ){
                 this.spawnEnemy(random.nextInt(width - 1), 0, EnemyType.values()[random.nextInt(EnemyType.values().length-1)]);
             }
             spawnWave = false;
