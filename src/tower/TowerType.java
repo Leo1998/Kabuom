@@ -12,8 +12,8 @@ public enum TowerType{
     TESLACOIL(50, true,/*Frequency*/ 0.01f,/*AttackRadius : */ 5,500,ProjectileType.LIGHTNING, "Teslacoil", "LaserLamp.png"),
     SNIPER(20, true,/*Frequency*/ 4,/*AttackRadius : */ 50,250,ProjectileType.PIERCINGBULLET, "Sniper", "LaserLampRot.png"),
     MORTAR(40, true,/*Frequency*/ 6,/*AttackRadius : */ 1500,750,ProjectileType.FRAGGRENADE,"Mortar", "MissileLauncherGruen.png"),
-    BARRICADE(500, false,/*Frequency*/ 0,/*AttackRadius : */ 0,50,ProjectileType.BULLET, "Barricade", "MgTurret.png"),
-    MAINTOWER(1000, false,/*Frequency*/ 0,/*AttackRadius : */ 0,0,ProjectileType.BULLET,"Maintower", "MgTurret.png");
+    BARRICADE(500, false,/*Frequency*/ 0,/*AttackRadius : */ 0,50,ProjectileType.BULLET, "Barricade", "barricade2.png"),
+    MAINTOWER(1000, false,/*Frequency*/ 0,/*AttackRadius : */ 0,0,ProjectileType.BULLET,"Maintower", "MainTower.png");
 
     private int HP,attackRadius,cost;
     private float frequency;

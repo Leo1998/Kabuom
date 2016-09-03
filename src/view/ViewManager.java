@@ -55,6 +55,10 @@ public class ViewManager {
             loadTexture("projektil.png");
             loadTexture("flame.png");
             loadTexture("Laser.png");
+            loadTexture("IceBullet.png");
+            loadTexture("barricade.png");
+            loadTexture("barricade2.png");
+            loadTexture("MainTower.png");
             //Gegner
             loadTexture("enemyTextures/Gegner1SLinks.png");
             loadTexture("enemyTextures/Gegner1SLinksHit.png");
@@ -80,7 +84,6 @@ public class ViewManager {
             loadTexture("enemyTextures/Endgegner3SLinksHit.png");
             loadTexture("enemyTextures/Endgegner3SRechts.png");
             loadTexture("enemyTextures/Endgegner3SRechtsHit.png");
-
 
 
         } catch(IOException e) {
