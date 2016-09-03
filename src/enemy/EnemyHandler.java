@@ -189,7 +189,7 @@ public class EnemyHandler {
         for(Queue<Enemy> currQueue:qEList){
             Queue<Vertex> path = dijkstraAlgorithm(adoptedGraph.getVertex(currQueue.front().getPos().getID()),adoptedGraph.getVertex(targetID));
             ArrayList<Vertex> pathList = new ArrayList<>();
-            while (!path.isEmpty()){
+            while (path != null && !path.isEmpty()){
                 pathList.add(path.front());
                 path.dequeue();
             }
