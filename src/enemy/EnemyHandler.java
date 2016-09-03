@@ -15,7 +15,7 @@ public class EnemyHandler {
     private Graph adoptedGraph;
     private boolean changed;
     private World world;
-    private final float dpsMultiplier = 5;
+    private float dpsMultiplier = 1;
     private int maxCalc, calced;
 
     public EnemyHandler(Graph graph,Vertex<Tower>[][] blocks,World world) {
@@ -457,6 +457,22 @@ public class EnemyHandler {
             Queue<Vertex> changedVertices = changedTower(dataVertex,towerVertex.getContent());
             calcEdges(changedVertices,graph);
         }
+    }
+
+    public float getDpsMultiplier() {
+        return dpsMultiplier;
+    }
+
+    public int getMaxCalc() {
+        return maxCalc;
+    }
+
+    public void setMaxCalc(int maxCalc) {
+        this.maxCalc = maxCalc;
+    }
+
+    public void setDpsMultiplier(float dpsMultiplier) {
+        this.dpsMultiplier = dpsMultiplier;
     }
 
     private class VertexData{
