@@ -3,7 +3,6 @@ package enemy;
 import graph.*;
 import graph.List;
 import graph.Queue;
-import org.lwjgl.Sys;
 import tower.Tower;
 import tower.TowerType;
 import world.World;
@@ -49,7 +48,9 @@ public class EnemyHandler {
             for(int i = 0; i < enemies.size(); i++){
                 Enemy currEnemy = enemies.get(i);
                 if(currEnemy.getPath().isEmpty() || recalculate){
-                    currEnemy.getPath().enqueue(getRandomNeighbour(currEnemy.getPos(),random));
+                    Queue<Vertex> newPath =  new Queue<>();
+                    newPath.enqueue(getRandomNeighbour(currEnemy.getPos(),random));
+                    currEnemy.setPath(newPath);
                 }
             }
             changed = true;
@@ -115,7 +116,7 @@ public class EnemyHandler {
      */
     private void move(Enemy enemy, float moveableDist, Graph graph,float dt){
         Tower collidingTower = checkCollision(enemy,graph);
-        if(collidingTower == null && !enemy.getPath().isEmpty()) {
+        if(collidingTower == null && enemy.getPath() != null && !enemy.getPath().isEmpty()) {
             float[] pos = {enemy.getX(), enemy.getY()};
             VertexData vd = (VertexData) enemy.getPath().front().getContent();
             float[] target = {vd.x, vd.y};
@@ -176,6 +177,7 @@ public class EnemyHandler {
         ArrayList<Queue<Enemy>> qEList = new ArrayList<>();
         for(Enemy currEnemy:enemies){
             if(currEnemy.getPath() == null || changed || currEnemy.getPath().isEmpty()){
+                currEnemy.setPath(null);
                 addToList(qEList,currEnemy);
             }
         }
@@ -329,23 +331,28 @@ public class EnemyHandler {
         return false;
     }
 
-    private void changedTower(Vertex<VertexData> pos,Tower tower){
+    private Queue<Vertex> changedTower(Vertex<VertexData> pos,Tower tower){
         VertexData content = pos.getContent();
         float addDPS, dps;
-        if(tower == null){
+        if(tower == null || tower.getFrequency() == 0){
             dps = 0;
         }else{
-            dps = (tower.getProjectile().getImpactDamage() * tower.getFrequency())+dpsMultiplier;
+            dps = (tower.getProjectile().getImpactDamage() / tower.getFrequency()) * dpsMultiplier;
         }
         addDPS = dps - content.dps;
         content.getFromTower(tower);
-        DFS(pos,content.x,content.y,content.attackRange,addDPS);
+        adoptedGraph.setAllVertexMarks(false);
+        Queue<Vertex> retQueue = new Queue<>();
+        DFS(pos,content.x,content.y,content.attackRange,addDPS,retQueue);
+        return retQueue;
     }
 
-    private void DFS(Vertex<VertexData> currVertex,float startX,float startY,float range,float dps){
+    private void DFS(Vertex<VertexData> currVertex,float startX,float startY,float range,float dps,Queue<Vertex> vQueue){
         float currX = currVertex.getContent().x;
         float currY = currVertex.getContent().y;
         if(calcDist(startX,startY,currX,currY) <= range){
+            vQueue.enqueue(currVertex);
+            currVertex.getContent().dpsInRange = currVertex.getContent().dpsInRange+dps;
             List<Vertex> neighbours = adoptedGraph.getNeighbours(currVertex);
             neighbours.toFirst();
             while (neighbours.hasAccess()){
@@ -354,8 +361,7 @@ public class EnemyHandler {
                     neighbours.remove();
                 }else{
                     curr.setMark(true);
-                    ((VertexData)(curr.getContent())).dpsInRange=+dps;
-                    DFS(curr,startX,startY,range,dps);
+                    DFS(curr,startX,startY,range,dps,vQueue);
                     neighbours.next();
                 }
             }
@@ -382,7 +388,10 @@ public class EnemyHandler {
                 if(!nEdges.getContent().isMarked()){
                     calcEdge(nEdges.getContent(),oEdges.getContent());
                 }
+                oEdges.next();
+                nEdges.next();
             }
+            vQueue.dequeue();
         }
     }
 
@@ -424,13 +433,12 @@ public class EnemyHandler {
         while (nVList.hasAccess()){
             Tower currTower = (Tower) nVList.getContent().getContent();
             VertexData currData = (VertexData) oVList.getContent().getContent();
-            System.out.println((currData == null)+" "+(currTower == null));
             if(currTower == null){
-                if(currData.name.equals("dummy")) {
+                if(!currData.name.equals("dummy")) {
                     vQueue.enqueue(nVList.getContent());
                     vQueue.enqueue(oVList.getContent());
                 }
-            }else if(currData.name.equals(currTower.getName())){
+            }else if(!currData.name.equals(currTower.getName())){
                 vQueue.enqueue(nVList.getContent());
                 vQueue.enqueue(oVList.getContent());
             }
@@ -446,9 +454,9 @@ public class EnemyHandler {
             vQueue.dequeue();
             Vertex<VertexData> dataVertex = vQueue.front();
             vQueue.dequeue();
-            changedTower(dataVertex,towerVertex.getContent());
+            Queue<Vertex> changedVertices = changedTower(dataVertex,towerVertex.getContent());
+            calcEdges(changedVertices,graph);
         }
-        calcEdges(vQueue,graph);
     }
 
     private class VertexData{
@@ -467,7 +475,11 @@ public class EnemyHandler {
 
         private void getFromTower(Tower tower){
             if(tower != null) {
-                dps = (tower.getProjectile().getImpactDamage() / tower.getFrequency())*dpsMultiplier;
+                if(tower.getFrequency() == 0){
+                    dps = 0;
+                }else {
+                    dps = (tower.getProjectile().getImpactDamage() / tower.getFrequency()) * dpsMultiplier;
+                }
                 attackRange = tower.getAttackRadius();
                 name = tower.getName();
             }else{

@@ -175,7 +175,7 @@ public class World {
             //this.spawnEnemy(10,0,EnemyType.Cheat);
             Random random = new Random();
             for (int i = 0; i < Math.pow(1+wave,3)/100 + 5 ; i++ ){
-                this.spawnEnemy(random.nextInt(width - 1), 0, EnemyType.values()[random.nextInt(EnemyType.values().length-1)]);
+                this.spawnEnemy(random.nextInt(width), 0, EnemyType.values()[random.nextInt(EnemyType.values().length-1)]);
             }
             spawnWave = false;
         }
@@ -192,6 +192,7 @@ public class World {
      */
     public boolean setTowerInBlocks(int i, int j, Tower setTower){
         if(!isTowerAtCoords(i,j)&& setTower != null){
+            newTurretSet = true;
             setTower.setX(i);
             setTower.setY(j);
             blocks[i][j].setContent(setTower);
