@@ -27,6 +27,7 @@ public class GameView extends View{
     private float w2,h2;
     private ITexture blockTexture,towerButtonBackgroundTexture;
     private Button startButton;
+    private boolean shiftdown;
 
 
     public GameView(float width, float height, final ViewManager viewManager, final World world){
@@ -57,7 +58,7 @@ public class GameView extends View{
                 public void onClick() {
                     if (setTower == null) {
                         int cost = towerButton.getTowerType().getCost();
-                        if (world.getCoins() > cost) {
+                        if (world.getCoins() >= cost) {
                             viewManager.getPostProcessingManager().enableEffect(PostProcessingManager.Effect.RadialBlur);
 
                             setTower = new Tower(towerButton.getTowerType(), 0, 0, 0, 0);
@@ -279,7 +280,11 @@ public class GameView extends View{
                     world.setCoins(world.getCoins() - setTower.getCost());
                     if (world.setTowerInBlocks((int) mouse.getCoords()[0], (int) mouse.getCoords()[1], (setTower))) {
                         viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);
-                        setTower = null;
+                        if(shiftdown && world.getCoins() - setTower.getCost() >= 0){
+                            setTower = new Tower(setTower.getType(),0,0,0,0);
+                        }else {
+                            setTower = null;
+                        }
                         //setTower = new Tower(setTower.getType(),0,0,0,0);
                     }
                 }
@@ -301,6 +306,17 @@ public class GameView extends View{
         }
         if (key == Keyboard.KEY_4) {
             this.getViewManager().getPostProcessingManager().disableEffect(PostProcessingManager.Effect.Drunk);
+        }
+        if(key == Keyboard.KEY_LSHIFT) {
+            shiftdown = true;
+        }
+    }
+
+    @Override
+    public void onKeyUp(int key, char c) {
+        super.onKeyUp(key, c);
+        if(key == Keyboard.KEY_LSHIFT){
+            shiftdown = false;
         }
     }
 }

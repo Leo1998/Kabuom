@@ -5,15 +5,17 @@ import projectile.ProjectileType;
 public enum TowerType{
 
     MGTURRET(100, true,/*Frequency*/ 0.15f,/*AttackRadius : */ 8,100,ProjectileType.BULLET, "MGTurret", "MgTurret.png"),
-    MISSILELAUNCHER(75,true,/*Frequency*/ 2,/*AttackRadius : */ 50,200,ProjectileType.MISSILE, "Missilelauncher", "MissileLauncher.png"),
-    FLAMETHROWER(60, true,/*Frequency*/ 0.1f,/*AttackRadius : */ 7,300,ProjectileType.FLAME, "Flamethrower", "Flamethrower.png"),
-    POISONTOWER(75, true,/*Frequency*/ 3,/*AttackRadius : */ 20,175,ProjectileType.POISON, "Poisontower", "MgTurretGruen.png"),
-    CYROGUN(90, true,/*Frequency*/ 5,/*AttackRadius : */ 20,350,ProjectileType.ICE, "Cyrogun", "MgTurret.png"),
-    TESLACOIL(50, true,/*Frequency*/ 0.01f,/*AttackRadius : */ 5,500,ProjectileType.LIGHTNING, "Teslacoil", "LaserLamp.png"),
-    SNIPER(20, true,/*Frequency*/ 4,/*AttackRadius : */ 50,250,ProjectileType.PIERCINGBULLET, "Sniper", "LaserLampRot.png"),
-    MORTAR(40, true,/*Frequency*/ 6,/*AttackRadius : */ 1500,750,ProjectileType.FRAGGRENADE,"Mortar", "MissileLauncherGruen.png"),
+
+    MISSILELAUNCHER(75,true,/*Frequency*/ 2,/*AttackRadius : */ 14,300,ProjectileType.MISSILE, "Missilelauncher", "MissileLauncher.png"),
+    FLAMETHROWER(60, true,/*Frequency*/ 0.05f,/*AttackRadius : */ 7,200,ProjectileType.FLAME, "Flamethrower", "Flamethrower.png"),
+    POISONTOWER(75, true,/*Frequency*/ 3,/*AttackRadius : */ 10,160,ProjectileType.POISON, "Poisontower", "MgTurretGruen.png"),
+    CYROGUN(90, true,/*Frequency*/ 2,/*AttackRadius : */ 10,275,ProjectileType.ICE, "Cyrogun", "MgTurret.png"),
+    TESLACOIL(50, true,/*Frequency*/ 0.01f,/*AttackRadius : */ 5,700,ProjectileType.LIGHTNING, "Teslacoil", "LaserLamp.png"),
+    SNIPER(20, true,/*Frequency*/ 3,/*AttackRadius : */ 16,250,ProjectileType.PIERCINGBULLET, "Sniper", "LaserLampRot.png"),
+    MORTAR(40, true,/*Frequency*/ 4f,/*AttackRadius : */ 20,500,ProjectileType.FRAGGRENADE,"Mortar", "MissileLauncherGruen.png"),
     BARRICADE(500, false,/*Frequency*/ 0,/*AttackRadius : */ 0,50,ProjectileType.BULLET, "Barricade", "barricade2.png"),
     MAINTOWER(1000, false,/*Frequency*/ 0,/*AttackRadius : */ 0,0,ProjectileType.BULLET,"Maintower", "MainTower.png");
+
 
     private int HP,attackRadius,cost;
     private float frequency;
