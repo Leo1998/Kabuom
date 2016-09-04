@@ -18,11 +18,18 @@ public class EnemyHandler {
     private float dpsMultiplier = 1;
     private int maxCalc, calced;
 
+    /**
+     * Konstruktur von Enemyhandler
+     * Ruft calcAdoptedGraph auf
+     * @param graph der Graph von World
+     * @param blocks zweidimensionales Array aus allen Vertices des Graphen
+     * @param world die World
+     */
     public EnemyHandler(Graph graph,Vertex<Tower>[][] blocks,World world) {
         calcAdoptedGraph(graph,blocks);
         changed = true;
         this.world = world;
-        maxCalc = 5;
+        maxCalc = 1;
         calced = 0;
     }
 
@@ -257,6 +264,11 @@ public class EnemyHandler {
         }
     }
 
+    /**
+     * Nötig für den Dijkstra-Algorithmus
+     * Geht vom übergebenen Vertex zurück zum Startvertex
+     * Gibt alle Vertices, die auf dem Weg liegen, in einer Queue zurück.
+     */
     private Queue<Vertex> goBack(Vertex<VertexData> pVertex){
         Vertex<VertexData> currVertex = pVertex;
         Queue<Vertex> retQueue = new Queue<>();
@@ -269,6 +281,10 @@ public class EnemyHandler {
         return retQueue;
     }
 
+    /**
+     * Nötig für den Dijkstra-Algorithmus
+     * Sucht in der übergebenen Liste den Vertex, der als nächstes bearbeitet werden soll und gibt diesen zurück.
+     */
     private Vertex findSmallest(List<Vertex> vertexList){
         vertexList.toFirst();
         Vertex<VertexData> v = vertexList.getContent();
@@ -290,6 +306,10 @@ public class EnemyHandler {
         return null;
     }
 
+    /**
+     * Nötig für den Dijkstra-Algorithmus
+     * Berechnet für alle Vertices, die benachbart zum übergebenen Vertex sind, die Distanz vom Start und setzt ggf. diese und den vorherigen Vertex
+     */
     private void calcDist(Vertex<VertexData> source,List<Vertex> vertexList){
         List<Edge> edgeList = adoptedGraph.getEdges(source);
         edgeList.toFirst();
@@ -306,6 +326,10 @@ public class EnemyHandler {
         }
     }
 
+    /**
+     * Nötig für den Dijkstra-Algorithmus
+     * Bereitet alles nötige für den Start des Algorithmus vor.
+     */
     private List<Vertex> initiate(Vertex<VertexData> start){
         List<Vertex> vertexList = new List<Vertex>();
         List<Vertex> vList = adoptedGraph.getVertices();
@@ -322,6 +346,9 @@ public class EnemyHandler {
         return vertexList;
     }
 
+    /**
+     * Überprüft, pb der Vertex v in der Liste vertexList ist
+     */
     private boolean isInList(Vertex v,List<Vertex> vertexList){
         vertexList.toFirst();
         while (vertexList.hasAccess()){
@@ -331,22 +358,31 @@ public class EnemyHandler {
         return false;
     }
 
+    /**
+     * Berechnet dpsInRange und die Kantengewichter der Vertices um den übergebenen Vertex
+     */
     private Queue<Vertex> changedTower(Vertex<VertexData> pos,Tower tower){
         VertexData content = pos.getContent();
-        float addDPS, dps;
+        Queue<Vertex> retQueue = new Queue<>();
+        if(!(pos.getContent().attackRange == 0)) {
+            adoptedGraph.setAllVertexMarks(false);
+            DFS(pos, content.x, content.y, pos.getContent().attackRange, -1*pos.getContent().dps, retQueue);
+        }
+        float dps;
         if(tower == null || tower.getFrequency() == 0){
             dps = 0;
         }else{
             dps = (tower.getProjectile().getImpactDamage() / tower.getFrequency()) * dpsMultiplier;
         }
-        addDPS = dps - content.dps;
         content.getFromTower(tower);
         adoptedGraph.setAllVertexMarks(false);
-        Queue<Vertex> retQueue = new Queue<>();
-        DFS(pos,content.x,content.y,content.attackRange,addDPS,retQueue);
+        DFS(pos,content.x,content.y,content.attackRange,dps,retQueue);
         return retQueue;
     }
 
+    /**
+     * Setzt dpsInRange mithilfe der Tiefensuche
+     */
     private void DFS(Vertex<VertexData> currVertex,float startX,float startY,float range,float dps,Queue<Vertex> vQueue){
         float currX = currVertex.getContent().x;
         float currY = currVertex.getContent().y;
@@ -368,6 +404,9 @@ public class EnemyHandler {
         }
     }
 
+    /**
+     * Setzt das Gewicht der übergebenen Edge nEdge auf das Gewicht der Edge oEdge + das Maximum von dpsInRange des Knoten, die diese verbindet.
+     */
     private void calcEdge(Edge nEdge,Edge oEdge){
         Vertex<VertexData> v1 = nEdge.getVertices()[0];
         Vertex<VertexData> v2 = nEdge.getVertices()[1];
@@ -376,6 +415,9 @@ public class EnemyHandler {
         nEdge.setWeight(dpsInRange+weight);
     }
 
+    /**
+     * Ruft calcEdge für jede Edge, die an einem Vertice aus der Queue vQueue liegt, auf.
+     */
     private void calcEdges(Queue<Vertex> vQueue,Graph oGraph){
         adoptedGraph.setAllEdgeMarks(false);
         while (!vQueue.isEmpty()){
@@ -395,6 +437,9 @@ public class EnemyHandler {
         }
     }
 
+    /**
+     * Berechnet den adoptedGraph auf Grundlage des Graphe graph
+     */
     private void calcAdoptedGraph(Graph graph,Vertex<Tower>[][] blocks){
         Queue<Vertex> vQueue = new Queue<>();
         adoptedGraph = new Graph();
@@ -423,6 +468,9 @@ public class EnemyHandler {
         updateData(vQueue,graph);
     }
 
+    /**
+     * Passt adoptedGraph dem übergebenen Graphen graph an
+     */
     private void setGraph(Graph graph){
         changed = true;
         List<Vertex> nVList = graph.getVertices();
@@ -448,6 +496,10 @@ public class EnemyHandler {
         updateData(vQueue,graph);
     }
 
+    /**
+     * Aktualisiert VertexData der Vertices von vQueue
+     * Ruft danach calcEdges auf
+     */
     private void updateData(Queue<Vertex> vQueue,Graph graph){
         while (!vQueue.isEmpty()){
             Vertex<Tower> towerVertex = vQueue.front();
@@ -459,18 +511,30 @@ public class EnemyHandler {
         }
     }
 
+    /**
+     * Gibt dpsMultiplier zurück
+     */
     public float getDpsMultiplier() {
         return dpsMultiplier;
     }
 
+    /**
+     * Gibt maxCalc zurück
+     */
     public int getMaxCalc() {
         return maxCalc;
     }
 
+    /**
+     * Setzt maxCalc auf den übergebenen Wert
+     */
     public void setMaxCalc(int maxCalc) {
         this.maxCalc = maxCalc;
     }
 
+    /**
+     * Setzt dpsMultiplier auf den übergebenen Wert
+     */
     public void setDpsMultiplier(float dpsMultiplier) {
         this.dpsMultiplier = dpsMultiplier;
     }
@@ -482,6 +546,12 @@ public class EnemyHandler {
         private double dist;
         private Vertex<VertexData> prev;
 
+        /**
+         * Konstruktor von VertexData
+         * @param tower Turm, den VertexData repräsentiert
+         * @param x X-Position besagten Turmes
+         * @param y Y-Position besagten Turmes
+         */
         public VertexData(Tower tower,int x,int y){
             this.x = x;
             this.y = y;
@@ -489,6 +559,9 @@ public class EnemyHandler {
             dpsInRange = 0;
         }
 
+        /**
+         * Setzt dps, attackRange und name abhängig des übergebenen Turmes
+         */
         private void getFromTower(Tower tower){
             if(tower != null) {
                 if(tower.getFrequency() == 0){

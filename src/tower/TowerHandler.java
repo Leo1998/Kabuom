@@ -72,11 +72,11 @@ public class TowerHandler {
         if (tower.getTarget()==null&&target!=null){//tower hat noch kein target
             tower.setTarget(target);
             target.setInDanger(target.getInDanger() + 1);
-        }else if (target!=null&&tower.getTarget()!=null&&!target.equals(tower.getTarget())) {//tower hat ein neues Target
+        }else if (target!=null&&tower.getTarget()!=null&&!target.equals(tower.getTarget())) {//tower hat ein neues target
             tower.getTarget().setInDanger(tower.getTarget().getInDanger() - 1);
             tower.setTarget(target);
             target.setInDanger(target.getInDanger() + 1);
-        }else if (target==null){//there is no Spoon
+        }else if (target==null){//there is no spoon
             tower.setTarget(null);
         }
 
