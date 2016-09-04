@@ -23,7 +23,7 @@ public class ProjectileHandler {
             Projectile p = projectiles.get(i);
 
             //System.out.println(p.getX() + "  " + p.getY());
-
+            //weite die das Projektil geflogen ist wird aktualisiert
             if(p.getDistance() < p.getRange()){
                 p.setDistance(p.getDistance() + p.getSpeed() * dt);
             }
@@ -32,7 +32,7 @@ public class ProjectileHandler {
                 world.removeGameObject(p);
             }
 
-
+            //projektil fliegt in richtung des zieles
             p.setX(p.getX() + p.getDir().getCoords()[0] * p.getSpeed() * dt);
             p.setY(p.getY() + p.getDir().getCoords()[1] * p.getSpeed() * dt);
         }
@@ -48,6 +48,7 @@ public class ProjectileHandler {
                     //falls hp des projektils == 0 ist
                     if(projectiles.get(i).getHp()==0){
                         //lösche das projektil
+                        //wenn projektil gift, dann fette giftwolke
                         if(projectiles.get(i).getProjectileType() == ProjectileType.POISON){
                             Random random = new Random();
                             for(int w = 0; w < 15 ; w++){

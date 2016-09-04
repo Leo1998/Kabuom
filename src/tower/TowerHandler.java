@@ -20,7 +20,7 @@ public class TowerHandler {
         this.world = world;
     }
 
-    public void handleTowers(float dt, ArrayList<Tower> towers, ArrayList<Enemy> enemies, Tower mainTower) {
+    public void handleTowers(float dt, ArrayList<Tower> towers, ArrayList<Enemy> enemies) {
         for (int i = 0; i < towers.size(); i++) {
             Tower curTower = towers.get(i);
             if(curTower.getHp() <= 0){
