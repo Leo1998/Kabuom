@@ -10,6 +10,7 @@ public class Enemy extends GameObject {
     private EnemyType enemyType;
     private Vertex pos;
     private float[] movement;
+    private int inDanger;
 
     /**
      * Konstruktor des Enemy
@@ -111,4 +112,8 @@ public class Enemy extends GameObject {
     public EnemyType getEnemyType() {
         return enemyType;
     }
+
+    public int getInDanger(){return inDanger;}
+
+    public void setInDanger(int inDanger){this.inDanger=inDanger;}
 }
