@@ -277,15 +277,15 @@ public class GameView extends View{
             Vector2 mouse = getBlockIDOfMouse(mouseX, mouseY);
             if (mouse != null) {
                 if (button == 0) {
-                    world.setCoins(world.getCoins() - setTower.getCost());
                     if (world.setTowerInBlocks((int) mouse.getCoords()[0], (int) mouse.getCoords()[1], (setTower))) {
+                        world.setCoins(world.getCoins() - setTower.getCost());
+
                         if(shiftdown && world.getCoins() - setTower.getCost() >= 0){
                             setTower = new Tower(setTower.getType(),0,0,0,0);
                         }else {
                             setTower = null;
                             viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);
                         }
-                        //setTower = new Tower(setTower.getType(),0,0,0,0);
                     }
                 }
             }

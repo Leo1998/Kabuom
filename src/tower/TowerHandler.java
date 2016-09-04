@@ -54,13 +54,32 @@ public class TowerHandler {
         Enemy target = null;
 
         float shortestWay = Float.MAX_VALUE;
+        int highestBounty = 0;
         for (int j = 0; j < targetList.size(); j++) {
-            if (new Vector2(tower.getX() - targetList.get(j).getX(), tower.getY() - targetList.get(j).getY()).getLength() < shortestWay) {
-                target = targetList.get(j);
-                shortestWay = new Vector2(tower.getX() - targetList.get(j).getX(), tower.getY() - targetList.get(j).getY()).getLength();
+            if(targetList.get(j).getInDanger()>highestBounty){
+                highestBounty=targetList.get(j).getInDanger();
             }
         }
-        tower.setTarget(target);
+
+        for (int j = 0; j < targetList.size(); j++) {
+            if (new Vector2(tower.getX() - targetList.get(j).getX(), tower.getY() - targetList.get(j).getY()).getLength() < shortestWay) {
+                if (targetList.get(j).getInDanger()+1!=highestBounty) {
+                    target = targetList.get(j);
+                    shortestWay = new Vector2(tower.getX() - targetList.get(j).getX(), tower.getY() - targetList.get(j).getY()).getLength();
+                }
+            }
+        }
+        if (tower.getTarget()==null&&target!=null){//tower hat noch kein target
+            tower.setTarget(target);
+            target.setInDanger(target.getInDanger() + 1);
+        }else if (target!=null&&tower.getTarget()!=null&&!target.equals(tower.getTarget())) {//tower hat ein neues Target
+            tower.getTarget().setInDanger(tower.getTarget().getInDanger() - 1);
+            tower.setTarget(target);
+            target.setInDanger(target.getInDanger() + 1);
+        }else if (target==null){//there is no Spoon
+            tower.setTarget(null);
+        }
+
     }
 
     public void shoot(Tower tower) {
