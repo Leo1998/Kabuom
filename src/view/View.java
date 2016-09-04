@@ -1,9 +1,8 @@
 package view;
 
-import org.lwjgl.opengl.Display;
 import view.components.ViewComponent;
 import view.rendering.Batch;
-import view.rendering.ITexture;
+
 
 
 import java.util.ArrayList;
@@ -20,8 +19,6 @@ public abstract class View {
         components = new ArrayList<ViewComponent>() ;
         originHeight = height;
         originWidth = width;
-        width = originWidth;
-        height = originHeight;
         this.viewManager = viewManager;
     }
 

@@ -127,7 +127,11 @@ public class GameView extends View{
             for (int i = 0; i < world.getObjects().size(); i++) {
                 drawGameObject(world.getObjects().get(i), batch);
             }
-            for(int i = 0; i < world.getBlocks().length; i++){
+
+        /**
+         * Zeichnet die Tower
+         */
+        for(int i = 0; i < world.getBlocks().length; i++){
                 for(int j = 0 ; j< world.getBlocks()[i].length ; j++ ) {
                     Tower tower = world.getBlocks()[i][j].getContent();
                     if (tower != null) {
@@ -148,12 +152,20 @@ public class GameView extends View{
 
         super.render(deltaTime, batch);
 
+
+        /**
+         * Zeichnet die Coin & Wave Zähler an den unteren rand
+         */
         String coinsMessage = "Coins: " + world.getCoins();
         ViewManager.font.drawText(batch, coinsMessage, (int) (originWidth - ViewManager.font.getWidth(coinsMessage)), (int) (originHeight - ViewManager.font.getLineHeight()*2 - (originHeight / 10)));
 
         String waveMessage = "Wave: " + world.getWave();
         ViewManager.font.drawText(batch, waveMessage, (int) (originWidth - ViewManager.font.getWidth(waveMessage)), (int) (originHeight - ViewManager.font.getLineHeight() - (originHeight / 10)));
 
+
+        /**
+         * Zeichnet die Info über den überfahrenden Tower an den Cursor
+         */
         Vector2 block = getBlockIDOfMouse(Mouse.getX(), Mouse.getY());
         if (block != null) {
             batch.draw(null,blockCoordToViewCoordX((int)block.getCoords()[0]), blockCoordToViewCoordY((int)(world.getBlocks()[0].length - block.getCoords()[1])), w2/world.getBlocks().length, h2/world.getBlocks()[0].length, 0, 0, 0, 1f, 1f, 1f, 0.45f);
@@ -176,6 +188,9 @@ public class GameView extends View{
             }
         }
 
+        /**
+         * Zeichnet die Info über den Tower vom Button an den Cursor
+         */
         for (int i = 0; i < towerButtons.length; i++) {
             TowerButton b = towerButtons[i];
 
@@ -268,6 +283,7 @@ public class GameView extends View{
     @Override
     public void onMouseDown(int button, int mouseX, int mouseY) {
         super.onMouseDown(button, mouseX, mouseY);
+
 
         if(setTower != null) {
             if (button == 1) {

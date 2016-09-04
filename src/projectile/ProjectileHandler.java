@@ -53,7 +53,7 @@ public class ProjectileHandler {
                             Random random = new Random();
                             for(int w = 0; w < 15 ; w++){
                                 float alpha = random.nextFloat()*(float)(Math.PI * 2);
-                                float distance = random.nextFloat()*2;
+                                float distance = random.nextFloat()*1.5f;
                                 float y = projectiles.get(i).getY()-(float)(Math.sin(alpha) * distance);
                                 float x = projectiles.get(i).getX()-(float)(Math.cos(alpha) * distance);
                                 world.spawnProjectile(new Projectile(ProjectileType.POISONTRAIL,projectiles.get(i).getLevel(),x,y,projectiles.get(i).getDir()));
