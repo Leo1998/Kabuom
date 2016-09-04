@@ -59,6 +59,8 @@ public class ViewManager {
             loadTexture("barricade.png");
             loadTexture("barricade2.png");
             loadTexture("MainTower.png");
+            loadTexture("toxicBullet.png");
+            loadTexture("Giftgas.png");
             //Gegner
             loadTexture("enemyTextures/Gegner1SLinks.png");
             loadTexture("enemyTextures/Gegner1SLinksHit.png");

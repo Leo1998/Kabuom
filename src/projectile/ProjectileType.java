@@ -12,8 +12,8 @@ public enum ProjectileType {
     LIGHTNING (5,0.01f,"LIGHTNING",12,/*Damage*/1, /*Range*/ 7, "Laser.png"),
     PIERCINGBULLET (3,0.05f,"PIERCINGBULLET",27,/*Damage*/150, /*Range*/30, "Piercingprojektil.png"),
     FRAGGRENADE (1,0.1f,"FRAGGRENADE",30,/*Damage*/470, /*Range*/ 20, "missile.png"),
-    POISON (1,0.05f,"POISON",5,/*Damage*/25,/*Range*/ 10, "test1.png"),
-    POISONTRAIL(1,0.05f,"POISON",0.002f,/*Damage*/15,/*Range*/ 0.01f, "test1.png");
+    POISON (1,0.05f,"POISON",5,/*Damage*/25,/*Range*/ 10, "toxicBullet.png"),
+    POISONTRAIL(1,0.05f,"POISON",0.002f,/*Damage*/15,/*Range*/ 0.01f, "Giftgas.png");
 
     private final int maxHP;
     private final String name;

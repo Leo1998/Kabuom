@@ -23,7 +23,7 @@ public class World {
     private ArrayList<Tower> towerList = new ArrayList<Tower>();
     private Graph graph;
     private Vertex<Tower>[][] blocks;
-    private int width, height, difficulty;
+    private int width, height;
     private float timePassed;
 
     private int wave = 0;
@@ -47,7 +47,6 @@ public class World {
     public World(int width, int height, int difficulty) {
         this.width = width;
         this.height = height;
-        this.difficulty = difficulty;
         timePassed = 0;
 
         int mainTowerCoordX = width/2;
@@ -73,6 +72,8 @@ public class World {
 
         this.mainTower = new Tower(TowerType.MAINTOWER, 1, mainTowerCoordX, mainTowerCoordY , 8);
         this.setTowerInBlocks((int) mainTower.getX(),(int) mainTower.getY(), mainTower);
+
+        setDifficulty(difficulty);
 
         /**
         for(int i = 0; i < width;i++){
@@ -223,8 +224,8 @@ public class World {
     /**
      * Die Anfrage liefert die Schwierigkeit der Welt als Integer.
      */
-    public int getDifficulty(){
-        return difficulty;
+    public float getDifficulty(){
+        return eH.getDpsMultiplier();
     }
     /**
      * Die Anfrage liefert die vergangene Zeit der Welt als float.
@@ -262,5 +263,9 @@ public class World {
         if (wave > Controller.instance.getConfig().getMaxWave()) {
             Controller.instance.getConfig().setMaxWave(wave);
         }
+    }
+
+    public void setDifficulty(int difficulty){
+        eH.setDpsMultiplier(((float)difficulty-1)/10 );
     }
 }

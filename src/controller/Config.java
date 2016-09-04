@@ -17,6 +17,10 @@ public class Config {
     private int fboSamples = 1;
     private int maxWave = 0;
 
+
+
+    private int difficulty = 0;
+
     private File configFile;
 
     public Config(File configFile) {
@@ -29,6 +33,7 @@ public class Config {
                 this.graphicMode = GraphicMode.valueOf(obj.getString("graphicMode"));
                 this.fboSamples = obj.getInt("fboSamples");
                 this.maxWave = obj.getInt("maxWave");
+                this.difficulty = obj.getInt("difficulty");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -48,6 +53,7 @@ public class Config {
             obj.put("graphicMode", this.graphicMode);
             obj.put("fboSamples", this.fboSamples);
             obj.put("maxWave", this.maxWave);
+            obj.put("difficulty", this.difficulty);
 
             String json = obj.toString();
 
@@ -84,6 +90,10 @@ public class Config {
     public void setMaxWave(int maxWave) {
         this.maxWave = maxWave;
     }
+
+    public int getDifficulty() {return difficulty;}
+
+    public void setDifficulty(int difficulty) {this.difficulty = difficulty;}
 
     @Override
     public String toString() {
