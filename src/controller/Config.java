@@ -1,6 +1,8 @@
 package controller;
 
 import org.json.*;
+import org.lwjgl.opengl.ARBTextureMultisample;
+import org.lwjgl.opengl.GL11;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,7 +16,6 @@ public class Config {
     }
 
     private GraphicMode graphicMode = GraphicMode.High;
-    private int fboSamples = 1;
     private int maxWave = 0;
 
     private File configFile;
@@ -27,7 +28,6 @@ public class Config {
                 JSONObject obj = new JSONObject(new JSONTokener(new FileInputStream(configFile)));
 
                 this.graphicMode = GraphicMode.valueOf(obj.getString("graphicMode"));
-                this.fboSamples = obj.getInt("fboSamples");
                 this.maxWave = obj.getInt("maxWave");
             } catch (Exception e) {
                 e.printStackTrace();
@@ -46,7 +46,6 @@ public class Config {
             JSONObject obj = new JSONObject();
 
             obj.put("graphicMode", this.graphicMode);
-            obj.put("fboSamples", this.fboSamples);
             obj.put("maxWave", this.maxWave);
 
             String json = obj.toString();
@@ -70,11 +69,7 @@ public class Config {
     }
 
     public int getFboSamples() {
-        return fboSamples;
-    }
-
-    public void setFboSamples(int fboSamples) {
-        this.fboSamples = fboSamples;
+        return graphicMode == GraphicMode.High ? 4 : 1;
     }
 
     public int getMaxWave() {
@@ -89,7 +84,6 @@ public class Config {
     public String toString() {
         return "Config{" +
                 "graphicMode=" + graphicMode +
-                ", fboSamples=" + fboSamples +
                 ", maxWave=" + maxWave +
                 '}';
     }
