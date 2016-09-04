@@ -37,7 +37,6 @@ public class Texture implements ITexture {
     }
 
     public Texture(int width, int height, int filter, int wrap, int samples) {
-        GL11.glEnable(getTarget());
         handle = GL11.glGenTextures();
         this.width = width;
         this.height = height;
@@ -47,6 +46,7 @@ public class Texture implements ITexture {
         } else {
             this.samples = Math.min(samples, GL11.glGetInteger(ARBTextureMultisample.GL_MAX_COLOR_TEXTURE_SAMPLES));
         }
+        GL11.glEnable(getTarget());
 
         bind();
 

@@ -118,7 +118,7 @@ public class ViewManager {
         try {
             setDisplayMode(800, 600, false);
 
-            Display.create(new PixelFormat(8, 8, 0, ctrl.getConfig().getFboSamples()));
+            Display.create(new PixelFormat(8, 0, 0, ctrl.getConfig().getFboSamples()));
 
             System.out.println("OpenGL context created! Version: " + GL11.glGetString(GL11.GL_VERSION) + ", Vendor: " + GL11.glGetString(GL11.GL_VENDOR) + ", Renderer: " + GL11.glGetString(GL11.GL_RENDERER));
         } catch (LWJGLException e) {
@@ -188,7 +188,6 @@ public class ViewManager {
             Display.setResizable(true);
             Display.setTitle("Kabuom! Tower Defense");
             Display.setVSyncEnabled(true);
-
         } catch (LWJGLException e) {
             System.out.println("Unable to setup mode "+width+"x"+height+" fullscreen="+fullscreen + e);
         }
