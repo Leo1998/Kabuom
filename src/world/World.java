@@ -183,7 +183,7 @@ public class World {
 
         eH.handleEnemies(dt, enemyList, getIDOfMainTower(), graph, recalculate, drunk);
         pH.handleProjectiles(dt, projectileList, enemyList);
-        tH.handleTowers(dt, towerList, enemyList, this.mainTower);
+        tH.handleTowers(dt, towerList, enemyList);
 
     }
 
