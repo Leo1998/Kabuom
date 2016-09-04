@@ -75,6 +75,9 @@ public enum ProjectileType {
         return range;
     }
 
+    /**
+     * Die Anfrage liefert die TextureID des Projektils als String.
+     */
     public String getTextureID() {
         return textureID;
     }
