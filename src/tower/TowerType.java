@@ -10,7 +10,7 @@ public enum TowerType{
     FLAMETHROWER(60, true,/*Frequency*/ 0.05f,/*AttackRadius : */ 7,200,ProjectileType.FLAME, "Flamethrower", "Flamethrower.png"),
     POISONTOWER(75, true,/*Frequency*/ 3,/*AttackRadius : */ 10,160,ProjectileType.POISON, "Poisontower", "MgTurretGruen.png"),
     CYROGUN(90, true,/*Frequency*/ 2,/*AttackRadius : */ 10,275,ProjectileType.ICE, "Cyrogun", "MgTurret.png"),
-    TESLACOIL(50, true,/*Frequency*/ 0.01f,/*AttackRadius : */ 5,700,ProjectileType.LIGHTNING, "Teslacoil", "LaserLamp.png"),
+    TESLACOIL(50, true,/*Frequency*/ 0.01f,/*AttackRadius : */ 4,700,ProjectileType.LIGHTNING, "Teslacoil", "LaserLamp.png"),
     SNIPER(20, true,/*Frequency*/ 3,/*AttackRadius : */ 16,250,ProjectileType.PIERCINGBULLET, "Sniper", "LaserLampRot.png"),
     MORTAR(40, true,/*Frequency*/ 4f,/*AttackRadius : */ 20,500,ProjectileType.FRAGGRENADE,"Mortar", "MissileLauncherGruen.png"),
     BARRICADE(500, false,/*Frequency*/ 0,/*AttackRadius : */ 0,50,ProjectileType.BULLET, "Barricade", "barricade2.png"),

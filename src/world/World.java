@@ -100,7 +100,7 @@ public class World {
             return;
         }
         if(o instanceof  Enemy) {
-            coins += (25-(25-1-(5)*Math.pow(Math.E,((-1f/16f)*(wave-24f)))));
+            coins += (25-(25-1-(5)*Math.pow(Math.E,((-1f/6f)*(wave-15f)))));
         }
 
         this.objects.remove(o);
@@ -225,7 +225,7 @@ public class World {
      * Die Anfrage liefert die Schwierigkeit der Welt als Integer.
      */
     public float getDifficulty(){
-        return eH.getDpsMultiplier();
+        return (eH.getDpsMultiplier()+1) *10;
     }
     /**
      * Die Anfrage liefert die vergangene Zeit der Welt als float.
