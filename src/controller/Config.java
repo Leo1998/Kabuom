@@ -20,7 +20,7 @@ public class Config {
 
 
 
-    private int difficulty = 0;
+    private int difficulty = 1;
 
     private File configFile;
 

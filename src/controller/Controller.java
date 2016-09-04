@@ -68,7 +68,7 @@ public class Controller {
     }
 
     public void createNewWorld(){
-        this.world = new World(19,19,9000);
+        this.world = new World(19,19,config.getDifficulty());
     }
 
     public void endGame() {

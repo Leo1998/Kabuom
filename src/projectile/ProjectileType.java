@@ -9,7 +9,7 @@ public enum ProjectileType {
     MISSILE (1,0.1f,"MISSILE",15,/*Damage*/200, /*Range*/14, "missileKlein.png"),
     FLAME (3,0.1f,"FLAME",5,/*Damage*/ 8, /*Range*/ 7, "flame.png"),
     ICE (1,0.1f,"ICE",5,/*Damage*/ 200, /*Range*/ 10, "IceBullet.png"),
-    LIGHTNING (5,0.01f,"LIGHTNING",12,/*Damage*/1, /*Range*/ 7, "Laser.png"),
+    LIGHTNING (5,0.01f,"LIGHTNING", 15,/*Damage*/3, /*Range*/ 12, "Laser.png"),
     PIERCINGBULLET (3,0.05f,"PIERCINGBULLET",27,/*Damage*/150, /*Range*/30, "Piercingprojektil.png"),
     FRAGGRENADE (1,0.1f,"FRAGGRENADE",30,/*Damage*/470, /*Range*/ 20, "missile.png"),
     POISON (1,0.05f,"POISON",5,/*Damage*/25,/*Range*/ 10, "toxicBullet.png"),
