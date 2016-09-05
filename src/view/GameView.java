@@ -305,6 +305,17 @@ public class GameView extends View{
                     }
                 }
             }
+        }else {
+            Vector2 block = getBlockIDOfMouse(Mouse.getX(), Mouse.getY());
+            if (block != null) {
+                Tower t = world.getBlocks()[(int) block.getCoords()[0]][(int) (world.getBlocks()[0].length - block.getCoords()[1])].getContent();
+                if (t != null) {
+                    if (button == 1) {
+                        world.setCoins(world.getCoins() + t.getType().getCost() / 2);
+                        world.removeGameObject(t);
+                    }
+                }
+            }
         }
     }
 
