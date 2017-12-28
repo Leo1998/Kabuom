@@ -3,6 +3,7 @@ package tower;
 import enemy.Enemy;
 import model.GameObject;
 import projectile.ProjectileType;
+import utility.Vector2;
 
 public class Tower extends GameObject{
     private ProjectileType projectile;
@@ -41,4 +42,5 @@ public class Tower extends GameObject{
     public void setTarget(Enemy newTarget){target=newTarget;}
 
     public void setCooldown(float newCooldown){cooldown=newCooldown;}
+
 }

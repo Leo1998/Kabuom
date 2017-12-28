@@ -2,6 +2,7 @@ package enemy;
 
 import graph.*;
 import model.GameObject;
+import utility.Vector2;
 
 
 public class Enemy extends GameObject {
@@ -9,8 +10,7 @@ public class Enemy extends GameObject {
     private float attackCooldown;
     private EnemyType enemyType;
     private Vertex pos;
-    private float[] movement;
-    private int inDanger;
+    private Vector2 movement;
 
     /**
      * Konstruktor des Enemy
@@ -27,7 +27,7 @@ public class Enemy extends GameObject {
         this.enemyType = enemyType;
         attackCooldown = 0;
         this.pos = pos;
-        this.movement = new float[]{0f,0f};
+        this.movement = new Vector2(0,0);
     }
 
     /**
@@ -98,22 +98,18 @@ public class Enemy extends GameObject {
     /**
      * Gibt zurück, in welche Richtung mit welcher Geschwindigkeit sich der Gegner im letzem Frame bewegt hat
      */
-    public float[] getMovement() {
+    public Vector2 getMovement() {
         return movement;
     }
 
     /**
      * Setzt, in welche Richtung mit welcher Geschwindigkeit sich der Gegner im letzem Frame bewegt hat
      */
-    public void setMovement(float[] movement) {
+    public void setMovement(Vector2 movement) {
         this.movement = movement;
     }
 
     public EnemyType getEnemyType() {
         return enemyType;
     }
-
-    public int getInDanger(){return inDanger;}
-
-    public void setInDanger(int inDanger){this.inDanger=inDanger;}
 }

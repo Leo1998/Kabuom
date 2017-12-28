@@ -27,6 +27,11 @@ public class Vector2 {
         coords[1] *= r;
     }
 
+    public void multiply(float m){
+        coords[0] = coords[0]*m;
+        coords[1] = coords[1]*m;
+    }
+
     @Override
     public String toString() {
         return "Vector2{" +

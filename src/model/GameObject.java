@@ -45,6 +45,10 @@ public abstract class GameObject {
         this.hp = hp;
     }
 
+    public void addHp(int hp){
+        this.hp += hp;
+    }
+
     public void setX(float x) {
         this.x = x;
     }

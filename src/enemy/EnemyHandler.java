@@ -5,6 +5,7 @@ import graph.List;
 import graph.Queue;
 import tower.Tower;
 import tower.TowerType;
+import utility.Vector2;
 import world.World;
 
 import java.util.*;
@@ -100,8 +101,7 @@ public class EnemyHandler {
             enemy.setAttackCooldown(enemy.getAttackCooldown() + dt);
             Tower tower = checkCollision(enemy, graph);
             if (tower != null && (!drunk || random.nextDouble() < 0.3 || tower.getType() == TowerType.BARRICADE)) {  //Attack
-                float[] move = {0, 0};
-                enemy.setMovement(move);
+                enemy.setMovement(new Vector2(0,0));
                 if (enemy.getAttackCooldown() > enemy.getAttackSpeed()) {
                     tower.setHp(tower.getHp() - enemy.getDamage());
                     enemy.setAttackCooldown(0);
@@ -110,7 +110,7 @@ public class EnemyHandler {
                     }
                 }
             } else {              //Move
-                move(enemy, enemy.getSpeed() * dt, graph, dt);
+                move(enemy, enemy.getSpeed() * dt, graph);
             }
         }
     }
@@ -121,30 +121,31 @@ public class EnemyHandler {
      * @param moveableDist Die Strecke, die der Gegner in diesem Frame noch zurücklegen kann
      * @param graph Der Graph
      */
-    private void move(Enemy enemy, float moveableDist, Graph graph,float dt){
+    private void move(Enemy enemy, float moveableDist, Graph graph){
         Tower collidingTower = checkCollision(enemy,graph);
         if(collidingTower == null && enemy.getPath() != null && !enemy.getPath().isEmpty()) {
-            float[] pos = {enemy.getX(), enemy.getY()};
             VertexData vd = (VertexData) enemy.getPath().front().getContent();
-            float[] target = {vd.x, vd.y};
-            float dist = (new Double(Math.sqrt(Math.pow(pos[0] - target[0], 2) + Math.pow(pos[1] - target[1], 2)))).floatValue();
-            if (dist < moveableDist) {
-                enemy.setX(target[0]);
-                enemy.setY(target[1]);
-                moveableDist = moveableDist - dist;
+            float targetX = vd.x;
+            float targetY = vd.y;
+            float dist = (float)(Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
+            while (dist < moveableDist) {
                 enemy.setPos(graph.getVertex(enemy.getPath().front().getID()));
                 enemy.getPath().dequeue();
-                move(enemy, moveableDist, graph, dt);
-            } else {
-                float q = moveableDist / dist;
-                float nX = pos[0] + ((target[0] - pos[0]) * q);
-                float nY = pos[1] + ((target[1] - pos[1]) * q);
-                enemy.setX(nX);
-                enemy.setY(nY);
-                float[] move = {nX / dt, nY / dt};
-                enemy.setMovement(move);
-                enemy.setPos(graph.getVertex(enemy.getPath().front().getID()));
+                vd = (VertexData) enemy.getPath().front().getContent();
+                targetX = vd.x;
+                targetY = vd.y;
+                dist = (float)(Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
             }
+            float q = moveableDist / dist;
+            float nX = enemy.getX() + ((targetX - enemy.getX()) * q);
+            float nY = enemy.getY() + ((targetY - enemy.getY()) * q);
+            enemy.setX(nX);
+            enemy.setY(nY);
+            Vector2 vec = new Vector2(targetX-enemy.getX(), targetY-enemy.getY());
+            vec.normalize();
+            vec.multiply(enemy.getEnemyType().getSpeed());
+            enemy.setMovement(vec);
+            enemy.setPos(graph.getVertex(enemy.getPath().front().getID()));
         }
     }
 
