@@ -1,37 +1,36 @@
 package enemy;
 
-import graph.*;
-import graph.List;
-import graph.Queue;
+import graph.Vertex;
 import tower.Tower;
 import tower.TowerType;
 import utility.Vector2;
+import world.Block;
 import world.World;
+import enemy.step.*;
 
 import java.util.*;
 
 
 public class EnemyHandler {
 
-    private Graph adoptedGraph;
+    private Node[][] nodeMap;
     private boolean changed;
     private World world;
     private float dpsMultiplier = 1;
-    private int maxCalc, calced;
+    private final int mainX, mainY;
+    private Random random;
 
     /**
      * Konstruktur von Enemyhandler
-     * Ruft calcAdoptedGraph auf
-     * @param graph der Graph von World
-     * @param blocks zweidimensionales Array aus allen Vertices des Graphen
      * @param world die World
      */
-    public EnemyHandler(Graph graph,Vertex<Tower>[][] blocks,World world) {
-        calcAdoptedGraph(graph,blocks);
+    public EnemyHandler(World world, int mainX, int mainY) {
+        this.mainX = mainX;
+        this.mainY = mainY;
+        createNodeMap(world.getBlocks());
         changed = true;
         this.world = world;
-        maxCalc = 1;
-        calced = 0;
+        this.random = new Random();
     }
 
 
@@ -39,67 +38,115 @@ public class EnemyHandler {
      * Berechnet die Handlungen aller Gegner und führt diese aus
      * @param dt Zeit seit dem letztem Frame
      * @param enemies Liste aller Gegner
-     * @param targetID ID des Ziel-Vertex
-     * @param graph Der Graph
      * @param recalculate Ist true, wenn in dem Frame ein Turm geädnert oder Drunk aktiviert wurde (einmalig)
      * @param drunk Ist true, wenn Drunk aktiv ist
      */
-    public void handleEnemies(float dt, ArrayList<Enemy> enemies,String targetID, Graph graph, boolean recalculate,boolean drunk){
-        calced = 0;
-        Random random = new Random();
+    public void handleEnemies(float dt, ArrayList<Enemy> enemies, boolean recalculate,boolean drunk){
         if(!drunk) {
             if (recalculate) {
-                setGraph(graph);
+                createNodeMap(world.getBlocks());
             }
-            calcAllPaths(enemies, targetID);
+            calcAllPaths(enemies);
         }else {
-            for(int i = 0; i < enemies.size(); i++){
-                Enemy currEnemy = enemies.get(i);
-                if(currEnemy.getPath().isEmpty() || recalculate){
-                    Queue<Vertex> newPath =  new Queue<>();
-                    newPath.enqueue(getRandomNeighbour(currEnemy.getPos(),random));
-                    currEnemy.setPath(newPath);
+            for(Enemy enemy : enemies){
+                if(enemy.getPath().isEmpty() || recalculate){
+                    Queue<Step> newPath =  new LinkedList<>();
+                    newPath.add(getRandomMove(Math.round(enemy.getX()),Math.round(enemy.getY()),random));
+                    enemy.setPath(newPath);
                 }
             }
             changed = true;
         }
         for(Enemy currEnemy:enemies){
-            handleEnemy(dt, graph, currEnemy,drunk,random);
+            handleEnemy(dt, currEnemy,drunk,random);
         }
     }
 
-    /**
-     * Gibt einen zufälligen Nachbarn von currVertex zurück
-     */
-    private Vertex getRandomNeighbour(Vertex currVertex,Random random){
-        List<Vertex> neighbours = adoptedGraph.getNeighbours(currVertex);
-        int length = 0;
-        neighbours.toFirst();
-        while (neighbours.hasAccess()){
-            length++;
-            neighbours.next();
+    private MoveStep getRandomMove(int x, int y, Random random){
+        boolean moveX = random.nextBoolean();
+        boolean moveY = random.nextBoolean();
+        if(!moveX && !moveY){
+            moveX = random.nextBoolean();
+            moveY = !moveX;
         }
-        int pos = random.nextInt(length + 1)-1;
-        neighbours.toFirst();
-        for(int i = 0;i < pos;i++){
-            neighbours.next();
+        int toX = x, toY = y;
+        if(moveX){
+            toX += (random.nextBoolean())? -1:1;
         }
-        return neighbours.getContent();
+        if(moveY){
+            toY += (random.nextBoolean())? -1:1;
+        }
+
+        return new MoveStep(StepType.Move,toX,toY);
+    }
+
+    private void calcAllPaths(ArrayList<Enemy> enemies){
+
+        //Group Enemies at similar places together to reduce total amount of findPath calls
+        ArrayList<Enemy>[][] groupMap = new ArrayList[nodeMap.length][nodeMap[0].length];
+        for(Enemy enemy: enemies){
+            if(changed || enemy.getPath().isEmpty()){
+                int i = Math.max(Math.min(Math.round(enemy.getX()),groupMap.length),0);
+                int j = Math.max(Math.min(Math.round(enemy.getY()),groupMap[i].length),0);
+                if(groupMap[i][j] == null){
+                    groupMap[i][j] = new ArrayList<>();
+                }
+                groupMap[i][j].add(enemy);
+            }
+        }
+
+        //Call findPath for every enemy-Group
+        for(int i = 0; i < groupMap.length; i++){
+            for(int  j = 0; j < groupMap[i].length; j++){
+                ArrayList<Enemy> group = groupMap[i][j];
+                if(group != null){
+                    Queue<Step> path = findPath(i,j);
+                    Queue<Step>[] paths = createQueueClones(path,group.size());
+                    if(paths != null) {
+                        for (int k = 0; k < group.size(); k++) {
+                            group.get(k).setPath(paths[k]);
+                        }
+                    }
+                }
+            }
+        }
+
+        changed = false;
+    }
+
+    private Queue<Step>[] createQueueClones(Queue<Step> steps, int amount){
+        if(amount > 0 && steps != null && !steps.isEmpty()) {
+            Queue<Step>[] result = new Queue[amount];
+            for(int i = 0; i < result.length; i++){
+                result[i] = new LinkedList<>();
+            }
+            for (Step step : steps) {
+                for (Queue<Step> queue : result) {
+                    try {
+                        queue.add(step.clone());
+                    } catch (java.lang.CloneNotSupportedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            return result;
+        }else {
+            return null;
+        }
     }
 
     /**
      * Entscheidet, ob ein Gegner sich bewegen oder angreifen soll.
      * Führt dies aus
      * @param dt Zeit seit dem letztem Frame
-     * @param graph Der Graph
      * @param enemy Gegner, für den dies entschieden werden soll
      */
-    private void handleEnemy(float dt,Graph graph,Enemy enemy,boolean drunk,Random random){
+    private void handleEnemy(float dt,Enemy enemy,boolean drunk,Random random){
         if(enemy.getHp()<=0){
             world.removeGameObject(enemy);
         }else {
             enemy.setAttackCooldown(enemy.getAttackCooldown() + dt);
-            Tower tower = checkCollision(enemy, graph);
+            Tower tower = getCollidingTower(enemy);
             if (tower != null && (!drunk || random.nextDouble() < 0.3 || tower.getType() == TowerType.BARRICADE)) {  //Attack
                 enemy.setMovement(new Vector2(0,0));
                 if (enemy.getAttackCooldown() > enemy.getAttackSpeed()) {
@@ -110,406 +157,215 @@ public class EnemyHandler {
                     }
                 }
             } else {              //Move
-                move(enemy, enemy.getSpeed() * dt, graph);
+                move(enemy, enemy.getSpeed() * dt);
             }
         }
     }
 
-    /**
-     * Bewegt einen Gegner entlang des berechneten Weges path
-     * @param enemy Der zu bewegene Gegner
-     * @param moveableDist Die Strecke, die der Gegner in diesem Frame noch zurücklegen kann
-     * @param graph Der Graph
-     */
-    private void move(Enemy enemy, float moveableDist, Graph graph){
-        Tower collidingTower = checkCollision(enemy,graph);
+    private void move(Enemy enemy, float moveableDist){
+        Tower collidingTower = getCollidingTower(enemy);
         if(collidingTower == null && enemy.getPath() != null && !enemy.getPath().isEmpty()) {
-            VertexData vd = (VertexData) enemy.getPath().front().getContent();
-            float targetX = vd.x;
-            float targetY = vd.y;
-            float dist = (float)(Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
-            while (dist < moveableDist) {
-                enemy.setPos(graph.getVertex(enemy.getPath().front().getID()));
-                enemy.getPath().dequeue();
-                vd = (VertexData) enemy.getPath().front().getContent();
-                targetX = vd.x;
-                targetY = vd.y;
-                dist = (float)(Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
+            Step step = enemy.getPath().peek();
+            if(step instanceof MoveStep) {
+                float targetX = ((MoveStep)step).x;
+                float targetY = ((MoveStep)step).y;
+                float dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
+                while (dist < moveableDist) {
+                    enemy.getPath().remove();
+                    step = enemy.getPath().peek();
+                    if(step instanceof MoveStep) {
+                        targetX = ((MoveStep) step).x;
+                        targetY = ((MoveStep) step).y;
+                        dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
+                    }else{
+                        goTo(enemy,targetX,targetY);
+                        return;
+                    }
+                }
+                float q = moveableDist / dist;
+                float nX = enemy.getX() + ((targetX - enemy.getX()) * q);
+                float nY = enemy.getY() + ((targetY - enemy.getY()) * q);
+                goTo(enemy,nX,nY);
             }
-            float q = moveableDist / dist;
-            float nX = enemy.getX() + ((targetX - enemy.getX()) * q);
-            float nY = enemy.getY() + ((targetY - enemy.getY()) * q);
-            enemy.setX(nX);
-            enemy.setY(nY);
-            Vector2 vec = new Vector2(targetX-enemy.getX(), targetY-enemy.getY());
-            vec.normalize();
-            vec.multiply(enemy.getEnemyType().getSpeed());
-            enemy.setMovement(vec);
-            enemy.setPos(graph.getVertex(enemy.getPath().front().getID()));
         }
     }
 
-    /**
-     * Überprüft, ob der Gegner mit einem Turm kollidiert.
-     * Überprüft den Turm, von dem der Gegner kommt und den Turm, auf den sich der Gegner zubewegt
-     * @param enemy Der Gegner, für den die Kollision überprüft werden soll
-     * @return Ist null, wenn der Gegner mit keinem Turm kollidiert. Gibt sonst den Turm mit den der Gegner kollidiert zurück
-     */
-    private Tower checkCollision(Enemy enemy,Graph graph){
-        List<Vertex> checkVertex = graph.getNeighbours(enemy.getPos());
-        checkVertex.append(enemy.getPos());
-        checkVertex.toFirst();
-        while (checkVertex.hasAccess()){
-            Tower checkTower = (Tower)checkVertex.getContent().getContent();
-            if(checkTower != null){
-                float dist = calcDist(enemy.getX(),enemy.getY(),checkTower.getX(),checkTower.getY());
-                if(dist < new Double(Math.sqrt(2)).floatValue()){
-                    return checkTower;
+    private void goTo(Enemy enemy, float x, float y){
+        Vector2 vec = new Vector2(x - enemy.getX(), y - enemy.getY());
+        enemy.setX(x);
+        enemy.setY(y);
+        vec.normalize();
+        vec.multiply(enemy.getEnemyType().getSpeed());
+        enemy.setMovement(vec);
+    }
+
+    private Tower getCollidingTower(Enemy enemy){
+        Tower result = null;
+        for(int i = (int)Math.floor(enemy.getX()); i < Math.ceil(enemy.getX())+1 && result == null; i++){
+            for(int j = (int)Math.floor(enemy.getY()); j < Math.ceil(enemy.getY())+1 && result == null; j++){
+                Tower tower = nodeMap[i][j].block.getTower();
+                if(tower != null){
+                    if(getDist(tower.getX(),tower.getY(),enemy.getX(),enemy.getY()) < 2){
+                        result = tower;
+                    }
                 }
             }
-            checkVertex.next();
         }
-        return null;
+        return result;
     }
 
-    private float calcDist(float x1,float y1,float x2,float y2){
-        return (new Double(Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2)))).floatValue();
+    private Queue<Step> findPath(int startX ,int startY){
+        prepareNodeMap(startX,startY);
+        int xPos = startX;
+        int yPos = startY;
+        while(xPos != mainX || yPos != mainY){
+            nodeMap[xPos][yPos].visited = true;
+            updateNeighbours(xPos,yPos);
+            int[] next = findSmallest();
+            if(next != null){
+                xPos = next[0];
+                yPos = next[1];
+            }else{
+                return null;
+            }
+        }
+        return goBack(xPos,yPos);
     }
 
-    /**
-     * Berechnet für alle Gegner, für die dies nötig ist, den besten Weg
-     * @param enemies Liste aller Gegner
-     * @param targetID ID des Zielvertex
-     */
-    private void calcAllPaths(ArrayList<Enemy> enemies,String targetID) {
-        ArrayList<Queue<Enemy>> qEList = new ArrayList<>();
-        for(Enemy currEnemy:enemies){
-            if(currEnemy.getPath() == null || changed || currEnemy.getPath().isEmpty()){
-                currEnemy.setPath(null);
-                addToList(qEList,currEnemy);
-            }
-        }
+    private Queue<Step> goBack(int x, int y){
+        Queue<Step> path = new LinkedList<>();
 
-        if(changed){
-            changed = false;
+        int xPos = x, yPos = y;
+        Node current = nodeMap[xPos][yPos];
+        while(current.preX != -1 && current.preY != -1){
+            path.add(new MoveStep(StepType.Move,xPos,yPos));
+            xPos = current.preX;
+            yPos = current.preY;
+            current = nodeMap[xPos][yPos];
         }
-
-        for(Queue<Enemy> currQueue:qEList){
-            Queue<Vertex> path = dijkstraAlgorithm(adoptedGraph.getVertex(currQueue.front().getPos().getID()),adoptedGraph.getVertex(targetID));
-            ArrayList<Vertex> pathList = new ArrayList<>();
-            while (path != null && !path.isEmpty()){
-                pathList.add(path.front());
-                path.dequeue();
-            }
-            while (!currQueue.isEmpty()){
-                Queue<Vertex> copyPath = new Queue<>();
-                for(int i = pathList.size()-1;i >= 0; i--){
-                    copyPath.enqueue(pathList.get(i));
-                }
-                currQueue.front().setPath(copyPath);
-                currQueue.dequeue();
-            }
-        }
+        return path;
     }
 
-    /**
-     * Fügt den Gegner an die Stelle der Liste, an der die Gegner in der Queue dieselbe Position haben.
-     * Wenn es in den Queues der Liste keine Gegner mit derselben Position wie den übergebenen Gegner gibt, wird eine neue Queue, die diesen enthält ans Ende der Liste gefügt
-     * @param pList Liste aus Queues mit Gegnern
-     * @param enemy Gegner, der in die richtige Queue der Liste gefügt werden soll
-     * @return Liste aus Queues mit Gegnern
-     */
-    private ArrayList<Queue<Enemy>> addToList(ArrayList<Queue<Enemy>> pList,Enemy enemy){
-        boolean added = false;
-        for (Queue<Enemy> currQueue:pList){
-            Enemy currEnemy = currQueue.front();
-            if(currEnemy.getPos() == enemy.getPos()){
-                currQueue.enqueue(enemy);
-                added = true;
-                break;
-            }
-        }
-        if(!added){
-            if(calced < maxCalc) {
-                calced++;
-                Queue<Enemy> eQueue = new Queue<>();
-                eQueue.enqueue(enemy);
-                pList.add(eQueue);
-            }
-        }
-        return pList;
-    }
-
-    /**
-     * Führt den Dijkstra-Navigations-Algorithmus auf adoptedGraph aus.
-     * @param start Start-Vertex
-     * @param target Ziel-Vertex
-     * @return Berechneter Pfad
-     */
-    private Queue<Vertex> dijkstraAlgorithm(Vertex start, Vertex target){
-        List<Vertex> vertexList = initiate(start);
-        boolean foundTarget = false;
-        Vertex currVertex = start;
-        do {
-            if (currVertex == target) {
-                foundTarget = true;
-            } else {
-                calcDist(currVertex,vertexList);
-                currVertex = findSmallest(vertexList);
-            }
-        } while (!foundTarget && !vertexList.isEmpty());
-        if (foundTarget) {
-            return goBack(currVertex);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Nötig für den Dijkstra-Algorithmus
-     * Geht vom übergebenen Vertex zurück zum Startvertex
-     * Gibt alle Vertices, die auf dem Weg liegen, in einer Queue zurück.
-     */
-    private Queue<Vertex> goBack(Vertex<VertexData> pVertex){
-        Vertex<VertexData> currVertex = pVertex;
-        Queue<Vertex> retQueue = new Queue<>();
-        retQueue.enqueue(currVertex);
-        while (currVertex.getContent().prev != null) {
-            Vertex nextVertex = currVertex.getContent().prev;
-            retQueue.enqueue(nextVertex);
-            currVertex = nextVertex;
-        }
-        return retQueue;
-    }
-
-    /**
-     * Nötig für den Dijkstra-Algorithmus
-     * Sucht in der übergebenen Liste den Vertex, der als nächstes bearbeitet werden soll und gibt diesen zurück.
-     */
-    private Vertex findSmallest(List<Vertex> vertexList){
-        vertexList.toFirst();
-        Vertex<VertexData> v = vertexList.getContent();
-        vertexList.next();
-        while (vertexList.hasAccess()){
-            if(((Vertex<VertexData>)(vertexList.getContent())).getContent().dist < v.getContent().dist){
-                v = vertexList.getContent();
-            }
-            vertexList.next();
-        }
-        vertexList.toFirst();
-        while (vertexList.hasAccess()){
-            if(v == vertexList.getContent()){
-                vertexList.remove();
-                return v;
-            }
-            vertexList.next();
-        }
-        return null;
-    }
-
-    /**
-     * Nötig für den Dijkstra-Algorithmus
-     * Berechnet für alle Vertices, die benachbart zum übergebenen Vertex sind, die Distanz vom Start und setzt ggf. diese und den vorherigen Vertex
-     */
-    private void calcDist(Vertex<VertexData> source,List<Vertex> vertexList){
-        List<Edge> edgeList = adoptedGraph.getEdges(source);
-        edgeList.toFirst();
-        while (edgeList.hasAccess()){
-            Vertex<VertexData> v = (source == edgeList.getContent().getVertices()[0]) ? edgeList.getContent().getVertices()[1] : edgeList.getContent().getVertices()[0];
-            if(v.getContent().dist > source.getContent().dist + edgeList.getContent().getWeight()){
-                v.getContent().dist = source.getContent().dist+edgeList.getContent().getWeight();
-                v.getContent().prev = source;
-                if(!isInList(v,vertexList)){
-                    vertexList.append(v);
+    private int[] findSmallest(){
+        int[] min = null;
+        for(int i = 0; i < nodeMap.length; i++){
+            for(int j = 0; j < nodeMap.length; j++){
+                Node current  = nodeMap[i][j];
+                if(!current.visited && current.getDistance() != Float.MAX_VALUE){
+                    if(min == null){
+                        min = new int[]{i,j};
+                    }else if(nodeMap[min[0]][min[1]].getDistance() > current.getDistance()){
+                        min[0] = i;
+                        min[1] = j;
+                    }
                 }
             }
-            edgeList.next();
         }
+        return min;
     }
 
-    /**
-     * Nötig für den Dijkstra-Algorithmus
-     * Bereitet alles nötige für den Start des Algorithmus vor.
-     */
-    private List<Vertex> initiate(Vertex<VertexData> start){
-        List<Vertex> vertexList = new List<Vertex>();
-        List<Vertex> vList = adoptedGraph.getVertices();
-        vList.toFirst();
-        while (vList.hasAccess()){
-            Vertex<VertexData> v = vList.getContent();
-            v.getContent().dist = (Double.MAX_VALUE);
-            v.getContent().prev = (null);
-            if(v == start){
-                v.getContent().dist = 0;
+    private void updateNeighbours(int xPos, int yPos){
+        for(int i = Math.max(0,xPos-1); i < Math.min(nodeMap.length, xPos+2); i++){
+            for(int j = Math.max(0,yPos-1); j < Math.min(nodeMap[i].length, yPos+2); j++){
+                if(i != xPos || j != yPos){
+                    updateNeighbour(xPos,yPos,i,j);
+                }
             }
-            vList.next();
         }
-        return vertexList;
     }
 
-    /**
-     * Überprüft, pb der Vertex v in der Liste vertexList ist
-     */
-    private boolean isInList(Vertex v,List<Vertex> vertexList){
-        vertexList.toFirst();
-        while (vertexList.hasAccess()){
-            if(vertexList.getContent() == v) return true;
-            vertexList.next();
+    private void updateNeighbour(int srcX, int srcY, int xPos, int yPos){
+        Node current = nodeMap[xPos][yPos];
+        if(!current.visited) {
+            float newDist = nodeMap[srcX][srcY].fromStart;
+            if(newDist != Float.MAX_VALUE) {
+                newDist += (nodeMap[srcX][srcY].dpsInRange + current.dpsInRange) / 2;
+                if (srcX == xPos || srcY == yPos) {
+                    newDist += 1;
+                } else {
+                    newDist += (float) Math.sqrt(2);
+                }
+
+                if (newDist < current.fromStart) {
+                    current.fromStart = newDist;
+                    current.preX = srcX;
+                    current.preY = srcY;
+                }
+            }
         }
-        return false;
     }
 
-    /**
-     * Berechnet dpsInRange und die Kantengewichter der Vertices um den übergebenen Vertex
-     */
-    private Queue<Vertex> changedTower(Vertex<VertexData> pos,Tower tower){
-        VertexData content = pos.getContent();
-        Queue<Vertex> retQueue = new Queue<>();
-        if(!(pos.getContent().attackRange == 0)) {
-            adoptedGraph.setAllVertexMarks(false);
-            DFS(pos, content.x, content.y, pos.getContent().attackRange, -1*pos.getContent().dps, retQueue);
-        }
-        float dps;
-        if(tower == null || tower.getFrequency() == 0){
-            dps = 0;
-        }else{
-            dps = (tower.getProjectile().getImpactDamage() / tower.getFrequency()) * dpsMultiplier;
-        }
-        content.getFromTower(tower);
-        adoptedGraph.setAllVertexMarks(false);
-        DFS(pos,content.x,content.y,content.attackRange,dps,retQueue);
-        return retQueue;
-    }
-
-    /**
-     * Setzt dpsInRange mithilfe der Tiefensuche
-     */
-    private void DFS(Vertex<VertexData> currVertex,float startX,float startY,float range,float dps,Queue<Vertex> vQueue){
-        float currX = currVertex.getContent().x;
-        float currY = currVertex.getContent().y;
-        if(calcDist(startX,startY,currX,currY) <= range){
-            vQueue.enqueue(currVertex);
-            currVertex.getContent().dpsInRange = currVertex.getContent().dpsInRange+dps;
-            List<Vertex> neighbours = adoptedGraph.getNeighbours(currVertex);
-            neighbours.toFirst();
-            while (neighbours.hasAccess()){
-                Vertex curr = neighbours.getContent();
-                if(curr.isMarked()){
-                    neighbours.remove();
+    private void prepareNodeMap(int startX, int startY){
+        for(int i = 0; i < nodeMap.length; i++){
+            for(int  j = 0; j < nodeMap.length; j++){
+                Node current = nodeMap[i][j];
+                current.preX = -1;
+                current.preY = -1;
+                current.visited = false;
+                if(i == startX && j == startY){
+                    current.fromStart = 0;
                 }else{
-                    curr.setMark(true);
-                    DFS(curr,startX,startY,range,dps,vQueue);
-                    neighbours.next();
+                    current.fromStart = Float.MAX_VALUE;
                 }
             }
         }
     }
 
-    /**
-     * Setzt das Gewicht der übergebenen Edge nEdge auf das Gewicht der Edge oEdge + das Maximum von dpsInRange des Knoten, die diese verbindet.
-     */
-    private void calcEdge(Edge nEdge,Edge oEdge){
-        Vertex<VertexData> v1 = nEdge.getVertices()[0];
-        Vertex<VertexData> v2 = nEdge.getVertices()[1];
-        double dpsInRange = Math.max(v1.getContent().dpsInRange,v2.getContent().dpsInRange);
-        double weight = oEdge.getWeight();
-        nEdge.setWeight(dpsInRange+weight);
+    private float getDist(int x1, int y1, int x2, int y2){
+        return (float) Math.sqrt(Math.pow(x1-x2,2)+Math.pow(y1-y2,2));
     }
 
-    /**
-     * Ruft calcEdge für jede Edge, die an einem Vertice aus der Queue vQueue liegt, auf.
-     */
-    private void calcEdges(Queue<Vertex> vQueue,Graph oGraph){
-        adoptedGraph.setAllEdgeMarks(false);
-        while (!vQueue.isEmpty()){
-            Vertex currVertex = vQueue.front();
-            List<Edge> oEdges = oGraph.getEdges(oGraph.getVertex(currVertex.getID()));
-            List<Edge> nEdges = adoptedGraph.getEdges(currVertex);
-            oEdges.toFirst();
-            nEdges.toFirst();
-            while (oEdges.hasAccess() && nEdges.hasAccess()){
-                if(!nEdges.getContent().isMarked()){
-                    calcEdge(nEdges.getContent(),oEdges.getContent());
-                }
-                oEdges.next();
-                nEdges.next();
-            }
-            vQueue.dequeue();
-        }
+    private float getDist(float x1, float y1, float x2, float y2){
+        return (float) Math.sqrt(Math.pow(x1-x2,2)+Math.pow(y1-y2,2));
     }
 
-    /**
-     * Berechnet den adoptedGraph auf Grundlage des Graphe graph
-     */
-    private void calcAdoptedGraph(Graph graph,Vertex<Tower>[][] blocks){
-        Queue<Vertex> vQueue = new Queue<>();
-        adoptedGraph = new Graph();
-        for(int i = 0;i < blocks.length;i++){
-            for(int j = 0;j < blocks[i].length;j++) {
-                Vertex<Tower> currVertex = blocks[i][j];
-                Vertex<VertexData> nVertex = new Vertex(currVertex.getID());
-                nVertex.setContent(new VertexData(currVertex.getContent(),i,j));
-                if (nVertex.getContent().dps > 0) {
-                    vQueue.enqueue(currVertex);
-                    vQueue.enqueue(nVertex);
+    private void updateNodesInRange(int xPos, int yPos){
+        if(nodeMap[xPos][yPos].dps > 0){
+            float dps = nodeMap[xPos][yPos].dps;
+            float attackRange = nodeMap[xPos][yPos].attackRange;
+
+            for(int i = (int)Math.max(0,xPos-attackRange); i < (int)Math.min(nodeMap.length,xPos+attackRange+1); i++){
+                for(int j = (int)Math.max(0,yPos-attackRange); j < (int)Math.min(nodeMap[i].length,yPos+attackRange+1); j++){
+                    if(getDist(xPos,yPos,i,j) <= attackRange){
+                        nodeMap[i][j].dpsInRange += dps;
+                    }
                 }
-                adoptedGraph.addVertex(nVertex);
             }
         }
-        List<Edge> eList = graph.getEdges();
-        eList.toFirst();    //Kopiere Edges
-        while (eList.hasAccess()){
-            Edge currEdge = eList.getContent();
-            Vertex v1 = adoptedGraph.getVertex(currEdge.getVertices()[0].getID());
-            Vertex v2 = adoptedGraph.getVertex(currEdge.getVertices()[1].getID());
-            Edge nEdge = new Edge(v1,v2,currEdge.getWeight());
-            adoptedGraph.addEdge(nEdge);
-            eList.next();
-        }
-        updateData(vQueue,graph);
     }
 
-    /**
-     * Passt adoptedGraph dem übergebenen Graphen graph an
-     */
-    private void setGraph(Graph graph){
+    private void updateAllNodes(){
+        for(int  i = 0; i < nodeMap.length; i++){
+            for(int  j = 0; j < nodeMap.length; j++){
+                updateNodesInRange(i,j);
+            }
+        }
+    }
+
+    private void createNodeMap(Block[][] blocks){
+        nodeMap = new Node[blocks.length][blocks[0].length];
+
+        for(int i = 0; i < blocks.length; i++){
+            for (int j = 0; j < blocks.length; j++){
+                nodeMap[i][j] = new Node(blocks[i][j],i,j,mainX,mainY);
+            }
+        }
+
+        updateAllNodes();
+    }
+
+    private void createNodeMap(Vertex<Tower>[][] blocks){
+        nodeMap = new Node[blocks.length][blocks[0].length];
+
+        for(int i = 0; i < blocks.length; i++){
+            for (int j = 0; j < blocks.length; j++){
+                nodeMap[i][j] = new Node(new Block(blocks[i][j],blocks[i][j].getContent()),i,j,mainX,mainY);
+            }
+        }
+
+        updateAllNodes();
+
         changed = true;
-        List<Vertex> nVList = graph.getVertices();
-        List<Vertex> oVList = adoptedGraph.getVertices();
-        Queue<Vertex> vQueue = new Queue<>();
-        nVList.toFirst();
-        oVList.toFirst();
-        while (nVList.hasAccess()){
-            Tower currTower = (Tower) nVList.getContent().getContent();
-            VertexData currData = (VertexData) oVList.getContent().getContent();
-            if(currTower == null){
-                if(!currData.name.equals("dummy")) {
-                    vQueue.enqueue(nVList.getContent());
-                    vQueue.enqueue(oVList.getContent());
-                }
-            }else if(!currData.name.equals(currTower.getName())){
-                vQueue.enqueue(nVList.getContent());
-                vQueue.enqueue(oVList.getContent());
-            }
-            oVList.next();
-            nVList.next();
-        }
-        updateData(vQueue,graph);
-    }
-
-    /**
-     * Aktualisiert VertexData der Vertices von vQueue
-     * Ruft danach calcEdges auf
-     */
-    private void updateData(Queue<Vertex> vQueue,Graph graph){
-        while (!vQueue.isEmpty()){
-            Vertex<Tower> towerVertex = vQueue.front();
-            vQueue.dequeue();
-            Vertex<VertexData> dataVertex = vQueue.front();
-            vQueue.dequeue();
-            Queue<Vertex> changedVertices = changedTower(dataVertex,towerVertex.getContent());
-            calcEdges(changedVertices,graph);
-        }
     }
 
     /**
@@ -520,48 +376,37 @@ public class EnemyHandler {
     }
 
     /**
-     * Gibt maxCalc zurück
-     */
-    public int getMaxCalc() {
-        return maxCalc;
-    }
-
-    /**
-     * Setzt maxCalc auf den übergebenen Wert
-     */
-    public void setMaxCalc(int maxCalc) {
-        this.maxCalc = maxCalc;
-    }
-
-    /**
      * Setzt dpsMultiplier auf den übergebenen Wert
      */
     public void setDpsMultiplier(float dpsMultiplier) {
         this.dpsMultiplier = dpsMultiplier;
     }
 
-    private class VertexData{
-        private String name;
+    private class Node{
         private float dps,attackRange,dpsInRange;
-        private float x,y;
-        private double dist;
-        private Vertex<VertexData> prev;
+        private float fromStart;
+        private final float toEnd;
+        private int xPos, yPos, preX, preY;
+        private boolean visited;
+        private Block block;
 
-        /**
-         * Konstruktor von VertexData
-         * @param tower Turm, den VertexData repräsentiert
-         * @param x X-Position besagten Turmes
-         * @param y Y-Position besagten Turmes
-         */
-        public VertexData(Tower tower,int x,int y){
-            this.x = x;
-            this.y = y;
-            getFromTower(tower);
+        public Node(Block block, int xPos, int yPos, int endX, int endY){
+            this.xPos = xPos;
+            this.yPos = yPos;
+            this.preX = -1;
+            this.preY = -1;
+            this.block = block;
+            int minDif = Math.min(Math.max(xPos,endX)-Math.min(xPos,endX),Math.max(yPos,endY)-Math.min(yPos,endY));
+            int maxDif = Math.max(Math.max(xPos,endX)-Math.min(xPos,endX),Math.max(yPos,endY)-Math.min(yPos,endY));
+            this.toEnd = (float) (Math.sqrt(2) * minDif) + maxDif - minDif;
+            this.fromStart = Float.MAX_VALUE;
+            getFromTower(block.getTower());
             dpsInRange = 0;
+            visited = false;
         }
 
         /**
-         * Setzt dps, attackRange und name abhängig des übergebenen Turmes
+         * Setzt dps, attackRange abhängig des übergebenen Turmes
          */
         private void getFromTower(Tower tower){
             if(tower != null) {
@@ -571,11 +416,17 @@ public class EnemyHandler {
                     dps = (tower.getProjectile().getImpactDamage() / tower.getFrequency()) * dpsMultiplier;
                 }
                 attackRange = tower.getAttackRadius();
-                name = tower.getName();
             }else{
                 dps = 0;
                 attackRange = 0;
-                name = "dummy";
+            }
+        }
+
+        private float getDistance(){
+            if(fromStart == Float.MAX_VALUE){
+                return Float.MAX_VALUE;
+            }else {
+                return fromStart + toEnd;
             }
         }
     }

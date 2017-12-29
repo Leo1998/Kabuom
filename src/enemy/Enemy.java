@@ -1,15 +1,17 @@
 package enemy;
 
-import graph.*;
+import enemy.step.Step;
 import model.GameObject;
 import utility.Vector2;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 
 public class Enemy extends GameObject {
-    private Queue<Vertex> path;
+    private Queue<Step> path;
     private float attackCooldown;
     private EnemyType enemyType;
-    private Vertex pos;
     private Vector2 movement;
 
     /**
@@ -21,12 +23,11 @@ public class Enemy extends GameObject {
      * @param y         Y-Position des Gegners
      * @param pos       Vertex, auf dem sich der Gegner befindet
      */
-    public Enemy(EnemyType enemyType, int level, float x, float y, Vertex pos) {
+    public Enemy(EnemyType enemyType, int level, float x, float y) {
         super(enemyType.getMaxHP(), level, enemyType.getName(), x, y, enemyType.getRadius(), enemyType.getTextureID());
-        this.path = new Queue<>();
+        this.path = new LinkedList<>();
         this.enemyType = enemyType;
         attackCooldown = 0;
-        this.pos = pos;
         this.movement = new Vector2(0,0);
     }
 
@@ -49,7 +50,7 @@ public class Enemy extends GameObject {
     /**
      * Gibt den, für diesen Gegner berechneten, Pfad zurück
      */
-    public Queue<Vertex> getPath() {
+    public Queue<Step> getPath() {
         return path;
     }
 
@@ -63,7 +64,7 @@ public class Enemy extends GameObject {
     /**
      * Setzt den Pfad, dem der Gegner folgen soll
      */
-    public void setPath(Queue<Vertex> path) {
+    public void setPath(Queue<Step> path) {
         this.path = path;
     }
 
@@ -72,20 +73,6 @@ public class Enemy extends GameObject {
      */
     public void setAttackCooldown(float attackCooldown) {
         this.attackCooldown = attackCooldown;
-    }
-
-    /**
-     * Gibt den letzten Vertex im normalen Graphen, an dem sich der Gegner befand, zurück
-     */
-    public Vertex getPos() {
-        return pos;
-    }
-
-    /**
-     * Setzt den letzten Vertex im normalen Graphen, an dem sich der Gegner befand
-     */
-    public void setPos(Vertex pos) {
-        this.pos = pos;
     }
 
     /**

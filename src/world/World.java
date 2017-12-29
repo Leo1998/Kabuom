@@ -66,7 +66,7 @@ public class World {
 
         connectAll(blocks, graph);
 
-        this.eH = new EnemyHandler(graph, blocks,this);
+        this.eH = new EnemyHandler(this, mainTowerCoordX,mainTowerCoordY);
         this.pH = new ProjectileHandler(this);
         this.tH = new TowerHandler(this);
 
@@ -86,7 +86,7 @@ public class World {
     }
 
     public void spawnEnemy(float x, float y, EnemyType type) {
-        this.objects.add(new Enemy(type, 1, x, y, blocks[(int) x][(int) y]));
+        this.objects.add(new Enemy(type, 1, x, y));
     }
 
     public void spawnProjectile(Projectile p) {
@@ -181,7 +181,7 @@ public class World {
             spawnWave = false;
         }
 
-        eH.handleEnemies(dt, enemyList, getIDOfMainTower(), graph, recalculate, drunk);
+        eH.handleEnemies(dt, enemyList, recalculate, drunk);
         pH.handleProjectiles(dt, projectileList, enemyList);
         tH.handleTowers(dt, towerList, enemyList);
 
