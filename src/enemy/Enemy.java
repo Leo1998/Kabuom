@@ -2,6 +2,7 @@ package enemy;
 
 import enemy.step.Step;
 import model.GameObject;
+import utility.Constants;
 import utility.Vector2;
 
 import java.util.LinkedList;
@@ -10,7 +11,7 @@ import java.util.Queue;
 
 public class Enemy extends GameObject {
     private Queue<Step> path;
-    private float attackCooldown;
+    private float attackCooldown, slowDuration;
     private EnemyType enemyType;
     private Vector2 movement;
 
@@ -21,13 +22,13 @@ public class Enemy extends GameObject {
      * @param level     Level des Gegners (WIP)
      * @param x         X-Position des Gegners
      * @param y         Y-Position des Gegners
-     * @param pos       Vertex, auf dem sich der Gegner befindet
      */
     public Enemy(EnemyType enemyType, int level, float x, float y) {
         super(enemyType.getMaxHP(), level, enemyType.getName(), x, y, enemyType.getRadius(), enemyType.getTextureID());
         this.path = new LinkedList<>();
         this.enemyType = enemyType;
         attackCooldown = 0;
+        slowDuration = 0;
         this.movement = new Vector2(0,0);
     }
 
@@ -37,7 +38,7 @@ public class Enemy extends GameObject {
      * @return
      */
     public float getSpeed() {
-        return enemyType.getSpeed();
+        return enemyType.getSpeed() / (slowDuration > 0 ? Constants.slowDebuff : 1);
     }
 
     /**
@@ -61,6 +62,10 @@ public class Enemy extends GameObject {
         return attackCooldown;
     }
 
+    public float getSlowDuration() {
+        return slowDuration;
+    }
+
     /**
      * Setzt den Pfad, dem der Gegner folgen soll
      */
@@ -73,6 +78,10 @@ public class Enemy extends GameObject {
      */
     public void setAttackCooldown(float attackCooldown) {
         this.attackCooldown = attackCooldown;
+    }
+
+    public void setSlowDuration(float slowDuration) {
+        this.slowDuration = slowDuration;
     }
 
     /**
@@ -94,6 +103,14 @@ public class Enemy extends GameObject {
      */
     public void setMovement(Vector2 movement) {
         this.movement = movement;
+    }
+
+    public void addAttackCooldown(float attackCooldown){
+        this.attackCooldown += attackCooldown;
+    }
+
+    public void addSlowDuration(float slowDuration){
+        this.slowDuration += slowDuration;
     }
 
     public EnemyType getEnemyType() {

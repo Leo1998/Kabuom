@@ -145,7 +145,10 @@ public class EnemyHandler {
         if(enemy.getHp()<=0){
             world.removeGameObject(enemy);
         }else {
-            enemy.setAttackCooldown(enemy.getAttackCooldown() + dt);
+            enemy.addAttackCooldown(dt);
+            if(enemy.getSlowDuration() > 0) {
+                enemy.addSlowDuration(-dt);
+            }
             Tower tower = getCollidingTower(enemy);
             if (tower != null && (!drunk || random.nextDouble() < 0.3 || tower.getType() == TowerType.BARRICADE)) {  //Attack
                 enemy.setMovement(new Vector2(0,0));
@@ -229,6 +232,7 @@ public class EnemyHandler {
                 return null;
             }
         }
+
         return goBack(xPos,yPos);
     }
 
@@ -322,7 +326,7 @@ public class EnemyHandler {
     private void updateNodesInRange(int xPos, int yPos){
         if(nodeMap[xPos][yPos].dps > 0){
             float dps = nodeMap[xPos][yPos].dps;
-            float attackRange = nodeMap[xPos][yPos].attackRange;
+            float attackRange = nodeMap[xPos][yPos].attackRange+1;
 
             for(int i = (int)Math.max(0,xPos-attackRange); i < (int)Math.min(nodeMap.length,xPos+attackRange+1); i++){
                 for(int j = (int)Math.max(0,yPos-attackRange); j < (int)Math.min(nodeMap[i].length,yPos+attackRange+1); j++){

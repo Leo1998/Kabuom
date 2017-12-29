@@ -1,7 +1,6 @@
 package projectile;
 
 import enemy.Enemy;
-import tower.TowerType;
 import utility.*;
 import world.World;
 
@@ -11,6 +10,8 @@ import java.util.Random;
 public class ProjectileHandler {
 
     private World world;
+
+
 
     public ProjectileHandler(World world) {
         this.world = world;
@@ -27,6 +28,9 @@ public class ProjectileHandler {
             }
             //wenn die distanz größer als die reichweite ist wird das projektil entfernt
             if(projectile.getDistance() >= projectile.getRange()) {
+                if(projectile.getProjectileType() == ProjectileType.POISON){
+                    spawnPoisonCloud(projectile.getX(),projectile.getY(),projectile.getLevel(),projectile.getDir());
+                }
                 world.removeGameObject(projectile);
             }else {
                 //projektil fliegt in richtung des zieles
@@ -43,16 +47,18 @@ public class ProjectileHandler {
                         //falls hp des projektils == 0 ist
                         if(projectile.getHp()==0){
                             //lösche das projektil
-                            //wenn projektil gift, dann fette giftwolke
-                            if(projectile.getProjectileType() == ProjectileType.POISON){
-                                Random random = new Random();
-                                for(int w = 0; w < 15 ; w++){
-                                    float alpha = random.nextFloat()*(float)(Math.PI * 2);
-                                    float distance = random.nextFloat()*1.5f;
-                                    float y = projectile.getY()-(float)(Math.sin(alpha) * distance);
-                                    float x = projectile.getX()-(float)(Math.cos(alpha) * distance);
-                                    world.spawnProjectile(new Projectile(ProjectileType.POISONTRAIL,projectile.getLevel(),x,y,projectile.getDir()));
-                                }
+                            switch (projectile.getProjectileType()){
+                                case POISON:
+                                    spawnPoisonCloud(projectile.getX(),projectile.getY(),projectile.getLevel(),projectile.getDir());
+                                    break;
+                                case ICE:
+                                    enemy.setSlowDuration(Constants.slowDuration);
+                                    break;
+                                case FLAME:
+                                    if(Constants.fireBreaksSlow) {
+                                        enemy.setSlowDuration(0);
+                                    }
+                                    break;
                             }
                             world.removeGameObject(projectile);
 
@@ -114,6 +120,17 @@ public class ProjectileHandler {
                 }
             }
         }*/
+    }
+
+    private void spawnPoisonCloud(float xPos, float yPos, int level, Vector2 direction){
+        Random random = new Random();
+        for(int i = 0; i < Constants.poisonCloudAmount ; i++){
+            float alpha = random.nextFloat()*(float)(Math.PI * 2);
+            float distance = random.nextFloat()*1.5f;
+            float x = xPos+(float)(Math.cos(alpha) * distance);
+            float y = yPos+(float)(Math.sin(alpha) * distance);
+            world.spawnProjectile(new Projectile(ProjectileType.POISONTRAIL,level,x,y,direction));
+        }
     }
 
 }
