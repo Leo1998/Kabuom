@@ -12,7 +12,7 @@ public class Effect {
         this.duration = effectType.duration;
     }
 
-    public float getDuration(){
+    public float getDuration() {
         return duration;
     }
 
@@ -20,7 +20,7 @@ public class Effect {
         this.duration = duration;
     }
 
-    public void addDuration(float duration){
+    public void addDuration(float duration) {
         this.duration += duration;
     }
 

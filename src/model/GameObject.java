@@ -1,9 +1,9 @@
 package model;
 
 public abstract class GameObject {
-    private int hp,maxHp,level;
+    private int hp, maxHp, level;
     private String name;
-    private float x,y,radius;
+    private float x, y, radius;
 
     public GameObject(int maxHp, int level, String name, float x, float y, float radius, String textureID) {
         this.maxHp = maxHp;
@@ -15,7 +15,9 @@ public abstract class GameObject {
         this.hp = maxHp;
     }
 
-    public float getRadius(){return radius; }
+    public float getRadius() {
+        return radius;
+    }
 
     public int getHp() {
         return hp;
@@ -45,7 +47,7 @@ public abstract class GameObject {
         this.hp = hp;
     }
 
-    public void addHp(int hp){
+    public void addHp(int hp) {
         this.hp += hp;
     }
 
@@ -57,5 +59,7 @@ public abstract class GameObject {
         this.y = y;
     }
 
-    public void setRadius(float radius){this.radius = radius;}
+    public void setRadius(float radius) {
+        this.radius = radius;
+    }
 }

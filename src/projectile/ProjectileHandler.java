@@ -2,7 +2,9 @@ package projectile;
 
 import enemy.Enemy;
 import enemy.effect.EffectType;
-import utility.*;
+import utility.Constants;
+import utility.Utility;
+import utility.Vector2;
 import world.World;
 
 import java.util.ArrayList;
@@ -11,7 +13,7 @@ import java.util.Random;
 public class ProjectileHandler {
 
     private World world;
-
+    
     private Random random;
 
     public ProjectileHandler(World world) {
@@ -22,26 +24,26 @@ public class ProjectileHandler {
     // Projektile bewegen & Kollisionen mit Gegner überprüfen -> schaden
     public void handleProjectiles(float dt, ArrayList<Projectile> projectiles, ArrayList<Enemy> enemies) {
 
-        for(Projectile projectile:projectiles){
+        for (Projectile projectile : projectiles) {
             //System.out.println(p.getX() + "  " + p.getY());
             //weite die das Projektil geflogen ist wird aktualisiert
-            if(projectile.getDistance() < projectile.getRange()){
+            if (projectile.getDistance() < projectile.getRange()) {
                 projectile.setDistance(projectile.getDistance() + projectile.getSpeed() * dt);
             }
             //wenn die distanz größer als die reichweite ist wird das projektil entfernt
-            if(projectile.getDistance() >= projectile.getRange()) {
-                if(projectile.getProjectileType() == ProjectileType.POISON){
-                    spawnPoisonCloud(projectile.getX(),projectile.getY(),projectile.getLevel(),projectile.getDir());
+            if (projectile.getDistance() >= projectile.getRange()) {
+                if (projectile.getProjectileType() == ProjectileType.POISON) {
+                    spawnPoisonCloud(projectile.getX(), projectile.getY(), projectile.getLevel(), projectile.getDir());
                 }
                 world.removeGameObject(projectile);
-            }else {
+            } else {
                 //projektil fliegt in richtung des zieles
                 projectile.setX(projectile.getX() + projectile.getDir().getCoords()[0] * projectile.getSpeed() * dt);
                 projectile.setY(projectile.getY() + projectile.getDir().getCoords()[1] * projectile.getSpeed() * dt);
 
-                for(Enemy enemy:enemies){
+                for (Enemy enemy : enemies) {
                     //falls projektil mit gegner kollidiert und der gegner noch nicht getroffen ist
-                    if(Utility.gameObjectIsCollidingWithGameObject(projectile,enemy) && !projectile.getHitEnemies().contains(enemy)){
+                    if (Utility.gameObjectIsCollidingWithGameObject(projectile, enemy) && !projectile.getHitEnemies().contains(enemy)) {
                         //verringere die hp des gegners, verringere die hp des projektils, füge gegner zu getroffenen hinzu
                         enemy.addHp(-projectile.getImpactDamage());
                         projectile.addHp(-1);
@@ -54,17 +56,17 @@ public class ProjectileHandler {
                             projectile.getDir().getCoords()[1] = (float)(Math.sin(rand)*oldX + Math.cos(rand)*oldY);
                         }
                         //falls hp des projektils == 0 ist
-                        if(projectile.getHp()==0){
+                        if (projectile.getHp() == 0) {
                             //lösche das projektil
-                            switch (projectile.getProjectileType()){
+                            switch (projectile.getProjectileType()) {
                                 case POISON:
-                                    spawnPoisonCloud(projectile.getX(),projectile.getY(),projectile.getLevel(),projectile.getDir());
+                                    spawnPoisonCloud(projectile.getX(), projectile.getY(), projectile.getLevel(), projectile.getDir());
                                     break;
                                 case ICE:
                                     enemy.addEffect(EffectType.Slow);
                                     break;
                                 case FLAME:
-                                    if(Constants.fireBreaksSlow) {
+                                    if (Constants.fireBreaksSlow) {
                                         enemy.removeEffect(EffectType.Slow);
                                     }
                                     enemy.addEffect(EffectType.Burning);
@@ -81,7 +83,6 @@ public class ProjectileHandler {
                 }
             }
         }
-
 
 
         // Projektile werden bewegt.
@@ -136,14 +137,14 @@ public class ProjectileHandler {
         }*/
     }
 
-    private void spawnPoisonCloud(float xPos, float yPos, int level, Vector2 direction){
+    private void spawnPoisonCloud(float xPos, float yPos, int level, Vector2 direction) {
         Random random = new Random();
-        for(int i = 0; i < Constants.poisonCloudAmount ; i++){
-            float alpha = random.nextFloat()*(float)(Math.PI * 2);
-            float distance = random.nextFloat()*1.5f;
-            float x = xPos+(float)(Math.cos(alpha) * distance);
-            float y = yPos+(float)(Math.sin(alpha) * distance);
-            world.spawnProjectile(new Projectile(ProjectileType.POISONTRAIL,level,x,y,direction));
+        for (int i = 0; i < Constants.poisonCloudAmount; i++) {
+            float alpha = random.nextFloat() * (float) (Math.PI * 2);
+            float distance = random.nextFloat() * 1.5f;
+            float x = xPos + (float) (Math.cos(alpha) * distance);
+            float y = yPos + (float) (Math.sin(alpha) * distance);
+            world.spawnProjectile(new Projectile(ProjectileType.POISONTRAIL, level, x, y, direction));
         }
     }
 

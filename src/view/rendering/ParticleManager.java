@@ -1,10 +1,6 @@
 package view.rendering;
 
-import org.lwjgl.opengl.Display;
-
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class ParticleManager {
 

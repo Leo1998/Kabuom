@@ -1,8 +1,6 @@
 package controller;
 
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import view.GameView;
 import view.MenuView;
 import view.View;
 import view.ViewManager;
@@ -38,7 +36,7 @@ public class Controller {
 
         viewManager = new ViewManager(this);
 
-        View view = new MenuView(Display.getWidth(),Display.getHeight(), viewManager);
+        View view = new MenuView(Display.getWidth(), Display.getHeight(), viewManager);
         viewManager.setCurrentView(view);
 
         float deltaTime;
@@ -67,13 +65,13 @@ public class Controller {
         viewManager.dispose();
     }
 
-    public void createNewWorld(){
-        this.world = new World(19,19,config.getDifficulty());
+    public void createNewWorld() {
+        this.world = new World(19, 19, config.getDifficulty());
     }
 
     public void endGame() {
         world = null;
-        
+
         viewManager.setCurrentView(new MenuView(Display.getWidth(), Display.getHeight(), viewManager));
     }
 

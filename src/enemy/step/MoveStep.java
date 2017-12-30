@@ -5,7 +5,7 @@ package enemy.step;
  */
 public class MoveStep extends Step {
 
-    public final int x,y;
+    public final int x, y;
 
     public MoveStep(int x, int y) {
         super(StepType.Move);
@@ -15,6 +15,6 @@ public class MoveStep extends Step {
 
     @Override
     public MoveStep clone() throws CloneNotSupportedException {
-        return new MoveStep(x,y);
+        return new MoveStep(x, y);
     }
 }

@@ -1,6 +1,5 @@
 package view.rendering;
 
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL13;
 
@@ -15,7 +14,7 @@ public class DrunkEffect extends PostProcessingEffect {
             File vert = new File(Batch.class.getResource("/shaders/drunk.vert").toURI());
             File frag = new File(Batch.class.getResource("/shaders/drunk.frag").toURI());
 
-            VertexAttrib[] attribs = new VertexAttrib[] {
+            VertexAttrib[] attribs = new VertexAttrib[]{
                     new VertexAttrib(0, "position", 2),
                     new VertexAttrib(1, "tid", 1),
                     new VertexAttrib(2, "color", 4),
@@ -29,7 +28,7 @@ public class DrunkEffect extends PostProcessingEffect {
             }
 
             return new ShaderProgram(vert, frag, map);
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

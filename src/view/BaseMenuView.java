@@ -21,7 +21,7 @@ public abstract class BaseMenuView extends View {
 
         timer += deltaTime;
 
-        while(timer > 0.1f) {
+        while (timer > 0.1f) {
             timer -= 0.1f;
 
             ParticleManager manager = this.getViewManager().getParticleManager();
