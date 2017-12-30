@@ -13,7 +13,7 @@ import java.util.Random;
 public class ProjectileHandler {
 
     private World world;
-    
+
     private Random random;
 
     public ProjectileHandler(World world) {
