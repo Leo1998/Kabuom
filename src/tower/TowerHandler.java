@@ -37,6 +37,14 @@ public class TowerHandler {
         }
     }
 
+    public void regenerateTowers(ArrayList<Tower> towers){
+        for(Tower tower:towers){
+            if(tower.getHp() < tower.getMaxHp()){
+                tower.addHp(tower.getMaxHp()/10);
+            }
+        }
+    }
+
     private Enemy getClosestEnemy(ArrayList<Enemy> enemies, Tower tower) {
         if (enemies.size() > 0) {
             Enemy closest = enemies.get(0);

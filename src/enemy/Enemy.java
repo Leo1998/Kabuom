@@ -149,7 +149,7 @@ public class Enemy extends GameObject {
     }
 
     @Override
-    public void addHp(int hp) {
+    public void addHp(float hp) {
         super.addHp(Math.round(hp * getStrength(EffectType.Bleeding)));
     }
 

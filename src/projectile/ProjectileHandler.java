@@ -43,7 +43,7 @@ public class ProjectileHandler {
 
                 for (Enemy enemy : enemies) {
                     //falls projektil mit gegner kollidiert und der gegner noch nicht getroffen ist
-                    if (Utility.gameObjectIsCollidingWithGameObject(projectile, enemy) && !projectile.getHitEnemies().contains(enemy)) {
+                    if (enemy.getHp() > 0 && Utility.gameObjectIsCollidingWithGameObject(projectile, enemy) && !projectile.getHitEnemies().contains(enemy)) {
                         //verringere die hp des gegners, verringere die hp des projektils, füge gegner zu getroffenen hinzu
                         enemy.addHp(-projectile.getImpactDamage());
                         projectile.addHp(-1);

@@ -34,9 +34,9 @@ public class World {
 
     private int coins = 1000;
 
-    private EnemyHandler eH;
-    private ProjectileHandler pH;
-    private TowerHandler tH;
+    private EnemyHandler enemyHandler;
+    private ProjectileHandler projectileHandler;
+    private TowerHandler towerHandler;
 
     private Tower mainTower;
 
@@ -68,17 +68,17 @@ public class World {
 
         connectAll(blocks, graph);
 
-        this.eH = new EnemyHandler(this, mainTowerCoordX, mainTowerCoordY);
-        this.pH = new ProjectileHandler(this);
-        this.tH = new TowerHandler(this);
+        this.enemyHandler = new EnemyHandler(this, mainTowerCoordX, mainTowerCoordY);
+        this.projectileHandler = new ProjectileHandler(this);
+        this.towerHandler = new TowerHandler(this);
 
         this.mainTower = new Tower(TowerType.MAINTOWER, 1, mainTowerCoordX, mainTowerCoordY, 8);
         this.setTowerInBlocks((int) mainTower.getX(), (int) mainTower.getY(), mainTower);
 
         setDifficulty(difficulty);
 
-        /**
-         for(int i = 0; i < width;i++){
+
+         /**for(int i = 0; i < width;i++){
          for(int j = 0; j < height;j++){
          if(i != mainTowerCoordX || j != mainTowerCoordY){
          this.setTowerInBlocks(i,j,new Tower(TowerType.FLAMETHROWER,1,i,j,8));
@@ -176,6 +176,7 @@ public class World {
         gameTime = gameTime + dt;
 
         if (spawnWave) {
+            towerHandler.regenerateTowers(towerList);
             //this.spawnEnemy(10,0,EnemyType.Cheat);
             Random random = new Random();
             for (int i = 0; i < Math.pow(1 + wave, 3) / 100 + 5; i++) {
@@ -184,9 +185,9 @@ public class World {
             spawnWave = false;
         }
 
-        eH.handleEnemies(dt, enemyList, recalculate, drunk);
-        pH.handleProjectiles(dt, projectileList, enemyList);
-        tH.handleTowers(dt, towerList, enemyList);
+        enemyHandler.handleEnemies(dt, enemyList, recalculate, drunk);
+        projectileHandler.handleProjectiles(dt, projectileList, enemyList);
+        towerHandler.handleTowers(dt, towerList, enemyList);
 
     }
 
@@ -229,7 +230,7 @@ public class World {
      * Die Anfrage liefert die Schwierigkeit der Welt als Integer.
      */
     public float getDifficulty() {
-        return (eH.getDpsMultiplier() + 1) * 10;
+        return (enemyHandler.getDpsMultiplier() + 1) * 10;
     }
 
     /**
@@ -273,6 +274,6 @@ public class World {
     }
 
     public void setDifficulty(int difficulty) {
-        eH.setDpsMultiplier(((float) difficulty - 1) / 10);
+        enemyHandler.setDpsMultiplier(((float) difficulty - 1) / 10);
     }
 }
