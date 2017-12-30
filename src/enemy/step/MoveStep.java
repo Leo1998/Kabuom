@@ -7,14 +7,14 @@ public class MoveStep extends Step {
 
     public final int x,y;
 
-    public MoveStep(StepType stepType, int x, int y) {
-        super(stepType);
+    public MoveStep(int x, int y) {
+        super(StepType.Move);
         this.x = x;
         this.y = y;
     }
 
     @Override
     public MoveStep clone() throws CloneNotSupportedException {
-        return new MoveStep(stepType,x,y);
+        return new MoveStep(x,y);
     }
 }

@@ -5,12 +5,11 @@ import model.GameObject;
 import utility.Constants;
 import utility.Vector2;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.Stack;
 
 
 public class Enemy extends GameObject {
-    private Queue<Step> path;
+    private Stack<Step> path;
     private float attackCooldown, slowDuration;
     private EnemyType enemyType;
     private Vector2 movement;
@@ -25,7 +24,7 @@ public class Enemy extends GameObject {
      */
     public Enemy(EnemyType enemyType, int level, float x, float y) {
         super(enemyType.getMaxHP(), level, enemyType.getName(), x, y, enemyType.getRadius(), enemyType.getTextureID());
-        this.path = new LinkedList<>();
+        this.path = new Stack<>();
         this.enemyType = enemyType;
         attackCooldown = 0;
         slowDuration = 0;
@@ -51,7 +50,7 @@ public class Enemy extends GameObject {
     /**
      * Gibt den, für diesen Gegner berechneten, Pfad zurück
      */
-    public Queue<Step> getPath() {
+    public Stack<Step> getPath() {
         return path;
     }
 
@@ -69,7 +68,7 @@ public class Enemy extends GameObject {
     /**
      * Setzt den Pfad, dem der Gegner folgen soll
      */
-    public void setPath(Queue<Step> path) {
+    public void setPath(Stack<Step> path) {
         this.path = path;
     }
 

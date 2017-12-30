@@ -50,8 +50,8 @@ public class EnemyHandler {
         }else {
             for(Enemy enemy : enemies){
                 if(enemy.getPath().isEmpty() || recalculate){
-                    Queue<Step> newPath =  new LinkedList<>();
-                    newPath.add(getRandomMove(Math.round(enemy.getX()),Math.round(enemy.getY()),random));
+                    Stack<Step> newPath =  new Stack<>();
+                    newPath.push(getRandomMove(Math.round(enemy.getX()),Math.round(enemy.getY()),random));
                     enemy.setPath(newPath);
                 }
             }
@@ -77,7 +77,7 @@ public class EnemyHandler {
             toY += (random.nextBoolean())? -1:1;
         }
 
-        return new MoveStep(StepType.Move,toX,toY);
+        return new MoveStep(toX,toY);
     }
 
     private void calcAllPaths(ArrayList<Enemy> enemies){
@@ -101,7 +101,7 @@ public class EnemyHandler {
                 ArrayList<Enemy> group = groupMap[i][j];
                 if(group != null){
                     Queue<Step> path = findPath(i,j);
-                    Queue<Step>[] paths = createQueueClones(path,group.size());
+                    Stack<Step>[] paths = createStackClones(path,group.size());
                     if(paths != null) {
                         for (int k = 0; k < group.size(); k++) {
                             group.get(k).setPath(paths[k]);
@@ -114,16 +114,16 @@ public class EnemyHandler {
         changed = false;
     }
 
-    private Queue<Step>[] createQueueClones(Queue<Step> steps, int amount){
+    private Stack<Step>[] createStackClones(Queue<Step> steps, int amount){
         if(amount > 0 && steps != null && !steps.isEmpty()) {
-            Queue<Step>[] result = new Queue[amount];
+            Stack<Step>[] result = new Stack[amount];
             for(int i = 0; i < result.length; i++){
-                result[i] = new LinkedList<>();
+                result[i] = new Stack<>();
             }
             for (Step step : steps) {
-                for (Queue<Step> queue : result) {
+                for (Stack<Step> stack : result) {
                     try {
-                        queue.add(step.clone());
+                        stack.push(step.clone());
                     } catch (java.lang.CloneNotSupportedException e) {
                         e.printStackTrace();
                     }
@@ -153,7 +153,9 @@ public class EnemyHandler {
             if (tower != null && (!drunk || random.nextDouble() < 0.3 || tower.getType() == TowerType.BARRICADE)) {  //Attack
                 enemy.setMovement(new Vector2(0,0));
                 if (enemy.getAttackCooldown() > enemy.getAttackSpeed()) {
-                    tower.setHp(tower.getHp() - enemy.getDamage());
+                    if(tower.getType() != TowerType.MAINTOWER) {
+                        tower.setHp(tower.getHp() - enemy.getDamage());
+                    }
                     enemy.setAttackCooldown(0);
                     if(tower.getType() == TowerType.BARRICADE){
                         enemy.setHp(Math.round(enemy.getHp()-(enemy.getDamage()*0.5f)));
@@ -174,7 +176,7 @@ public class EnemyHandler {
                 float targetY = ((MoveStep)step).y;
                 float dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
                 while (dist < moveableDist) {
-                    enemy.getPath().remove();
+                    enemy.getPath().pop();
                     step = enemy.getPath().peek();
                     if(step instanceof MoveStep) {
                         targetX = ((MoveStep) step).x;
@@ -217,85 +219,87 @@ public class EnemyHandler {
         return result;
     }
 
-    private Queue<Step> findPath(int startX ,int startY){
+    private Queue<Step> findPath(int startX,int startY){
+        //Exceptions
+            //Map empty
+            if(nodeMap == null || nodeMap.length == 0 || nodeMap[0] == null || nodeMap[0].length == 0 ) return null;
+            //Coordinates to small
+            if(startX < 0 || startY < 0 || mainX < 0 || mainY < 0) return null;
+            //Coordinates to large
+            if(startX >= nodeMap.length || startY >= nodeMap[0].length || mainX >= nodeMap.length || mainY >= nodeMap[0].length) return null;
+
         prepareNodeMap(startX,startY);
-        int xPos = startX;
-        int yPos = startY;
-        while(xPos != mainX || yPos != mainY){
-            nodeMap[xPos][yPos].visited = true;
-            updateNeighbours(xPos,yPos);
-            int[] next = findSmallest();
-            if(next != null){
-                xPos = next[0];
-                yPos = next[1];
+        int currX = startX, currY = startY;
+        boolean unreachable = false;
+
+        while(!unreachable && !(currX == mainX && currY == mainY)){
+            nodeMap[currX][currY].visited = true;
+            updateNeighbours(currX,currY);
+            int[] newCurr = getMinNode();
+            if(newCurr == null){
+                unreachable = true;
             }else{
-                return null;
+                currX = newCurr[0];
+                currY = newCurr[1];
             }
         }
 
-        return goBack(xPos,yPos);
-    }
-
-    private Queue<Step> goBack(int x, int y){
-        Queue<Step> path = new LinkedList<>();
-
-        int xPos = x, yPos = y;
-        Node current = nodeMap[xPos][yPos];
-        while(current.preX != -1 && current.preY != -1){
-            path.add(new MoveStep(StepType.Move,xPos,yPos));
-            xPos = current.preX;
-            yPos = current.preY;
-            current = nodeMap[xPos][yPos];
+        if(unreachable){
+            return null;
+        }else{
+            return goBack(currX,currY,startX,startY);
         }
-        return path;
     }
 
-    private int[] findSmallest(){
-        int[] min = null;
+    private Queue<Step> goBack(int currX, int currY, int startX, int startY){
+        Queue<Step> result = new LinkedList<>();
+        while(!(currX == startX && currY == startY)){
+            int newX = nodeMap[currX][currY].preX;
+            int newY = nodeMap[currX][currY].preY;
+            result.add(new MoveStep(currX,currY));
+            currX = newX;
+            currY = newY;
+        }
+        return result;
+    }
+
+    private void updateNeighbours(int x, int y){
+        if(x >= 0 && y >= 0 && x < nodeMap.length && y < nodeMap[x].length) {
+            for(int i = Math.max(0,x-1); i < Math.min(x+2,nodeMap.length);i++){
+                for(int j = Math.max(0,y-1); j < Math.min(y+2, nodeMap[i].length);j++){
+                    updateNeighbour(x,y,i,j);
+                }
+            }
+        }
+    }
+
+    private void updateNeighbour(int srcX, int srcY, int xPos, int yPos) {
+        if (xPos >= 0 && yPos >= 0 && xPos < nodeMap.length && yPos < nodeMap[xPos].length) {
+            float addDist = (srcX == xPos || srcY == yPos) ? 1 : (float) Math.sqrt(2);
+            addDist += Math.max(nodeMap[xPos][yPos].dpsInRange,nodeMap[srcX][srcY].dpsInRange);
+            if (nodeMap[xPos][yPos].fromStart > nodeMap[srcX][srcY].fromStart + addDist) {
+                nodeMap[xPos][yPos].fromStart = nodeMap[srcX][srcY].fromStart + addDist;
+                nodeMap[xPos][yPos].preX = srcX;
+                nodeMap[xPos][yPos].preY = srcY;
+            }
+
+        }
+    }
+
+    private int[] getMinNode(){
+        int minX = -1, minY = -1;
         for(int i = 0; i < nodeMap.length; i++){
-            for(int j = 0; j < nodeMap.length; j++){
-                Node current  = nodeMap[i][j];
-                if(!current.visited && current.getDistance() != Float.MAX_VALUE){
-                    if(min == null){
-                        min = new int[]{i,j};
-                    }else if(nodeMap[min[0]][min[1]].getDistance() > current.getDistance()){
-                        min[0] = i;
-                        min[1] = j;
-                    }
+            for(int j = 0; j < nodeMap[i].length; j++){
+                if(!nodeMap[i][j].visited && (minX == -1 || nodeMap[i][j].getDistance() < nodeMap[minX][minY].getDistance())){
+                    minX = i;
+                    minY = j;
                 }
             }
         }
-        return min;
-    }
-
-    private void updateNeighbours(int xPos, int yPos){
-        for(int i = Math.max(0,xPos-1); i < Math.min(nodeMap.length, xPos+2); i++){
-            for(int j = Math.max(0,yPos-1); j < Math.min(nodeMap[i].length, yPos+2); j++){
-                if(i != xPos || j != yPos){
-                    updateNeighbour(xPos,yPos,i,j);
-                }
-            }
-        }
-    }
-
-    private void updateNeighbour(int srcX, int srcY, int xPos, int yPos){
-        Node current = nodeMap[xPos][yPos];
-        if(!current.visited) {
-            float newDist = nodeMap[srcX][srcY].fromStart;
-            if(newDist != Float.MAX_VALUE) {
-                newDist += (nodeMap[srcX][srcY].dpsInRange + current.dpsInRange) / 2;
-                if (srcX == xPos || srcY == yPos) {
-                    newDist += 1;
-                } else {
-                    newDist += (float) Math.sqrt(2);
-                }
-
-                if (newDist < current.fromStart) {
-                    current.fromStart = newDist;
-                    current.preX = srcX;
-                    current.preY = srcY;
-                }
-            }
+        if(minX == -1 || nodeMap[minX][minY].fromStart == Float.MAX_VALUE){
+            return null;
+        }else{
+            return new int[]{minX,minY};
         }
     }
 
@@ -326,7 +330,7 @@ public class EnemyHandler {
     private void updateNodesInRange(int xPos, int yPos){
         if(nodeMap[xPos][yPos].dps > 0){
             float dps = nodeMap[xPos][yPos].dps;
-            float attackRange = nodeMap[xPos][yPos].attackRange+1;
+            float attackRange = nodeMap[xPos][yPos].attackRange;
 
             for(int i = (int)Math.max(0,xPos-attackRange); i < (int)Math.min(nodeMap.length,xPos+attackRange+1); i++){
                 for(int j = (int)Math.max(0,yPos-attackRange); j < (int)Math.min(nodeMap[i].length,yPos+attackRange+1); j++){
