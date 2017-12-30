@@ -5,7 +5,6 @@ import org.lwjgl.opengl.GL13;
 import utility.Matrix4;
 import utility.OrthographicCamera;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;

@@ -304,6 +304,7 @@ public class ViewManager {
         this.currentView = currentView;
         this.currentView.layout(Display.getWidth(), Display.getHeight());
 
+        this.ppManager.clearAllEffects();
         this.particleManager.clearParticles();
     }
 
