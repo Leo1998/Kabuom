@@ -48,7 +48,6 @@ public class Projectile extends GameObject {
         return dir;
     }
 
-
     /**
      * Die Anfrage liefert die Distanz zum Ziel des Projektils als float.
      */

@@ -13,10 +13,12 @@ import java.util.Random;
 public class ProjectileHandler {
 
     private World world;
-
+    
+    private Random random;
 
     public ProjectileHandler(World world) {
         this.world = world;
+        random = new Random();
     }
 
     // Projektile bewegen & Kollisionen mit Gegner überprüfen -> schaden
@@ -46,6 +48,13 @@ public class ProjectileHandler {
                         enemy.addHp(-projectile.getImpactDamage());
                         projectile.addHp(-1);
                         projectile.addToHitEnemies(enemy);
+                        if(projectile.getProjectileType() == ProjectileType.LIGHTNING){
+                            float oldX = projectile.getDir().getCoords()[0];
+                            float oldY = projectile.getDir().getCoords()[1];
+                            double rand = random.nextDouble() * (float) (Math.PI*2);
+                            projectile.getDir().getCoords()[0] = (float)(Math.cos(rand)*oldX - Math.sin(rand)*oldY);
+                            projectile.getDir().getCoords()[1] = (float)(Math.sin(rand)*oldX + Math.cos(rand)*oldY);
+                        }
                         //falls hp des projektils == 0 ist
                         if (projectile.getHp() == 0) {
                             //lösche das projektil
