@@ -6,6 +6,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.*;
 import org.lwjgl.opengl.DisplayMode;
+import utility.LwjglNativesLoader;
 import view.rendering.*;
 
 import java.awt.*;
@@ -116,6 +117,8 @@ public class ViewManager {
 
     public ViewManager(Controller ctrl) {
         this.ctrl = ctrl;
+
+        LwjglNativesLoader.load();
 
         try {
             setDisplayMode(800, 600, false);
@@ -301,6 +304,7 @@ public class ViewManager {
         this.currentView = currentView;
         this.currentView.layout(Display.getWidth(), Display.getHeight());
 
+        this.ppManager.clearAllEffects();
         this.particleManager.clearParticles();
     }
 

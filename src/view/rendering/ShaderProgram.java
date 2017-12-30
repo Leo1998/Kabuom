@@ -5,10 +5,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import utility.Matrix4;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.FloatBuffer;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,10 +13,19 @@ import java.util.Map;
 public class ShaderProgram {
 
     private static String loadShader(File file) {
+        try {
+            return loadShader(new FileInputStream(file));
+        } catch(Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static String loadShader(InputStream in) {
         StringBuilder result = new StringBuilder();
 
         try {
-            BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
             String buffer = "";
             while ((buffer = bufferedReader.readLine()) != null)
                 result.append(buffer + "\n");
@@ -49,6 +55,14 @@ public class ShaderProgram {
     }
 
     public ShaderProgram(File vertexShader, File fragmentShader, Map<Integer, String> attributes) {
+        this(loadShader(vertexShader), loadShader(fragmentShader), attributes);
+    }
+
+    public ShaderProgram(InputStream vertexShader, InputStream fragmentShader) {
+        this(vertexShader, fragmentShader, null);
+    }
+
+    public ShaderProgram(InputStream vertexShader, InputStream fragmentShader, Map<Integer, String> attributes) {
         this(loadShader(vertexShader), loadShader(fragmentShader), attributes);
     }
 

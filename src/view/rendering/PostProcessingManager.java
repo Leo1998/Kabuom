@@ -57,13 +57,22 @@ public class PostProcessingManager {
         }
     }
 
-    public void addEffect(PostProcessingEffect effect) {
+    public void clearAllEffects() {
+        for (PostProcessingEffect p : effects) {
+            p.dispose();
+        }
+        effects.clear();
+
+        resize(Display.getWidth(), Display.getHeight());
+    }
+
+    private void addEffect(PostProcessingEffect effect) {
         effects.add(effect);
 
         resize(Display.getWidth(), Display.getHeight());
     }
 
-    public void removeEffect(PostProcessingEffect effect) {
+    private void removeEffect(PostProcessingEffect effect) {
         effects.remove(effect);
         effect.dispose();
 
