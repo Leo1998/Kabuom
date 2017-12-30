@@ -63,9 +63,13 @@ public class ProjectileHandler {
                                     spawnPoisonCloud(projectile.getX(), projectile.getY(), projectile.getLevel(), projectile.getDir());
                                     break;
                                 case ICE:
+                                    if (Constants.fireBreaksSlow) {
+                                        enemy.removeEffect(EffectType.Burning);
+                                    }
                                     enemy.addEffect(EffectType.Slow);
                                     break;
                                 case FLAME:
+                                case FRAGGRENADE:
                                     if (Constants.fireBreaksSlow) {
                                         enemy.removeEffect(EffectType.Slow);
                                     }
