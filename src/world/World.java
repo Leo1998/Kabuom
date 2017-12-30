@@ -26,7 +26,7 @@ public class World {
     private int width, height;
     private float timePassed;
 
-    private int wave = 0;
+    private int wave = 1;
     private boolean spawnWave = false;
     private  float gameTime;
 
