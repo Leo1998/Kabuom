@@ -153,21 +153,19 @@ public class EnemyHandler {
             if (tower != null && (!drunk || random.nextDouble() < 0.3 || tower.getType() == TowerType.BARRICADE)) {  //Attack
                 enemy.setMovement(new Vector2(0,0));
                 if (enemy.getAttackCooldown() > enemy.getAttackSpeed()) {
-                    if(tower.getType() != TowerType.MAINTOWER) {
-                        tower.setHp(tower.getHp() - enemy.getDamage());
-                    }
+                    tower.setHp(tower.getHp() - enemy.getDamage());
                     enemy.setAttackCooldown(0);
                     if(tower.getType() == TowerType.BARRICADE){
                         enemy.setHp(Math.round(enemy.getHp()-(enemy.getDamage()*0.5f)));
                     }
                 }
             } else {              //Move
-                move(enemy, enemy.getSpeed() * dt);
+                move(enemy, enemy.getSpeed() * dt,dt);
             }
         }
     }
 
-    private void move(Enemy enemy, float moveableDist){
+    private void move(Enemy enemy, float moveableDist, float dt){
         Tower collidingTower = getCollidingTower(enemy);
         if(collidingTower == null && enemy.getPath() != null && !enemy.getPath().isEmpty()) {
             Step step = enemy.getPath().peek();
@@ -183,25 +181,22 @@ public class EnemyHandler {
                         targetY = ((MoveStep) step).y;
                         dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
                     }else{
-                        goTo(enemy,targetX,targetY);
+                        goTo(enemy,targetX,targetY,dt);
                         return;
                     }
                 }
                 float q = moveableDist / dist;
                 float nX = enemy.getX() + ((targetX - enemy.getX()) * q);
                 float nY = enemy.getY() + ((targetY - enemy.getY()) * q);
-                goTo(enemy,nX,nY);
+                goTo(enemy,nX,nY,dt);
             }
         }
     }
 
-    private void goTo(Enemy enemy, float x, float y){
-        Vector2 vec = new Vector2(x - enemy.getX(), y - enemy.getY());
+    private void goTo(Enemy enemy, float x, float y, float dt){
+        enemy.setMovement(new Vector2((x - enemy.getX())/dt, (y - enemy.getY())/dt));
         enemy.setX(x);
         enemy.setY(y);
-        vec.normalize();
-        vec.multiply(enemy.getEnemyType().getSpeed());
-        enemy.setMovement(vec);
     }
 
     private Tower getCollidingTower(Enemy enemy){

@@ -79,7 +79,7 @@ public class TowerHandler {
             }
 
             float emx = tower.getTarget().getMovement().getCoords()[0];
-            float emy = tower.getTarget().getMovement().getCoords()[0];
+            float emy = tower.getTarget().getMovement().getCoords()[1];
             float s = tower.getProjectile().getSpeed();
 
             float a = emx * emx + emy * emy - s * s;
