@@ -1,5 +1,7 @@
 package enemy;
 
+import enemy.effect.Effect;
+import enemy.effect.EffectType;
 import graph.Vertex;
 import tower.Tower;
 import tower.TowerType;
@@ -146,14 +148,15 @@ public class EnemyHandler {
             world.removeGameObject(enemy);
         }else {
             enemy.addAttackCooldown(dt);
-            if(enemy.getSlowDuration() > 0) {
-                enemy.addSlowDuration(-dt);
+            enemy.addEffectDuration(-dt);
+            if(enemy.hasEffect(EffectType.Burning)){
+                enemy.addHp(Math.round(EffectType.Burning.strength*dt));
             }
             Tower tower = getCollidingTower(enemy);
             if (tower != null && (!drunk || random.nextDouble() < 0.3 || tower.getType() == TowerType.BARRICADE)) {  //Attack
                 enemy.setMovement(new Vector2(0,0));
                 if (enemy.getAttackCooldown() > enemy.getAttackSpeed()) {
-                    tower.setHp(tower.getHp() - enemy.getDamage());
+                    tower.addHp(-enemy.getDamage());
                     enemy.setAttackCooldown(0);
                     if(tower.getType() == TowerType.BARRICADE){
                         enemy.setHp(Math.round(enemy.getHp()-(enemy.getDamage()*0.5f)));

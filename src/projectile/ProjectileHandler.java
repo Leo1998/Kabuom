@@ -1,6 +1,7 @@
 package projectile;
 
 import enemy.Enemy;
+import enemy.effect.EffectType;
 import utility.*;
 import world.World;
 
@@ -52,12 +53,17 @@ public class ProjectileHandler {
                                     spawnPoisonCloud(projectile.getX(),projectile.getY(),projectile.getLevel(),projectile.getDir());
                                     break;
                                 case ICE:
-                                    enemy.setSlowDuration(Constants.slowDuration);
+                                    enemy.addEffect(EffectType.Slow);
                                     break;
                                 case FLAME:
                                     if(Constants.fireBreaksSlow) {
-                                        enemy.setSlowDuration(0);
+                                        enemy.removeEffect(EffectType.Slow);
                                     }
+                                    enemy.addEffect(EffectType.Burning);
+                                    break;
+                                case BULLET:
+                                case PIERCINGBULLET:
+                                    enemy.addEffect(EffectType.Bleeding);
                                     break;
                             }
                             world.removeGameObject(projectile);
