@@ -43,7 +43,7 @@ public class PostProcessingManager {
             PostProcessingEffect e = effect.clazz.newInstance();
 
             addEffect(e);
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -87,7 +87,7 @@ public class PostProcessingManager {
                     passThroughFrameBuffers.add(new FrameBuffer(width, height, GL11.GL_LINEAR, GL12.GL_CLAMP_TO_EDGE));
                 }
 
-            } catch(LWJGLException e) {
+            } catch (LWJGLException e) {
                 e.printStackTrace();
             }
         }

@@ -1,8 +1,7 @@
 package controller;
 
-import org.json.*;
-import org.lwjgl.opengl.ARBTextureMultisample;
-import org.lwjgl.opengl.GL11;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -17,7 +16,6 @@ public class Config {
 
     private GraphicMode graphicMode = GraphicMode.High;
     private int maxWave = 0;
-
 
 
     private int difficulty = 1;
@@ -61,7 +59,7 @@ public class Config {
             writer.write(json);
 
             writer.close();
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -86,9 +84,13 @@ public class Config {
         this.maxWave = maxWave;
     }
 
-    public int getDifficulty() {return difficulty;}
+    public int getDifficulty() {
+        return difficulty;
+    }
 
-    public void setDifficulty(int difficulty) {this.difficulty = difficulty;}
+    public void setDifficulty(int difficulty) {
+        this.difficulty = difficulty;
+    }
 
     @Override
     public String toString() {

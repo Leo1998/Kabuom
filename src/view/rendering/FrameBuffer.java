@@ -1,10 +1,12 @@
 package view.rendering;
 
-import controller.Controller;
 import org.lwjgl.LWJGLException;
-import static org.lwjgl.opengl.EXTFramebufferObject.*;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GLContext;
 
-import org.lwjgl.opengl.*;
+import static org.lwjgl.opengl.EXTFramebufferObject.*;
 
 public class FrameBuffer implements ITexture {
 
@@ -80,14 +82,14 @@ public class FrameBuffer implements ITexture {
     }
 
     public void end() {
-        if (handle ==0)
+        if (handle == 0)
             return;
         GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
     }
 
     public void dispose() {
-        if (handle ==0)
+        if (handle == 0)
             return;
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
         glDeleteFramebuffersEXT(handle);

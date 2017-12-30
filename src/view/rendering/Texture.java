@@ -2,7 +2,10 @@ package view.rendering;
 
 import de.matthiasmann.twl.utils.PNGDecoder;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.ARBTextureMultisample;
+import org.lwjgl.opengl.EXTFramebufferObject;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GLContext;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -101,7 +104,7 @@ public class Texture implements ITexture {
             if (genMipmap) {
                 EXTFramebufferObject.glGenerateMipmapEXT(getTarget());
             }
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
             if (input != null) {

@@ -4,11 +4,9 @@ import enemy.effect.Effect;
 import enemy.effect.EffectType;
 import enemy.step.Step;
 import model.GameObject;
-import utility.Constants;
 import utility.Vector2;
 
 import java.util.ArrayList;
-import java.util.ListIterator;
 import java.util.Stack;
 
 
@@ -32,7 +30,7 @@ public class Enemy extends GameObject {
         this.path = new Stack<>();
         this.enemyType = enemyType;
         attackCooldown = 0;
-        this.movement = new Vector2(0,0);
+        this.movement = new Vector2(0, 0);
         this.effects = new ArrayList<>();
     }
 
@@ -101,7 +99,7 @@ public class Enemy extends GameObject {
         this.movement = movement;
     }
 
-    public void addAttackCooldown(float attackCooldown){
+    public void addAttackCooldown(float attackCooldown) {
         this.attackCooldown += attackCooldown;
     }
 
@@ -109,41 +107,41 @@ public class Enemy extends GameObject {
         return enemyType;
     }
 
-    public void addEffect(EffectType effectType){
+    public void addEffect(EffectType effectType) {
         boolean inList = false;
-        for(Effect effect:effects){
-            if(effect.effectType == effectType){
+        for (Effect effect : effects) {
+            if (effect.effectType == effectType) {
                 inList = true;
                 effect.setDuration(effectType.duration);
                 break;
             }
         }
-        if(!inList){
+        if (!inList) {
             effects.add(new Effect(effectType));
         }
     }
 
-    public void removeEffect(EffectType effectType){
-        for(int i = 0; i < effects.size();){
+    public void removeEffect(EffectType effectType) {
+        for (int i = 0; i < effects.size(); ) {
             Effect effect = effects.get(i);
-            if(effect.effectType == effectType){
+            if (effect.effectType == effectType) {
                 effects.remove(effect);
-            }else {
+            } else {
                 i++;
             }
         }
     }
 
-    public boolean hasEffect(EffectType effectType){
+    public boolean hasEffect(EffectType effectType) {
         return effects.contains(new Effect(effectType));
     }
 
-    public void addEffectDuration(float duration){
-        for(int i = 0; i < effects.size();){
+    public void addEffectDuration(float duration) {
+        for (int i = 0; i < effects.size(); ) {
             Effect effect = effects.get(i);
-            if(effect.getDuration() < 0){
+            if (effect.getDuration() < 0) {
                 effects.remove(effect);
-            }else {
+            } else {
                 effect.addDuration(duration);
                 i++;
             }
@@ -152,10 +150,10 @@ public class Enemy extends GameObject {
 
     @Override
     public void addHp(int hp) {
-        super.addHp(Math.round(hp*getStrength(EffectType.Bleeding)));
+        super.addHp(Math.round(hp * getStrength(EffectType.Bleeding)));
     }
 
-    private float getStrength(EffectType effectType){
+    private float getStrength(EffectType effectType) {
         return (effects.contains(new Effect(effectType)) ? effectType.strength : 1);
     }
 }

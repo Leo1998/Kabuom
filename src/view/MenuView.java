@@ -31,20 +31,23 @@ public class MenuView extends BaseMenuView {
             public void onClick() {
                 viewManager.getCtrl().createNewWorld();
 
-                viewManager.setCurrentView(new GameView(originWidth,originHeight, viewManager, viewManager.getCtrl().getWorld()));
-            }});
+                viewManager.setCurrentView(new GameView(originWidth, originHeight, viewManager, viewManager.getCtrl().getWorld()));
+            }
+        });
 
         optionsButton.setListener(new ButtonListener() {
             @Override
             public void onClick() {
-                viewManager.setCurrentView(new OptionsView(originWidth,originHeight, viewManager));
-            }});
+                viewManager.setCurrentView(new OptionsView(originWidth, originHeight, viewManager));
+            }
+        });
 
         exitButton.setListener(new ButtonListener() {
             @Override
             public void onClick() {
                 System.exit(0);
-            }});
+            }
+        });
     }
 
     @Override
