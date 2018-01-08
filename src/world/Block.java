@@ -11,7 +11,7 @@ public class Block {
     private Vertex vertex;
     private Tower tower;
 
-    public Block(Vertex vertex, Tower tower){
+    public Block(Vertex vertex, Tower tower) {
         this.vertex = vertex;
         this.tower = tower;
     }

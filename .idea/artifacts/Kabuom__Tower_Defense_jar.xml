@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="Kabuom! Tower Defense:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Kabuom__Tower_Defense_jar</output-path>
+    <root id="archive" name="Kabuom! Tower Defense.jar">
+      <element id="module-output" name="Kabuom! Tower Defense" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/json.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/lwjgl.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/PNGDecoder.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

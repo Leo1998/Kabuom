@@ -47,7 +47,7 @@ public class OptionsView extends BaseMenuView {
         });
 
         String difficulty = Integer.toString(Controller.instance.getConfig().getDifficulty());
-        difficultyButton = new Button(width / 2 - (width / 6 / 2), height/2+(height / 8 / 2), width/4,height/8,this,"Difficulty "  + difficulty);
+        difficultyButton = new Button(width / 2 - (width / 6 / 2), height / 2 + (height / 8 / 2), width / 4, height / 8, this, "Difficulty " + difficulty);
 
         this.components.add(difficultyButton);
 
@@ -56,9 +56,9 @@ public class OptionsView extends BaseMenuView {
             public void onClick() {
                 Config config = Controller.instance.getConfig();
                 int difficultyInt = Controller.instance.getConfig().getDifficulty();
-                if (difficultyInt == 10){
+                if (difficultyInt == 10) {
                     config.setDifficulty(1);
-                }else{
+                } else {
                     config.setDifficulty(++difficultyInt);
                 }
                 System.out.println(difficultyInt);

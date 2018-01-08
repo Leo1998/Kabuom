@@ -1,28 +1,28 @@
 package view.components;
 
 import utility.Utility;
-import view.rendering.Batch;
-import view.rendering.ITexture;
 import view.View;
 import view.ViewManager;
+import view.rendering.Batch;
+import view.rendering.ITexture;
 
 
-public class Button extends ViewComponent{
+public class Button extends ViewComponent {
 
     private ButtonListener listener;
     private String buttontext;
-    private ITexture texture,buttonMainTexture,buttonPressedTexture;
+    private ITexture texture, buttonMainTexture, buttonPressedTexture;
     private boolean down;
 
     public Button(float x, float y, float width, float height, View v, String buttontext) {
         this(x, y, width, height, v, buttontext, ViewManager.getTexture("viewTextures/mainButton.png"), ViewManager.getTexture("viewTextures/pressedButton.png"));
     }
 
-    public Button(float x, float y, float width, float height, View v, String buttontext,ITexture mainTexture, ITexture pressedTexture) {
+    public Button(float x, float y, float width, float height, View v, String buttontext, ITexture mainTexture, ITexture pressedTexture) {
         super(x, y, width, height, v);
         this.buttontext = buttontext;
         buttonMainTexture = mainTexture;
-        buttonPressedTexture =  pressedTexture;
+        buttonPressedTexture = pressedTexture;
         texture = buttonMainTexture;
         down = false;
     }
@@ -30,10 +30,10 @@ public class Button extends ViewComponent{
     @Override
     public void onMouseDown(int button, int mouseX, int mouseY) {
         super.onMouseDown(button, mouseX, mouseY);
-        if(button == 0 && Utility.viewComponentIsCollidingWithMouse(this, mouseX, mouseY) ) {
+        if (button == 0 && Utility.viewComponentIsCollidingWithMouse(this, mouseX, mouseY)) {
             down = true;
             texture = buttonPressedTexture;
-        }else{
+        } else {
             texture = buttonMainTexture;
             down = false;
         }
@@ -43,11 +43,11 @@ public class Button extends ViewComponent{
     public void onMouseUp(int button, int mouseX, int mouseY) {
         super.onMouseUp(button, mouseX, mouseY);
 
-        if(button == 0 && down) {
+        if (button == 0 && down) {
             texture = buttonMainTexture;
             down = false;
 
-            if (listener != null) {
+            if (listener != null && Utility.viewComponentIsCollidingWithMouse(this, mouseX, mouseY)) {
                 ViewManager.clickSound.start();
                 listener.onClick();
             }
@@ -56,9 +56,9 @@ public class Button extends ViewComponent{
 
     @Override
     public void draw(Batch batch) {
-        batch.draw(getTexture(),(getX()),(getY()),(getWidth()),(getHeight()),getWidth()/2,getHeight()/2,(float) Math.toRadians(0),1f,1f,1f,1f);
-        if(buttontext != null)
-        ViewManager.font.drawText(batch, buttontext , (int)((getX())+ (getWidth())/2 - ViewManager.font.getWidth(buttontext)/2),(int) ((getY()) + (getHeight())/2- ViewManager.font.getLineHeight()/2));
+        batch.draw(getTexture(), (getX()), (getY()), (getWidth()), (getHeight()), getWidth() / 2, getHeight() / 2, (float) Math.toRadians(0), 1f, 1f, 1f, 1f);
+        if (buttontext != null)
+            ViewManager.font.drawText(batch, buttontext, (int) ((getX()) + (getWidth()) / 2 - ViewManager.font.getWidth(buttontext) / 2), (int) ((getY()) + (getHeight()) / 2 - ViewManager.font.getLineHeight() / 2));
     }
 
     public ButtonListener getListener() {
@@ -69,13 +69,15 @@ public class Button extends ViewComponent{
         this.listener = listener;
     }
 
-    public ITexture getTexture() {return texture;}
+    public ITexture getTexture() {
+        return texture;
+    }
 
-    public String getButtontext(){
+    public String getButtontext() {
         return buttontext;
     }
 
-    public void setButtontext(String buttontext){
+    public void setButtontext(String buttontext) {
         this.buttontext = buttontext;
     }
 

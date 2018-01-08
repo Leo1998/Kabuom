@@ -1,16 +1,21 @@
 package enemy;
 
-import graph.*;
+import enemy.effect.Effect;
+import enemy.effect.EffectType;
+import enemy.step.Step;
 import model.GameObject;
+import utility.Vector2;
+
+import java.util.ArrayList;
+import java.util.Stack;
 
 
 public class Enemy extends GameObject {
-    private Queue<Vertex> path;
+    private Stack<Step> path;
     private float attackCooldown;
     private EnemyType enemyType;
-    private Vertex pos;
-    private float[] movement;
-    private int inDanger;
+    private Vector2 movement;
+    private ArrayList<Effect> effects;
 
     /**
      * Konstruktor des Enemy
@@ -19,15 +24,14 @@ public class Enemy extends GameObject {
      * @param level     Level des Gegners (WIP)
      * @param x         X-Position des Gegners
      * @param y         Y-Position des Gegners
-     * @param pos       Vertex, auf dem sich der Gegner befindet
      */
-    public Enemy(EnemyType enemyType, int level, float x, float y, Vertex pos) {
+    public Enemy(EnemyType enemyType, int level, float x, float y) {
         super(enemyType.getMaxHP(), level, enemyType.getName(), x, y, enemyType.getRadius(), enemyType.getTextureID());
-        this.path = new Queue<>();
+        this.path = new Stack<>();
         this.enemyType = enemyType;
         attackCooldown = 0;
-        this.pos = pos;
-        this.movement = new float[]{0f,0f};
+        this.movement = new Vector2(0, 0);
+        this.effects = new ArrayList<>();
     }
 
     /**
@@ -36,20 +40,20 @@ public class Enemy extends GameObject {
      * @return
      */
     public float getSpeed() {
-        return enemyType.getSpeed();
+        return enemyType.getSpeed() / getStrength(EffectType.Slow);
     }
 
     /**
      * Gibt die Zeit, die zwischen zwei Angriffen des Gegners verstreichen muss, zurück
      */
     public float getAttackSpeed() {
-        return enemyType.getAttackSpeed();
+        return enemyType.getAttackSpeed() * getStrength(EffectType.Slow);
     }
 
     /**
      * Gibt den, für diesen Gegner berechneten, Pfad zurück
      */
-    public Queue<Vertex> getPath() {
+    public Stack<Step> getPath() {
         return path;
     }
 
@@ -63,7 +67,7 @@ public class Enemy extends GameObject {
     /**
      * Setzt den Pfad, dem der Gegner folgen soll
      */
-    public void setPath(Queue<Vertex> path) {
+    public void setPath(Stack<Step> path) {
         this.path = path;
     }
 
@@ -72,20 +76,6 @@ public class Enemy extends GameObject {
      */
     public void setAttackCooldown(float attackCooldown) {
         this.attackCooldown = attackCooldown;
-    }
-
-    /**
-     * Gibt den letzten Vertex im normalen Graphen, an dem sich der Gegner befand, zurück
-     */
-    public Vertex getPos() {
-        return pos;
-    }
-
-    /**
-     * Setzt den letzten Vertex im normalen Graphen, an dem sich der Gegner befand
-     */
-    public void setPos(Vertex pos) {
-        this.pos = pos;
     }
 
     /**
@@ -98,22 +88,72 @@ public class Enemy extends GameObject {
     /**
      * Gibt zurück, in welche Richtung mit welcher Geschwindigkeit sich der Gegner im letzem Frame bewegt hat
      */
-    public float[] getMovement() {
+    public Vector2 getMovement() {
         return movement;
     }
 
     /**
      * Setzt, in welche Richtung mit welcher Geschwindigkeit sich der Gegner im letzem Frame bewegt hat
      */
-    public void setMovement(float[] movement) {
+    public void setMovement(Vector2 movement) {
         this.movement = movement;
+    }
+
+    public void addAttackCooldown(float attackCooldown) {
+        this.attackCooldown += attackCooldown;
     }
 
     public EnemyType getEnemyType() {
         return enemyType;
     }
 
-    public int getInDanger(){return inDanger;}
+    public void addEffect(EffectType effectType) {
+        boolean inList = false;
+        for (Effect effect : effects) {
+            if (effect.effectType == effectType) {
+                inList = true;
+                effect.setDuration(effectType.duration);
+                break;
+            }
+        }
+        if (!inList) {
+            effects.add(new Effect(effectType));
+        }
+    }
 
-    public void setInDanger(int inDanger){this.inDanger=inDanger;}
+    public void removeEffect(EffectType effectType) {
+        for (int i = 0; i < effects.size(); ) {
+            Effect effect = effects.get(i);
+            if (effect.effectType == effectType) {
+                effects.remove(effect);
+            } else {
+                i++;
+            }
+        }
+    }
+
+    public boolean hasEffect(EffectType effectType) {
+        return effects.contains(new Effect(effectType));
+    }
+
+    public void addEffectDuration(float duration) {
+        for (int i = 0; i < effects.size(); ) {
+            Effect effect = effects.get(i);
+            if (effect.getDuration() < 0) {
+                effects.remove(effect);
+            } else {
+                effect.addDuration(duration);
+                i++;
+            }
+        }
+    }
+
+    @Override
+    public void addHp(float hp) {
+        super.addHp(Math.round(hp * getStrength(EffectType.Bleeding)));
+    }
+
+    private float getStrength(EffectType effectType) {
+        return (effects.contains(new Effect(effectType)) ? effectType.strength : 1);
+    }
 }

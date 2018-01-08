@@ -44,7 +44,7 @@ public class PostProcessingManager {
             PostProcessingEffect e = effect.clazz.newInstance();
 
             addEffect(e);
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -58,13 +58,22 @@ public class PostProcessingManager {
         }
     }
 
-    public void addEffect(PostProcessingEffect effect) {
+    public void clearAllEffects() {
+        for (PostProcessingEffect p : effects) {
+            p.dispose();
+        }
+        effects.clear();
+
+        resize(Display.getWidth(), Display.getHeight());
+    }
+
+    private void addEffect(PostProcessingEffect effect) {
         effects.add(effect);
 
         resize(Display.getWidth(), Display.getHeight());
     }
 
-    public void removeEffect(PostProcessingEffect effect) {
+    private void removeEffect(PostProcessingEffect effect) {
         effects.remove(effect);
         effect.dispose();
 
@@ -88,7 +97,7 @@ public class PostProcessingManager {
                     passThroughFrameBuffers.add(new FrameBuffer(width, height, GL11.GL_LINEAR, GL12.GL_CLAMP_TO_EDGE));
                 }
 
-            } catch(LWJGLException e) {
+            } catch (LWJGLException e) {
                 e.printStackTrace();
             }
         }

@@ -6,6 +6,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.*;
 import org.lwjgl.opengl.DisplayMode;
+import utility.LwjglNativesLoader;
 import view.rendering.*;
 
 import java.awt.*;
@@ -22,7 +23,7 @@ public class ViewManager {
 
     public static final HashMap<String, ITexture> textureMap = new HashMap<>();
 
-    public static void load (){
+    public static void load() {
         try {
             font = new BitmapFont(ViewManager.class.getResource("/font/font.fnt"), ViewManager.class.getResource("/font/font.png"));
 
@@ -88,7 +89,7 @@ public class ViewManager {
             loadTexture("enemyTextures/Endgegner3SRechtsHit.png");
 
 
-        } catch(IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             font = null;
         }
@@ -100,7 +101,7 @@ public class ViewManager {
         textureMap.put(id, tex);
     }
 
-    public static ITexture getTexture(String textureID){
+    public static ITexture getTexture(String textureID) {
         if (!textureMap.containsKey(textureID)) {
             loadTexture(textureID);
         }
@@ -116,6 +117,8 @@ public class ViewManager {
 
     public ViewManager(Controller ctrl) {
         this.ctrl = ctrl;
+
+        LwjglNativesLoader.load();
 
         try {
             setDisplayMode(800, 600, false);
@@ -177,11 +180,11 @@ public class ViewManager {
                     }
                 }
             } else {
-                targetDisplayMode = new DisplayMode(width,height);
+                targetDisplayMode = new DisplayMode(width, height);
             }
 
             if (targetDisplayMode == null) {
-                System.out.println("Failed to find value mode: "+width+"x"+height+" fs="+fullscreen);
+                System.out.println("Failed to find value mode: " + width + "x" + height + " fs=" + fullscreen);
                 return;
             }
 
@@ -191,7 +194,7 @@ public class ViewManager {
             Display.setTitle("Kabuom! Tower Defense");
             Display.setVSyncEnabled(true);
         } catch (LWJGLException e) {
-            System.out.println("Unable to setup mode "+width+"x"+height+" fullscreen="+fullscreen + e);
+            System.out.println("Unable to setup mode " + width + "x" + height + " fullscreen=" + fullscreen + e);
         }
     }
 
@@ -203,13 +206,13 @@ public class ViewManager {
         GL11.glClearColor(0f, 0f, 0f, 1f);
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
-        while(Mouse.next()){
-            if(Mouse.getEventButtonState()){
+        while (Mouse.next()) {
+            if (Mouse.getEventButtonState()) {
                 int button = Mouse.getEventButton();
                 int mouseX = Mouse.getEventX();
                 int mouseY = Display.getHeight() - Mouse.getEventY();
 
-                currentView.onMouseDown(button, mouseX,mouseY);
+                currentView.onMouseDown(button, mouseX, mouseY);
             } else {
                 int button = Mouse.getEventButton();
                 int mouseX = Mouse.getEventX();
@@ -220,12 +223,12 @@ public class ViewManager {
                 }
             }
         }
-        while(Keyboard.next()){
-            if(Keyboard.getEventKeyState()){
+        while (Keyboard.next()) {
+            if (Keyboard.getEventKeyState()) {
                 int key = Keyboard.getEventKey();
                 char c = Keyboard.getEventCharacter();
 
-                currentView.onKeyDown(key , c);
+                currentView.onKeyDown(key, c);
 
                 if (key == Keyboard.KEY_F11) {
                     fullscreen = !fullscreen;
@@ -239,7 +242,7 @@ public class ViewManager {
                         } else {
                             setDisplayMode(800, 600, false);
                         }
-                    } catch(Exception e) {
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
@@ -247,7 +250,7 @@ public class ViewManager {
                 int key = Keyboard.getEventKey();
                 char c = Keyboard.getEventCharacter();
 
-                currentView.onKeyUp(key , c);
+                currentView.onKeyUp(key, c);
             }
         }
 
@@ -272,7 +275,7 @@ public class ViewManager {
         batch.resize(Display.getWidth(), Display.getHeight());
         ppManager.resize(Display.getWidth(), Display.getHeight());
         particleManager.clearParticles();
-        if(currentView!= null)
+        if (currentView != null)
             currentView.layout(Display.getWidth(), Display.getHeight());
 
     }
@@ -301,8 +304,11 @@ public class ViewManager {
         this.currentView = currentView;
         this.currentView.layout(Display.getWidth(), Display.getHeight());
 
+        this.ppManager.clearAllEffects();
         this.particleManager.clearParticles();
     }
 
-    public Controller getCtrl(){return ctrl;}
+    public Controller getCtrl() {
+        return ctrl;
+    }
 }

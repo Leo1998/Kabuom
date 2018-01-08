@@ -1,8 +1,10 @@
 package projectile;
 
 import enemy.Enemy;
-import tower.TowerType;
-import utility.*;
+import enemy.effect.EffectType;
+import utility.Constants;
+import utility.Utility;
+import utility.Vector2;
 import world.World;
 
 import java.util.ArrayList;
@@ -12,55 +14,75 @@ public class ProjectileHandler {
 
     private World world;
 
+    private Random random;
+
     public ProjectileHandler(World world) {
         this.world = world;
+        random = new Random();
     }
 
     // Projektile bewegen & Kollisionen mit Gegner überprüfen -> schaden
     public void handleProjectiles(float dt, ArrayList<Projectile> projectiles, ArrayList<Enemy> enemies) {
 
-        for(int i = 0;i < projectiles.size();i++) {
-            Projectile p = projectiles.get(i);
-
+        for (Projectile projectile : projectiles) {
             //System.out.println(p.getX() + "  " + p.getY());
             //weite die das Projektil geflogen ist wird aktualisiert
-            if(p.getDistance() < p.getRange()){
-                p.setDistance(p.getDistance() + p.getSpeed() * dt);
+            if (projectile.getDistance() < projectile.getRange()) {
+                projectile.setDistance(projectile.getDistance() + projectile.getSpeed() * dt);
             }
             //wenn die distanz größer als die reichweite ist wird das projektil entfernt
-            if(p.getDistance() >= p.getRange()) {
-                world.removeGameObject(p);
-            }
+            if (projectile.getDistance() >= projectile.getRange()) {
+                if (projectile.getProjectileType() == ProjectileType.POISON) {
+                    spawnPoisonCloud(projectile.getX(), projectile.getY(), projectile.getLevel(), projectile.getDir());
+                }
+                world.removeGameObject(projectile);
+            } else {
+                //projektil fliegt in richtung des zieles
+                projectile.setX(projectile.getX() + projectile.getDir().getCoords()[0] * projectile.getSpeed() * dt);
+                projectile.setY(projectile.getY() + projectile.getDir().getCoords()[1] * projectile.getSpeed() * dt);
 
-            //projektil fliegt in richtung des zieles
-            p.setX(p.getX() + p.getDir().getCoords()[0] * p.getSpeed() * dt);
-            p.setY(p.getY() + p.getDir().getCoords()[1] * p.getSpeed() * dt);
-        }
-
-        for(int i = 0;i < projectiles.size();i++){
-            for(int j = 0;j < enemies.size();j++){
-                //falls projektil mit gegner kollidiert und der gegner noch nicht getroffen ist
-                if(Utility.gameObjectIsCollidingWithGameObject(projectiles.get(i),enemies.get(j)) && !projectiles.get(i).getHitEnemies().contains(enemies.get(j))){
-                    //verringere die hp des gegners, verringere die hp des projektils, füge gegner zu getroffenen hinzu
-                    enemies.get(j).setHp(enemies.get(j).getHp() - projectiles.get(i).getImpactDamage());
-                    projectiles.get(i).setHp(projectiles.get(i).getHp()-1);
-                    projectiles.get(i).addToHitEnemies(enemies.get(j));
-                    //falls hp des projektils == 0 ist
-                    if(projectiles.get(i).getHp()==0){
-                        //lösche das projektil
-                        //wenn projektil gift, dann fette giftwolke
-                        if(projectiles.get(i).getProjectileType() == ProjectileType.POISON){
-                            Random random = new Random();
-                            for(int w = 0; w < 15 ; w++){
-                                float alpha = random.nextFloat()*(float)(Math.PI * 2);
-                                float distance = random.nextFloat()*1.5f;
-                                float y = projectiles.get(i).getY()-(float)(Math.sin(alpha) * distance);
-                                float x = projectiles.get(i).getX()-(float)(Math.cos(alpha) * distance);
-                                world.spawnProjectile(new Projectile(ProjectileType.POISONTRAIL,projectiles.get(i).getLevel(),x,y,projectiles.get(i).getDir()));
-                            }
+                for (Enemy enemy : enemies) {
+                    //falls projektil mit gegner kollidiert und der gegner noch nicht getroffen ist
+                    if (enemy.getHp() > 0 && Utility.gameObjectIsCollidingWithGameObject(projectile, enemy) && !projectile.getHitEnemies().contains(enemy)) {
+                        //verringere die hp des gegners, verringere die hp des projektils, füge gegner zu getroffenen hinzu
+                        enemy.addHp(-projectile.getImpactDamage());
+                        projectile.addHp(-1);
+                        projectile.addToHitEnemies(enemy);
+                        if(projectile.getProjectileType() == ProjectileType.LIGHTNING){
+                            float oldX = projectile.getDir().getCoords()[0];
+                            float oldY = projectile.getDir().getCoords()[1];
+                            double rand = random.nextDouble() * (float) (Math.PI*2);
+                            projectile.getDir().getCoords()[0] = (float)(Math.cos(rand)*oldX - Math.sin(rand)*oldY);
+                            projectile.getDir().getCoords()[1] = (float)(Math.sin(rand)*oldX + Math.cos(rand)*oldY);
                         }
-                        world.removeGameObject(projectiles.get(i));
+                        //falls hp des projektils == 0 ist
+                        if (projectile.getHp() == 0) {
+                            //lösche das projektil
+                            switch (projectile.getProjectileType()) {
+                                case POISON:
+                                    spawnPoisonCloud(projectile.getX(), projectile.getY(), projectile.getLevel(), projectile.getDir());
+                                    break;
+                                case ICE:
+                                    if (Constants.fireBreaksSlow) {
+                                        enemy.removeEffect(EffectType.Burning);
+                                    }
+                                    enemy.addEffect(EffectType.Slow);
+                                    break;
+                                case FLAME:
+                                case FRAGGRENADE:
+                                    if (Constants.fireBreaksSlow) {
+                                        enemy.removeEffect(EffectType.Slow);
+                                    }
+                                    enemy.addEffect(EffectType.Burning);
+                                    break;
+                                case BULLET:
+                                case PIERCINGBULLET:
+                                    enemy.addEffect(EffectType.Bleeding);
+                                    break;
+                            }
+                            world.removeGameObject(projectile);
 
+                        }
                     }
                 }
             }
@@ -117,6 +139,17 @@ public class ProjectileHandler {
                 }
             }
         }*/
+    }
+
+    private void spawnPoisonCloud(float xPos, float yPos, int level, Vector2 direction) {
+        Random random = new Random();
+        for (int i = 0; i < Constants.poisonCloudAmount; i++) {
+            float alpha = random.nextFloat() * (float) (Math.PI * 2);
+            float distance = random.nextFloat() * 1.5f;
+            float x = xPos + (float) (Math.cos(alpha) * distance);
+            float y = yPos + (float) (Math.sin(alpha) * distance);
+            world.spawnProjectile(new Projectile(ProjectileType.POISONTRAIL, level, x, y, direction));
+        }
     }
 
 }

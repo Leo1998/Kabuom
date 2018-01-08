@@ -1,7 +1,5 @@
 package view.rendering;
 
-import java.awt.*;
-
 public class ParticleEffect {
 
     private int count;
