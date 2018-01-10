@@ -88,7 +88,7 @@ public class World {
     }
 
     public void spawnEnemy(float x, float y, EnemyType type) {
-        this.objects.add(new Enemy(type, 1, x, y));
+        this.objects.add(new Enemy(type, 1, x, y, enemyHandler));
     }
 
     public void spawnProjectile(Projectile p) {

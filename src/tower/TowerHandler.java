@@ -64,6 +64,7 @@ public class TowerHandler {
     }
 
     private float getDist(Tower tower, Enemy enemy) {
+        //return -enemy.getY();
         return (float) Math.sqrt(Math.pow(tower.getX() - enemy.getX(), 2) + Math.pow(tower.getY() - enemy.getY(), 2));
     }
 

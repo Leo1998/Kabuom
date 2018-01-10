@@ -16,6 +16,7 @@ public class Enemy extends GameObject {
     private EnemyType enemyType;
     private Vector2 movement;
     private ArrayList<Effect> effects;
+    private EnemyHandler enemyHandler;
 
     /**
      * Konstruktor des Enemy
@@ -25,13 +26,14 @@ public class Enemy extends GameObject {
      * @param x         X-Position des Gegners
      * @param y         Y-Position des Gegners
      */
-    public Enemy(EnemyType enemyType, int level, float x, float y) {
-        super(enemyType.getMaxHP(), level, enemyType.getName(), x, y, enemyType.getRadius(), enemyType.getTextureID());
+    public Enemy(EnemyType enemyType, int level, float x, float y, EnemyHandler enemyHandler) {
+        super(enemyType.maxHP, level, enemyType.name, x, y, enemyType.radius, enemyType.textureID);
         this.path = new Stack<>();
         this.enemyType = enemyType;
         attackCooldown = 0;
         this.movement = new Vector2(0, 0);
         this.effects = new ArrayList<>();
+        this.enemyHandler = enemyHandler;
     }
 
     /**
@@ -40,14 +42,14 @@ public class Enemy extends GameObject {
      * @return
      */
     public float getSpeed() {
-        return enemyType.getSpeed() / getStrength(EffectType.Slow);
+        return enemyType.speed / getStrength(EffectType.Slow);
     }
 
     /**
      * Gibt die Zeit, die zwischen zwei Angriffen des Gegners verstreichen muss, zurück
      */
     public float getAttackSpeed() {
-        return enemyType.getAttackSpeed() * getStrength(EffectType.Slow);
+        return enemyType.attackSpeed * getStrength(EffectType.Slow);
     }
 
     /**
@@ -82,7 +84,7 @@ public class Enemy extends GameObject {
      * Gibt den Schaden, den der Gegner mit einem Angriff verursacht, zurück
      */
     public int getDamage() {
-        return enemyType.getDamage();
+        return enemyType.damage;
     }
 
     /**
@@ -150,7 +152,9 @@ public class Enemy extends GameObject {
 
     @Override
     public void addHp(float hp) {
-        super.addHp(Math.round(hp * getStrength(EffectType.Bleeding)));
+        float temp = hp * getStrength(EffectType.Bleeding);
+        super.addHp(temp);
+        enemyHandler.addDamage(-hp,getX(),getY());
     }
 
     private float getStrength(EffectType effectType) {

@@ -91,7 +91,7 @@ public class GameView extends View {
             if (percentage < 0)
                 percentage = 0;
 
-            batch.draw(ViewManager.getTexture(e.getEnemyType().getTextureID()), blockCoordToViewCoordX(e.getX()), blockCoordToViewCoordY(e.getY()), (h2 / world.getBlocks().length), h2 / world.getBlocks().length);
+            batch.draw(ViewManager.getTexture(e.getEnemyType().textureID), blockCoordToViewCoordX(e.getX()), blockCoordToViewCoordY(e.getY()), (h2 / world.getBlocks().length), h2 / world.getBlocks().length);
 
             batch.draw(null, blockCoordToViewCoordX(e.getX()), blockCoordToViewCoordY(e.getY()) + h2 / world.getBlocks().length * 1.2f, (h2 / world.getBlocks().length), h2 / world.getBlocks().length * 0.2f, 0.6f, 0.6f, 0.6f, 1.0f);
             batch.draw(null, blockCoordToViewCoordX(e.getX()), blockCoordToViewCoordY(e.getY()) + h2 / world.getBlocks().length * 1.2f, (h2 / world.getBlocks().length * percentage), h2 / world.getBlocks().length * 0.2f, 0.0f, 1.0f, 0.0f, 1.0f);

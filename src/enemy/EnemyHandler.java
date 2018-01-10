@@ -6,6 +6,7 @@ import enemy.step.Step;
 import graph.Vertex;
 import tower.Tower;
 import tower.TowerType;
+import utility.Constants;
 import utility.Vector2;
 import world.Block;
 import world.World;
@@ -36,6 +37,14 @@ public class EnemyHandler {
         this.random = new Random();
     }
 
+    public void addDamage(float damage, float xPos, float yPos){
+        for(int i = Math.max(Math.round(xPos)-2,0); i < Math.min(Math.round(xPos)+2,nodeMap.length); i++){
+            for(int j = Math.max(Math.round(yPos)-2,0); j < Math.min(Math.round(yPos)+2,nodeMap[i].length); j++){
+                nodeMap[Math.round(xPos)][Math.round(yPos)].damage += damage;
+            }
+        }
+    }
+
 
     /**
      * Berechnet die Handlungen aller Gegner und führt diese aus
@@ -48,9 +57,9 @@ public class EnemyHandler {
     public void handleEnemies(float dt, ArrayList<Enemy> enemies, boolean recalculate, boolean drunk) {
         if (!drunk) {
             if (recalculate) {
-                createNodeMap(world.getBlocks());
+                updateNodeMap(world.getBlocks());
             }
-            calcAllPaths(enemies);
+            findPaths(enemies);
         } else {
             for (Enemy enemy : enemies) {
                 if (enemy.getPath().isEmpty() || recalculate) {
@@ -84,7 +93,7 @@ public class EnemyHandler {
         return new MoveStep(toX, toY);
     }
 
-    private void calcAllPaths(ArrayList<Enemy> enemies) {
+    private void findPaths(ArrayList<Enemy> enemies) {
 
         //Group Enemies at similar places together to reduce total amount of findPath calls
         ArrayList<Enemy>[][] groupMap = new ArrayList[nodeMap.length][nodeMap[0].length];
@@ -181,13 +190,17 @@ public class EnemyHandler {
                 float dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
                 while (dist < moveableDist) {
                     enemy.getPath().pop();
-                    step = enemy.getPath().peek();
-                    if (step instanceof MoveStep) {
-                        targetX = ((MoveStep) step).x;
-                        targetY = ((MoveStep) step).y;
-                        dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
-                    } else {
-                        goTo(enemy, targetX, targetY, dt);
+                    if(!enemy.getPath().isEmpty()) {
+                        step = enemy.getPath().peek();
+                        if (step instanceof MoveStep) {
+                            targetX = ((MoveStep) step).x;
+                            targetY = ((MoveStep) step).y;
+                            dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
+                        } else {
+                            goTo(enemy, targetX, targetY, dt);
+                            return;
+                        }
+                    }else{
                         return;
                     }
                 }
@@ -262,6 +275,7 @@ public class EnemyHandler {
             currX = newX;
             currY = newY;
         }
+
         return result;
     }
 
@@ -277,12 +291,14 @@ public class EnemyHandler {
 
     private void updateNeighbour(int srcX, int srcY, int xPos, int yPos) {
         if (xPos >= 0 && yPos >= 0 && xPos < nodeMap.length && yPos < nodeMap[xPos].length) {
+            Node source = nodeMap[srcX][srcY], current = nodeMap[xPos][yPos];
             float addDist = (srcX == xPos || srcY == yPos) ? 1 : (float) Math.sqrt(2);
-            addDist += Math.max(nodeMap[xPos][yPos].dpsInRange, nodeMap[srcX][srcY].dpsInRange);
-            if (nodeMap[xPos][yPos].fromStart > nodeMap[srcX][srcY].fromStart + addDist) {
-                nodeMap[xPos][yPos].fromStart = nodeMap[srcX][srcY].fromStart + addDist;
-                nodeMap[xPos][yPos].preX = srcX;
-                nodeMap[xPos][yPos].preY = srcY;
+            addDist += ((current.dpsInRange + source.dpsInRange) / 2)* Constants.dpsMultiplier;
+            addDist += (current.damage + source.damage) / 2;
+            if ((current.fromStart > source.fromStart + addDist) || (current.fromStart == source.fromStart + addDist)) {
+                current.fromStart = source.fromStart + addDist;
+                current.preX = srcX;
+                current.preY = srcY;
             }
 
         }
@@ -336,7 +352,8 @@ public class EnemyHandler {
 
             for (int i = (int) Math.max(0, xPos - attackRange); i < (int) Math.min(nodeMap.length, xPos + attackRange + 1); i++) {
                 for (int j = (int) Math.max(0, yPos - attackRange); j < (int) Math.min(nodeMap[i].length, yPos + attackRange + 1); j++) {
-                    if (getDist(xPos, yPos, i, j) <= attackRange) {
+                    float distance = getDist(xPos,yPos,i,j);
+                    if (distance <= attackRange) {
                         nodeMap[i][j].dpsInRange += dps;
                     }
                 }
@@ -378,6 +395,26 @@ public class EnemyHandler {
         changed = true;
     }
 
+    private void updateNodeMap(Block[][] blocks){
+        for(int i = 0; i < blocks.length && i < nodeMap.length; i++){
+            for(int j = 0; j < blocks[i].length && i < nodeMap[i].length; j++){
+                nodeMap[i][j].getFromBlock(blocks[i][j]);
+            }
+        }
+
+        updateAllNodes();
+    }
+
+    private void updateNodeMap(Vertex<Tower>[][] blocks){
+        for(int i = 0; i < blocks.length && i < nodeMap.length; i++){
+            for(int j = 0; j < blocks[i].length && i < nodeMap[i].length; j++){
+                nodeMap[i][j].getFromBlock(new Block(blocks[i][j], blocks[i][j].getContent()));
+            }
+        }
+
+        updateAllNodes();
+    }
+
     /**
      * Gibt dpsMultiplier zurück
      */
@@ -393,18 +430,16 @@ public class EnemyHandler {
     }
 
     private class Node {
-        private float dps, attackRange, dpsInRange;
-        private float fromStart;
+        private float dps, attackRange, dpsInRange, fromStart, damage;
         private final float toEnd;
-        private int xPos, yPos, preX, preY;
+        private int preX, preY;
         private boolean visited;
         private Block block;
 
         public Node(Block block, int xPos, int yPos, int endX, int endY) {
-            this.xPos = xPos;
-            this.yPos = yPos;
             this.preX = -1;
             this.preY = -1;
+            damage = 0;
             this.block = block;
             int minDif = Math.min(Math.max(xPos, endX) - Math.min(xPos, endX), Math.max(yPos, endY) - Math.min(yPos, endY));
             int maxDif = Math.max(Math.max(xPos, endX) - Math.min(xPos, endX), Math.max(yPos, endY) - Math.min(yPos, endY));
@@ -430,6 +465,12 @@ public class EnemyHandler {
                 dps = 0;
                 attackRange = 0;
             }
+        }
+
+        private void getFromBlock(Block block){
+            this.block = block;
+            getFromTower(block.getTower());
+            dpsInRange = 0;
         }
 
         private float getDistance() {
