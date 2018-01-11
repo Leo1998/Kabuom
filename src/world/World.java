@@ -23,7 +23,7 @@ public class World {
     private int width, height;
     private float timePassed;
 
-    private int wave = 1;
+    private int wave = 0;
     private boolean spawnWave = false;
     private float gameTime;
 
@@ -58,7 +58,7 @@ public class World {
             }
         }
 
-        this.spawnTower(new Tower(TowerType.MAINTOWER, 1, mainTowerCoordX, mainTowerCoordY, 8));
+        this.spawnTower(new Tower(TowerType.MAINTOWER, 1, mainTowerCoordX, mainTowerCoordY));
 
         newTower = false;
 
@@ -107,13 +107,13 @@ public class World {
     }
 
     public void removeEnemy(Enemy enemy){
-        coins += (25 - (25 - 1 - (5) * Math.pow(Math.E, ((-1f / 6f) * (wave - 15f)))));
+        coins += (25 - (25 - 1 - (5) * Math.pow(Math.E, ((-1f / 6f) * (enemy.wave - 15f)))));
         enemy.getBlock().removeEnemy(enemy);
         enemyList.remove(enemy);
     }
 
     public void removeTower(Tower tower){
-        if (tower.getType() == TowerType.MAINTOWER) {
+        if (tower.towerType == TowerType.MAINTOWER) {
             towerList.clear();
             Controller.instance.endGame();
         } else {
@@ -143,12 +143,15 @@ public class World {
             //this.spawnEnemy(10,0,EnemyType.Cheat);
             Random random = new Random();
             for (int i = 0; i < Math.pow(1 + wave, 3) / 100 + 5; i++) {
-                this.spawnEnemy(new Enemy(EnemyType.values()[random.nextInt(EnemyType.values().length - 1)], 1, random.nextInt(width), 0, enemyHandler));
+                this.spawnEnemy(new Enemy(EnemyType.values()[random.nextInt(EnemyType.values().length - 1)], 1, random.nextInt(width), 0, enemyHandler, wave));
             }
             spawnWave = false;
         }
 
-        enemyHandler.handleEnemies(dt, enemyList, newTower, isDrunk);
+        int minWave = enemyHandler.handleEnemies(dt, enemyList, newTower, isDrunk);
+        if (minWave != -1 && minWave-1 > Controller.instance.getConfig().getMaxWave()) {
+            Controller.instance.getConfig().setMaxWave(minWave-1);
+        }
         projectileHandler.handleProjectiles(dt, projectileList);
         towerHandler.handleTowers(dt, towerList);
 
@@ -204,9 +207,6 @@ public class World {
     public void startWave() {
         this.spawnWave = true;
         this.wave++;
-        if (wave > Controller.instance.getConfig().getMaxWave()) {
-            Controller.instance.getConfig().setMaxWave(wave);
-        }
     }
 
     public void setDifficulty(int difficulty) {

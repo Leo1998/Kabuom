@@ -1,6 +1,8 @@
 package projectile;
 
-public enum ProjectileType {
+import model.ObjectType;
+
+public enum ProjectileType implements ObjectType {
 
 
     BULLET(1, 0.05f, "BULLET", 25f,/*Damage*/8, /*Range*/  8, "projektil.png"),
@@ -13,13 +15,11 @@ public enum ProjectileType {
     POISON(1, 0.05f, "POISON", 5,/*Damage*/25,/*Range*/ 10, "toxicBullet.png"),
     POISONTRAIL(1, 0.05f, "POISON", 0.002f,/*Damage*/15,/*Range*/ 0.01f, "Giftgas.png");
 
-    private final int maxHP;
-    private final String name;
-    private final float radius;
-    private final float speed;
-    private final int impactDamage;
-    private final float range;
-    private final String textureID;
+    public final int maxHP;
+    public final String name;
+    public final float radius, speed, range;
+    public final int impactDamage;
+    public final String textureID;
 
     ProjectileType(int maxHP, float radius, String name, float speed, int impactDamage, float range, String textureID) {
         this.maxHP = maxHP;
@@ -31,54 +31,18 @@ public enum ProjectileType {
         this.textureID = textureID;
     }
 
-    /**
-     * Die Anfrage liefert die Lebenspunkte des Projektils als Integer.
-     */
-    public int getMaxHP() {
+
+    public float getMaxHP() {
         return maxHP;
     }
 
-    /**
-     * Die Anfrage liefert den Namen des Projektils als String.
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Die Anfrage liefert den Radius des Projektils als float.
-     */
+    @Override
     public float getRadius() {
         return radius;
     }
 
-    /**
-     * Die Anfrage liefert die Schaden des Projektils als Integer.
-     */
-    public int getImpactDamage() {
-        return impactDamage;
+    @Override
+    public String getName() {
+        return name;
     }
-
-    /**
-     * Die Anfrage liefert die Geschwindigkeit des Projektils als float.
-     */
-    public float getSpeed() {
-        return speed;
-    }
-
-    /**
-     * Die Anfrage liefert die Reichweite des Projektils als float.
-     */
-    public float getRange() {
-        return range;
-    }
-
-    /**
-     * Die Anfrage liefert die TextureID des Projektils als String.
-     */
-    public String getTextureID() {
-        return textureID;
-    }
-
-
 }

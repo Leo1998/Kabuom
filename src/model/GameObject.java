@@ -5,14 +5,14 @@ public abstract class GameObject {
     private String name;
     private float x, y, radius, hp, maxHp;
 
-    public GameObject(float maxHp, int level, String name, float x, float y, float radius, String textureID) {
-        this.maxHp = maxHp;
+    public GameObject(ObjectType type, int level, float x, float y) {
+        this.maxHp = type.getMaxHP();
         this.level = level;
-        this.name = name;
+        this.name = type.getName();
         this.x = x;
         this.y = y;
-        this.radius = radius;
-        this.hp = maxHp;
+        this.radius = type.getRadius();
+        this.hp = type.getMaxHP();
     }
 
     public float getRadius() {

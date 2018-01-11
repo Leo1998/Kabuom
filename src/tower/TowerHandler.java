@@ -26,7 +26,7 @@ public class TowerHandler {
                 world.removeTower(curTower);
                 i--;
             } else {
-                if (curTower.getType().canShoot()) {
+                if (curTower.towerType.canShoot) {
 
                     if (curTower.getCooldown() <= 0) {
                         shoot(curTower);
@@ -62,7 +62,7 @@ public class TowerHandler {
             }
         }
 
-        if(closest != null && getDist(tower,closest) > tower.getType().getAttackRadius()){
+        if(closest != null && getDist(tower,closest) > tower.towerType.attackRadius){
             closest = null;
         }
         return closest;
@@ -74,7 +74,7 @@ public class TowerHandler {
     }
 
     private void shoot(Tower tower) {
-        tower.setCooldown(tower.getFrequency());
+        tower.setCooldown(tower.towerType.frequency);
         tower.setTarget(getClosestEnemy(tower));
 
         if (tower.getTarget() != null) {
@@ -85,14 +85,14 @@ public class TowerHandler {
             float ex = tower.getTarget().getX();
             float ey = tower.getTarget().getY();
 
-            if (tower.getType() == TowerType.FLAMETHROWER) {
+            if (tower.towerType == TowerType.FLAMETHROWER) {
                 ex = ex + random.nextFloat() * 2 - 1;
                 ey = ey + random.nextFloat() * 2 - 1;
             }
 
             float emx = tower.getTarget().getMovement().getCoords()[0];
             float emy = tower.getTarget().getMovement().getCoords()[1];
-            float s = tower.getProjectile().getSpeed();
+            float s = tower.towerType.projectileType.speed;
 
             float a = emx * emx + emy * emy - s * s;
             float b = 2 * ((ex - towerX) * emx + (ey - towerY) * emy);
@@ -116,18 +116,18 @@ public class TowerHandler {
 
             vec.normalize();
 
-            Projectile p = new Projectile(tower.getProjectile(), tower.getLevel(), towerX, towerY, vec);
+            Projectile p = new Projectile(tower.towerType.projectileType, tower.getLevel(), towerX, towerY, vec);
             world.spawnProjectile(p);
 
-            if (tower.getType() == TowerType.CYROGUN) {
+            if (tower.towerType == TowerType.CYROGUN) {
                 float alpha = (float) (Utility.calculateAngleBetweenTwoPoints(towerX, towerY, towerX + vec.getCoords()[0], towerY + vec.getCoords()[1]) + 1 / 32 * Math.PI);
                 float beta = (float) (Utility.calculateAngleBetweenTwoPoints(towerX, towerY, towerX + vec.getCoords()[0], towerY + vec.getCoords()[1]) - 1 / 32 * Math.PI);
                 Vector2 vec_A = new Vector2((float) (Math.cos(alpha) + vec.getCoords()[0]), (float) (Math.sin(alpha) + vec.getCoords()[1]));
                 vec_A.normalize();
                 Vector2 vec_B = new Vector2((float) (vec.getCoords()[0] - Math.cos(beta)), (float) (vec.getCoords()[1] - Math.sin(beta)));
                 vec_B.normalize();
-                Projectile p1 = new Projectile(tower.getProjectile(), tower.getLevel(), towerX, towerY, vec_A);
-                Projectile p2 = new Projectile(tower.getProjectile(), tower.getLevel(), towerX, towerY, vec_B);
+                Projectile p1 = new Projectile(tower.towerType.projectileType, tower.getLevel(), towerX, towerY, vec_A);
+                Projectile p2 = new Projectile(tower.towerType.projectileType, tower.getLevel(), towerX, towerY, vec_B);
 
                 world.spawnProjectile(p1);
                 world.spawnProjectile(p2);

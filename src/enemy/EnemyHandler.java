@@ -52,7 +52,8 @@ public class EnemyHandler {
      * @param recalculate Ist true, wenn in dem Frame ein Turm geädnert oder Drunk aktiviert wurde (einmalig)
      * @param drunk       Ist true, wenn Drunk aktiv ist
      */
-    public void handleEnemies(float dt, ArrayList<Enemy> enemies, boolean recalculate, boolean drunk) {
+    public int handleEnemies(float dt, ArrayList<Enemy> enemies, boolean recalculate, boolean drunk) {
+        int minWave = -1;
         if (!drunk) {
             if (recalculate) {
                 updateNodeMap(world.getBlocks());
@@ -74,10 +75,15 @@ public class EnemyHandler {
             if(enemy.getHp() <= 0){
                 world.removeEnemy(enemy);
                 i--;
+            }else{
+                if(enemy.wave < minWave || minWave == -1){
+                    minWave = enemy.wave;
+                }
             }
 
             handleEnemy(dt, enemy, drunk, random);
         }
+        return minWave;
     }
 
     private MoveStep getRandomMove(int x, int y, Random random) {
@@ -167,12 +173,12 @@ public class EnemyHandler {
             enemy.addHp(Math.round(EffectType.Burning.strength * dt));
         }
         Tower tower = getCollidingTower(enemy);
-        if (tower != null && (!drunk || random.nextDouble() < 0.3 || tower.getType() == TowerType.BARRICADE)) {  //Attack
+        if (tower != null && (!drunk || random.nextDouble() < 0.3 || tower.towerType == TowerType.BARRICADE)) {  //Attack
             enemy.setMovement(new Vector2(0, 0));
             if (enemy.getAttackCooldown() > enemy.getAttackSpeed()) {
                 tower.addHp(-enemy.getDamage());
                 enemy.setAttackCooldown(0);
-                if (tower.getType() == TowerType.BARRICADE) {
+                if (tower.towerType == TowerType.BARRICADE) {
                     enemy.setHp(Math.round(enemy.getHp() - (enemy.getDamage() * 0.5f)));
                 }
             }
@@ -443,12 +449,12 @@ public class EnemyHandler {
          */
         private void getFromTower(Tower tower) {
             if (tower != null) {
-                if (tower.getFrequency() == 0) {
+                if (tower.towerType.frequency == 0) {
                     dps = 0;
                 } else {
-                    dps = (tower.getProjectile().getImpactDamage() / tower.getFrequency()) * dpsMultiplier;
+                    dps = (tower.towerType.projectileType.impactDamage / tower.towerType.frequency) * dpsMultiplier;
                 }
-                attackRange = tower.getAttackRadius();
+                attackRange = tower.towerType.attackRadius;
             } else {
                 dps = 0;
                 attackRange = 0;

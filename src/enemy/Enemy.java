@@ -14,11 +14,12 @@ import java.util.Stack;
 public class Enemy extends GameObject {
     private Stack<Step> path;
     private float attackCooldown;
-    private EnemyType enemyType;
+    public final EnemyType enemyType;
     private Vector2 movement;
     private ArrayList<Effect> effects;
     private EnemyHandler enemyHandler;
     private Block block;
+    public final int wave;
 
     /**
      * Konstruktor des Enemy
@@ -28,8 +29,8 @@ public class Enemy extends GameObject {
      * @param x         X-Position des Gegners
      * @param y         Y-Position des Gegners
      */
-    public Enemy(EnemyType enemyType, int level, float x, float y, EnemyHandler enemyHandler) {
-        super(enemyType.maxHP, level, enemyType.name, x, y, enemyType.radius, enemyType.textureID);
+    public Enemy(EnemyType enemyType, int level, float x, float y, EnemyHandler enemyHandler, int wave) {
+        super(enemyType, level, x, y);
         this.path = new Stack<>();
         this.enemyType = enemyType;
         attackCooldown = 0;
@@ -37,6 +38,7 @@ public class Enemy extends GameObject {
         this.effects = new ArrayList<>();
         this.enemyHandler = enemyHandler;
         this.block = null;
+        this.wave = wave;
     }
 
     /**
@@ -106,10 +108,6 @@ public class Enemy extends GameObject {
 
     public void addAttackCooldown(float attackCooldown) {
         this.attackCooldown += attackCooldown;
-    }
-
-    public EnemyType getEnemyType() {
-        return enemyType;
     }
 
     public void addEffect(EffectType effectType) {

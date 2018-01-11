@@ -30,8 +30,8 @@ public class ProjectileHandler {
         for (int i = 0; i < projectiles.size(); i++) {
             Projectile projectile = projectiles.get(i);
 
-            if(projectile.getHp() <= 0 || projectile.getDistance() >= projectile.getRange()){
-                if(projectile.getProjectileType() == ProjectileType.POISON){
+            if(projectile.getHp() <= 0 || projectile.getDistance() >= projectile.projectileType.speed){
+                if(projectile.projectileType == ProjectileType.POISON){
                     spawnPoisonCloud(projectile.getX(),projectile.getY(),projectile.getLevel(), projectile.getDir());
                 }
                 world.removeProjectile(projectile);
@@ -39,17 +39,17 @@ public class ProjectileHandler {
             }
             //System.out.println(p.getX() + "  " + p.getY());
             //weite die das Projektil geflogen ist wird aktualisiert
-            projectile.setDistance(projectile.getDistance() + projectile.getSpeed() * dt);
+            projectile.setDistance(projectile.getDistance() + projectile.projectileType.speed * dt);
             //wenn die distanz größer als die reichweite ist wird das projektil entfernt
             //projektil fliegt in richtung des zieles
-            projectile.setX(projectile.getX() + projectile.getDir().getCoords()[0] * projectile.getSpeed() * dt);
-            projectile.setY(projectile.getY() + projectile.getDir().getCoords()[1] * projectile.getSpeed() * dt);
+            projectile.setX(projectile.getX() + projectile.getDir().getCoords()[0] * projectile.projectileType.speed * dt);
+            projectile.setY(projectile.getY() + projectile.getDir().getCoords()[1] * projectile.projectileType.speed * dt);
 
             for (Enemy enemy : findCollidingEnemies(projectile)) {
-                enemy.addHp(-projectile.getImpactDamage());
+                enemy.addHp(-projectile.projectileType.impactDamage);
                 projectile.addHp(-1);
                 projectile.addToHitEnemies(enemy);
-                switch (projectile.getProjectileType()) {
+                switch (projectile.projectileType) {
                     case POISON:
                         spawnPoisonCloud(projectile.getX(), projectile.getY(), projectile.getLevel(), projectile.getDir());
                         break;

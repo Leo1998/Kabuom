@@ -15,8 +15,8 @@ public class TowerButton extends Button {
     public TowerButton(float x, float y, float width, float height, View v, String buttontext, TowerType towerType) {
         super(x, y, width, height, v, buttontext);
         this.towerType = towerType;
-        this.icon = ViewManager.getTexture(towerType.getTextureID());
-        this.description = towerType.getName() + " (" + towerType.getCost() + ")";
+        this.icon = ViewManager.getTexture(towerType.textureID);
+        this.description = towerType.getName() + " (" + towerType.cost + ")";
     }
 
     @Override

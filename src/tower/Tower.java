@@ -5,43 +5,17 @@ import model.GameObject;
 import projectile.ProjectileType;
 
 public class Tower extends GameObject {
-    private ProjectileType projectile;
-    private int attackRadius, cost;
-    private float frequency, cooldown;
-    private TowerType type;
+    private float cooldown;
+    public final TowerType towerType;
     private Enemy target;
 
-    public Tower(TowerType type, int level, float x, float y, float radius) {
-        super(type.getHP(), level, type.getName(), x, y, radius, type.getTextureID());
-        this.projectile = type.getProjectileType();
-        this.attackRadius = type.getAttackRadius();
-        this.cost = type.getCost();
-        this.type = type;
-        this.frequency = type.getFrequency();
-    }
-
-    public int getAttackRadius() {
-        return attackRadius;
-    }
-
-    public ProjectileType getProjectile() {
-        return projectile;
-    }
-
-    public TowerType getType() {
-        return type;
-    }
-
-    public int getCost() {
-        return cost;
+    public Tower(TowerType type, int level, float x, float y) {
+        super(type, level, x, y);
+        this.towerType = type;
     }
 
     public Enemy getTarget() {
         return target;
-    }
-
-    public float getFrequency() {
-        return frequency;
     }
 
     public float getCooldown() {
