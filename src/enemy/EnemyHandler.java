@@ -24,7 +24,6 @@ public class EnemyHandler {
     private Random random;
 
     /**
-     * Konstruktur von Enemyhandler
      *
      * @param world die World
      */
@@ -70,8 +69,15 @@ public class EnemyHandler {
             }
             changed = true;
         }
-        for (Enemy currEnemy : enemies) {
-            handleEnemy(dt, currEnemy, drunk, random);
+        for (int i = 0; i < enemies.size(); i++) {
+            Enemy enemy = enemies.get(i);
+
+            if(enemy.getHp() <= 0){
+                world.removeEnemy(enemy);
+                i--;
+            }
+
+            handleEnemy(dt, enemy, drunk, random);
         }
     }
 
@@ -156,27 +162,23 @@ public class EnemyHandler {
      * @param enemy Gegner, für den dies entschieden werden soll
      */
     private void handleEnemy(float dt, Enemy enemy, boolean drunk, Random random) {
-        if (enemy.getHp() <= 0) {
-            world.removeGameObject(enemy);
-        } else {
-            enemy.addAttackCooldown(dt);
-            enemy.addEffectDuration(-dt);
-            if (enemy.hasEffect(EffectType.Burning)) {
-                enemy.addHp(Math.round(EffectType.Burning.strength * dt));
-            }
-            Tower tower = getCollidingTower(enemy);
-            if (tower != null && (!drunk || random.nextDouble() < 0.3 || tower.getType() == TowerType.BARRICADE)) {  //Attack
-                enemy.setMovement(new Vector2(0, 0));
-                if (enemy.getAttackCooldown() > enemy.getAttackSpeed()) {
-                    tower.addHp(-enemy.getDamage());
-                    enemy.setAttackCooldown(0);
-                    if (tower.getType() == TowerType.BARRICADE) {
-                        enemy.setHp(Math.round(enemy.getHp() - (enemy.getDamage() * 0.5f)));
-                    }
+        enemy.addAttackCooldown(dt);
+        enemy.addEffectDuration(-dt);
+        if (enemy.hasEffect(EffectType.Burning)) {
+            enemy.addHp(Math.round(EffectType.Burning.strength * dt));
+        }
+        Tower tower = getCollidingTower(enemy);
+        if (tower != null && (!drunk || random.nextDouble() < 0.3 || tower.getType() == TowerType.BARRICADE)) {  //Attack
+            enemy.setMovement(new Vector2(0, 0));
+            if (enemy.getAttackCooldown() > enemy.getAttackSpeed()) {
+                tower.addHp(-enemy.getDamage());
+                enemy.setAttackCooldown(0);
+                if (tower.getType() == TowerType.BARRICADE) {
+                    enemy.setHp(Math.round(enemy.getHp() - (enemy.getDamage() * 0.5f)));
                 }
-            } else {              //Move
-                move(enemy, enemy.getSpeed() * dt, dt);
             }
+        } else {              //Move
+            move(enemy, enemy.getSpeed() * dt, dt);
         }
     }
 
@@ -188,31 +190,42 @@ public class EnemyHandler {
                 float targetX = ((MoveStep) step).x;
                 float targetY = ((MoveStep) step).y;
                 float dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
+                boolean qMove = true;
                 while (dist < moveableDist) {
                     enemy.getPath().pop();
                     if(!enemy.getPath().isEmpty()) {
                         step = enemy.getPath().peek();
                         if (step instanceof MoveStep) {
+
                             targetX = ((MoveStep) step).x;
                             targetY = ((MoveStep) step).y;
+
                             dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
                         } else {
                             goTo(enemy, targetX, targetY, dt);
-                            return;
+                            qMove = false;
                         }
-                    }else{
-                        return;
+                    } else{
+                        qMove = false;
                     }
                 }
-                float q = moveableDist / dist;
-                float nX = enemy.getX() + ((targetX - enemy.getX()) * q);
-                float nY = enemy.getY() + ((targetY - enemy.getY()) * q);
-                goTo(enemy, nX, nY, dt);
+                if(qMove) {
+                    float q = moveableDist / dist;
+                    float nX = enemy.getX() + ((targetX - enemy.getX()) * q);
+                    float nY = enemy.getY() + ((targetY - enemy.getY()) * q);
+                    goTo(enemy, nX, nY, dt);
+                }
             }
         }
     }
 
     private void goTo(Enemy enemy, float x, float y, float dt) {
+        if(Math.round(enemy.getX()) != Math.round(x) || Math.round(enemy.getY()) != Math.round(y)) {
+            nodeMap[Math.round(enemy.getX())][Math.round(enemy.getY())].block.removeEnemy(enemy);
+            enemy.setBlock(nodeMap[Math.round(x)][Math.round(y)].block);
+            nodeMap[Math.round(x)][Math.round(y)].block.addEnemy(enemy);
+        }
+
         enemy.setMovement(new Vector2((x - enemy.getX()) / dt, (y - enemy.getY()) / dt));
         enemy.setX(x);
         enemy.setY(y);
@@ -220,8 +233,8 @@ public class EnemyHandler {
 
     private Tower getCollidingTower(Enemy enemy) {
         Tower result = null;
-        for (int i = (int) Math.floor(enemy.getX()); i < Math.ceil(enemy.getX()) + 1 && result == null; i++) {
-            for (int j = (int) Math.floor(enemy.getY()); j < Math.ceil(enemy.getY()) + 1 && result == null; j++) {
+        for (int i = Math.max(0,(int) Math.floor(enemy.getX())); i < Math.min(nodeMap.length,Math.ceil(enemy.getX()) + 1) && result == null; i++) {
+            for (int j = Math.max(0,(int) Math.floor(enemy.getY())); j < Math.min(nodeMap[i].length,Math.ceil(enemy.getY()) + 1) && result == null; j++) {
                 Tower tower = nodeMap[i][j].block.getTower();
                 if (tower != null) {
                     if (getDist(tower.getX(), tower.getY(), enemy.getX(), enemy.getY()) < 2) {
@@ -381,34 +394,10 @@ public class EnemyHandler {
         updateAllNodes();
     }
 
-    private void createNodeMap(Vertex<Tower>[][] blocks) {
-        nodeMap = new Node[blocks.length][blocks[0].length];
-
-        for (int i = 0; i < blocks.length; i++) {
-            for (int j = 0; j < blocks.length; j++) {
-                nodeMap[i][j] = new Node(new Block(blocks[i][j], blocks[i][j].getContent()), i, j, mainX, mainY);
-            }
-        }
-
-        updateAllNodes();
-
-        changed = true;
-    }
-
     private void updateNodeMap(Block[][] blocks){
         for(int i = 0; i < blocks.length && i < nodeMap.length; i++){
             for(int j = 0; j < blocks[i].length && i < nodeMap[i].length; j++){
                 nodeMap[i][j].getFromBlock(blocks[i][j]);
-            }
-        }
-
-        updateAllNodes();
-    }
-
-    private void updateNodeMap(Vertex<Tower>[][] blocks){
-        for(int i = 0; i < blocks.length && i < nodeMap.length; i++){
-            for(int j = 0; j < blocks[i].length && i < nodeMap[i].length; j++){
-                nodeMap[i][j].getFromBlock(new Block(blocks[i][j], blocks[i][j].getContent()));
             }
         }
 

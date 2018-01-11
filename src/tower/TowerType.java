@@ -5,7 +5,6 @@ import projectile.ProjectileType;
 public enum TowerType {
 
     MGTURRET(100, true,/*Frequency*/ 0.15f,/*AttackRadius : */ 8, 100, ProjectileType.BULLET, "MGTurret", "MgTurret.png"),
-
     MISSILELAUNCHER(75, true,/*Frequency*/ 2,/*AttackRadius : */ 14, 300, ProjectileType.MISSILE, "Missilelauncher", "MissileLauncher.png"),
     FLAMETHROWER(60, true,/*Frequency*/ 0.05f,/*AttackRadius : */ 7, 200, ProjectileType.FLAME, "Flamethrower", "Flamethrower.png"),
     POISONTOWER(75, true,/*Frequency*/ 3,/*AttackRadius : */ 10, 160, ProjectileType.POISON, "Poisontower", "MgTurretGruen.png"),

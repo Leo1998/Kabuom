@@ -4,9 +4,6 @@ import controller.Controller;
 import enemy.Enemy;
 import enemy.EnemyHandler;
 import enemy.EnemyType;
-import graph.Edge;
-import graph.Graph;
-import graph.Vertex;
 import model.GameObject;
 import projectile.Projectile;
 import projectile.ProjectileHandler;
@@ -19,12 +16,11 @@ import java.util.Random;
 
 public class World {
 
-    private ArrayList<GameObject> objects;
-    private ArrayList<Enemy> enemyList = new ArrayList<Enemy>();
-    private ArrayList<Projectile> projectileList = new ArrayList<Projectile>();
-    private ArrayList<Tower> towerList = new ArrayList<Tower>();
-    private Graph graph;
-    private Vertex<Tower>[][] blocks;
+    private ArrayList<Enemy> enemyList;
+    private ArrayList<Projectile> projectileList;
+    private ArrayList<Tower> towerList;
+
+    private Block[][] blocks;
     private int width, height;
     private float timePassed;
 
@@ -38,12 +34,10 @@ public class World {
     private ProjectileHandler projectileHandler;
     private TowerHandler towerHandler;
 
-    private Tower mainTower;
-
     /**
      * Attribute für den EnemyHandler
      */
-    private boolean newTurretSet;
+    private boolean newTower;
     private boolean isDrunk;
 
     public World(int width, int height, int difficulty) {
@@ -54,89 +48,84 @@ public class World {
         int mainTowerCoordX = width / 2;
         int mainTowerCoordY = height - 2;
 
-        this.graph = new Graph();
+        enemyList = new ArrayList<>();
+        projectileList = new ArrayList<>();
+        towerList = new ArrayList<>();
+        blocks = new Block[width][height];
 
-        this.objects = new ArrayList<>();
-        this.blocks = new Vertex[width][height];
-        for (int i = 0; i < this.blocks.length; i++) {
-            for (int j = 0; j < this.blocks[i].length; j++) {
-                blocks[i][j] = new Vertex<>(i + " " + j);
-
-                graph.addVertex(blocks[i][j]);
+        for(int i = 0; i < blocks.length; i++){
+            for(int j = 0; j < blocks.length; j++){
+                blocks[i][j] = new Block();
             }
         }
 
-        connectAll(blocks, graph);
+        this.spawnTower(new Tower(TowerType.MAINTOWER, 1, mainTowerCoordX, mainTowerCoordY, 8));
+
+        newTower = false;
 
         this.enemyHandler = new EnemyHandler(this, mainTowerCoordX, mainTowerCoordY);
         this.projectileHandler = new ProjectileHandler(this);
         this.towerHandler = new TowerHandler(this);
 
-        this.mainTower = new Tower(TowerType.MAINTOWER, 1, mainTowerCoordX, mainTowerCoordY, 8);
-        this.setTowerInBlocks((int) mainTower.getX(), (int) mainTower.getY(), mainTower);
-
         setDifficulty(difficulty);
-
 
          /**for(int i = 0; i < width;i++){
          for(int j = 0; j < height;j++){
          if(i != mainTowerCoordX || j != mainTowerCoordY){
-         this.setTowerInBlocks(i,j,new Tower(TowerType.FLAMETHROWER,1,i,j,8));
+         this.spawnTower(i,j,new Tower(TowerType.FLAMETHROWER,1,i,j,8));
          }
          }
          }*/
     }
 
-    public void spawnEnemy(float x, float y, EnemyType type) {
-        this.objects.add(new Enemy(type, 1, x, y, enemyHandler));
+    public void spawnEnemy(Enemy enemy) {
+        this.enemyList.add(enemy);
+        int xPos = Math.round(enemy.getX());
+        int yPos = Math.round(enemy.getY());
+        blocks[xPos][yPos].addEnemy(enemy);
     }
 
-    public void spawnProjectile(Projectile p) {
-        this.objects.add(p);
+    public void spawnProjectile(Projectile projectile) {
+        this.projectileList.add(projectile);
     }
 
-    public void removeGameObject(GameObject o) {
-        if (o == mainTower) {
+    /**
+     * Setzt einen Tower in den angegebenen Vertex, wenn dieser frei ist
+     * Gibt zürück, ob dies möglich war oder nicht
+     */
+    public boolean spawnTower(Tower tower) {
+        int xPos = (int)(tower.getX());
+        int yPos = (int)(tower.getY());
+        if (xPos >= 0 && xPos < blocks.length && yPos >= 0 && yPos < blocks[xPos].length && blocks[xPos][yPos].getTower() == null) {
+            tower.setX(xPos);
+            tower.setY(yPos);
+            newTower = true;
+            blocks[xPos][yPos].setTower(tower);
+            towerList.add(tower);
+            return true;
+        }
+        return false;
+    }
+
+    public void removeEnemy(Enemy enemy){
+        coins += (25 - (25 - 1 - (5) * Math.pow(Math.E, ((-1f / 6f) * (wave - 15f)))));
+        enemy.getBlock().removeEnemy(enemy);
+        enemyList.remove(enemy);
+    }
+
+    public void removeTower(Tower tower){
+        if (tower.getType() == TowerType.MAINTOWER) {
+            towerList.clear();
             Controller.instance.endGame();
-
-            return;
-        }
-        if (o instanceof Enemy) {
-            coins += (25 - (25 - 1 - (5) * Math.pow(Math.E, ((-1f / 6f) * (wave - 15f)))));
-        }
-
-        this.objects.remove(o);
-
-        if (o instanceof Tower) {
-            for (int i = 0; i < this.blocks.length; i++) {
-                for (int j = 0; j < this.blocks[i].length; j++) {
-                    Vertex v = blocks[i][j];
-
-                    if (v.getContent() == o) {
-                        v.setContent(null);
-                        newTurretSet = true;
-                    }
-                }
-            }
+        } else {
+            newTower = true;
+            blocks[Math.round(tower.getX())][Math.round(tower.getY())].setTower(null);
+            towerList.remove(tower);
         }
     }
 
-    private void connectAll(Vertex[][] blocks, Graph graph) {
-        for (int i = 0; i < blocks.length; i++) {
-            for (int j = 0; j < blocks[i].length; j++) {
-                createConnection(blocks, graph, i, j, i + 1, j);
-                createConnection(blocks, graph, i, j, i, j + 1);
-                createConnection(blocks, graph, i, j, i + 1, j + 1);
-                createConnection(blocks, graph, i, j, i + 1, j - 1);
-            }
-        }
-    }
-
-    private void createConnection(Vertex[][] blocks, Graph graph, int x1, int y1, int x2, int y2) {
-        if (x1 >= 0 && y1 >= 0 && x2 >= 0 && y2 >= 0 && x1 < blocks.length && y1 < blocks[x1].length && x2 < blocks.length && y2 < blocks[x2].length) {
-            double length = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-            graph.addEdge(new Edge(blocks[x1][y1], blocks[x2][y2], length));
-        }
+    public void removeProjectile(Projectile projectile){
+        projectileList.remove(projectile);
     }
 
     /**
@@ -147,31 +136,6 @@ public class World {
      */
     public void update(float dt) {
         timePassed = timePassed + dt;
-        boolean recalculate = false;
-        boolean drunk = false;
-
-        if (newTurretSet) {
-            recalculate = true;
-            newTurretSet = false;
-        }
-        if (isDrunk) {
-            drunk = true;
-        }
-
-        enemyList.clear();
-        projectileList.clear();
-        towerList.clear();
-        for (int i = 0; i < objects.size(); i++) {
-            GameObject object = objects.get(i);
-
-            if (object instanceof Enemy) {
-                enemyList.add((Enemy) object);
-            } else if (object instanceof Projectile) {
-                projectileList.add((Projectile) object);
-            } else if (object instanceof Tower) {
-                towerList.add((Tower) object);
-            }
-        }
 
         gameTime = gameTime + dt;
 
@@ -180,31 +144,17 @@ public class World {
             //this.spawnEnemy(10,0,EnemyType.Cheat);
             Random random = new Random();
             for (int i = 0; i < Math.pow(1 + wave, 3) / 100 + 5; i++) {
-                this.spawnEnemy(random.nextInt(width), 0, EnemyType.values()[random.nextInt(EnemyType.values().length - 1)]);
+                this.spawnEnemy(new Enemy(EnemyType.values()[random.nextInt(EnemyType.values().length - 1)], 1, random.nextInt(width), 0, enemyHandler));
             }
             spawnWave = false;
         }
 
-        enemyHandler.handleEnemies(dt, enemyList, recalculate, drunk);
-        projectileHandler.handleProjectiles(dt, projectileList, enemyList);
-        towerHandler.handleTowers(dt, towerList, enemyList);
+        enemyHandler.handleEnemies(dt, enemyList, newTower, isDrunk);
+        projectileHandler.handleProjectiles(dt, projectileList);
+        towerHandler.handleTowers(dt, towerList);
 
-    }
+        if(newTower) newTower = false;
 
-    /**
-     * Setzt einen Tower in den angegebenen Vertex, wenn dieser frei ist
-     * Gibt zürück, ob dies möglich war oder nicht
-     */
-    public boolean setTowerInBlocks(int i, int j, Tower setTower) {
-        if (!isTowerAtCoords(i, j) && setTower != null) {
-            newTurretSet = true;
-            setTower.setX(i);
-            setTower.setY(j);
-            blocks[i][j].setContent(setTower);
-            objects.add(setTower);
-            return true;
-        }
-        return false;
     }
 
     public int getCoins() {
@@ -220,13 +170,6 @@ public class World {
     }
 
     /**
-     * Prüft, ob an den Blockkoordinaten i und j ein Tower vorhanden ist
-     */
-    public boolean isTowerAtCoords(int i, int j) {
-        return blocks[i][j].getContent() != null;
-    }
-
-    /**
      * Die Anfrage liefert die Schwierigkeit der Welt als Integer.
      */
     public float getDifficulty() {
@@ -239,30 +182,24 @@ public class World {
     public float getTimePassed() {
         return timePassed;
     }
-
-    /**
-     * Die Anfrage liefert den Graphen der Welt als Graph.
-     */
-    public Graph getGraph() {
-        return graph;
-    }
-
     /**
      * Die Anfrage liefert die Blöcke der Welt als Zweidimensionales Array der Klasse Vertex.
      */
-    public Vertex<Tower>[][] getBlocks() {
+    public Block[][] getBlocks() {
         return blocks;
     }
 
-    public ArrayList<GameObject> getObjects() {
-        return objects;
+    public ArrayList<Projectile> getProjectileList() {
+        return projectileList;
     }
 
-    /**
-     * Die Anfrage liefert Pizza zu dir nach Hause.
-     */
-    public String getIDOfMainTower() {
-        return blocks[(int) mainTower.getX()][(int) mainTower.getY()].getID();
+    public ArrayList<Tower> getTowerList() {
+        return towerList;
+    }
+
+    public ArrayList<Enemy> getEnemyList() {
+
+        return enemyList;
     }
 
     public void startWave() {

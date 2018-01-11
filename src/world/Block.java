@@ -1,23 +1,23 @@
 package world;
 
+import enemy.Enemy;
 import graph.Vertex;
 import tower.Tower;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Created by 204g10 on 15.06.2016.
  */
 public class Block {
 
-    private Vertex vertex;
     private Tower tower;
+    private ArrayList<Enemy> enemies;
 
-    public Block(Vertex vertex, Tower tower) {
-        this.vertex = vertex;
-        this.tower = tower;
-    }
-
-    public Vertex getVertex() {
-        return vertex;
+    public Block() {
+        this.tower = null;
+        enemies = new ArrayList<>();
     }
 
     public Tower getTower() {
@@ -26,5 +26,17 @@ public class Block {
 
     public void setTower(Tower tower) {
         this.tower = tower;
+    }
+
+    public ArrayList<Enemy> getEnemies() {
+        return enemies;
+    }
+
+    public void addEnemy(Enemy enemy){
+        enemies.add(enemy);
+    }
+
+    public void removeEnemy(Enemy enemy){
+        enemies.remove(enemy);
     }
 }

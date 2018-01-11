@@ -5,6 +5,7 @@ import enemy.effect.EffectType;
 import enemy.step.Step;
 import model.GameObject;
 import utility.Vector2;
+import world.Block;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -17,6 +18,7 @@ public class Enemy extends GameObject {
     private Vector2 movement;
     private ArrayList<Effect> effects;
     private EnemyHandler enemyHandler;
+    private Block block;
 
     /**
      * Konstruktor des Enemy
@@ -34,6 +36,7 @@ public class Enemy extends GameObject {
         this.movement = new Vector2(0, 0);
         this.effects = new ArrayList<>();
         this.enemyHandler = enemyHandler;
+        this.block = null;
     }
 
     /**
@@ -159,5 +162,13 @@ public class Enemy extends GameObject {
 
     private float getStrength(EffectType effectType) {
         return (effects.contains(new Effect(effectType)) ? effectType.strength : 1);
+    }
+
+    public Block getBlock() {
+        return block;
+    }
+
+    public void setBlock(Block block) {
+        this.block = block;
     }
 }

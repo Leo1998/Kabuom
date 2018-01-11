@@ -19,15 +19,17 @@ public class TowerHandler {
         this.world = world;
     }
 
-    public void handleTowers(float dt, ArrayList<Tower> towers, ArrayList<Enemy> enemies) {
-        for (Tower curTower : towers) {
+    public void handleTowers(float dt, ArrayList<Tower> towers) {
+        for(int  i = 0; i < towers.size(); i++){
+            Tower curTower = towers.get(i);
             if (curTower.getHp() <= 0) {
-                world.removeGameObject(curTower);
+                world.removeTower(curTower);
+                i--;
             } else {
                 if (curTower.getType().canShoot()) {
 
                     if (curTower.getCooldown() <= 0) {
-                        shoot(curTower, enemies);
+                        shoot(curTower);
                     }
                     if (curTower.getCooldown() >= 0) {
                         curTower.setCooldown(curTower.getCooldown() - dt);
@@ -45,22 +47,22 @@ public class TowerHandler {
         }
     }
 
-    private Enemy getClosestEnemy(ArrayList<Enemy> enemies, Tower tower) {
-        if (enemies.size() > 0) {
-            Enemy closest = enemies.get(0);
-            for (Enemy enemy : enemies) {
-                if (getDist(tower, enemy) < getDist(tower, closest)) {
-                    closest = enemy;
+    private Enemy getClosestEnemy(Tower tower) {
+        Enemy closest = null;
+        for (int i = Math.max(0,(int) (Math.floor(tower.getX()) - tower.getRadius())); i < Math.min(world.getBlocks().length,Math.ceil(tower.getX()) + tower.getRadius()); i++) {
+            for (int j = Math.max(0, (int) (Math.floor(tower.getY()) - tower.getRadius())); j < Math.min(world.getBlocks()[i].length, Math.ceil(tower.getY()) + tower.getRadius()); j++) {
+                for(Enemy enemy:world.getBlocks()[i][j].getEnemies()){
+                    if(closest == null || getDist(tower,enemy) < getDist(tower,closest)){
+                        closest = enemy;
+                    }
                 }
             }
-            if (getDist(tower, closest) > tower.getType().getAttackRadius()) {
-                return null;
-            } else {
-                return closest;
-            }
-        } else {
-            return null;
         }
+
+        if(closest != null && getDist(tower,closest) > tower.getType().getAttackRadius()){
+            closest = null;
+        }
+        return closest;
     }
 
     private float getDist(Tower tower, Enemy enemy) {
@@ -68,13 +70,11 @@ public class TowerHandler {
         return (float) Math.sqrt(Math.pow(tower.getX() - enemy.getX(), 2) + Math.pow(tower.getY() - enemy.getY(), 2));
     }
 
-    private void shoot(Tower tower, ArrayList<Enemy> enemies) {
+    private void shoot(Tower tower) {
         tower.setCooldown(tower.getFrequency());
-        tower.setTarget(getClosestEnemy(enemies, tower));
+        tower.setTarget(getClosestEnemy(tower));
 
         if (tower.getTarget() != null) {
-
-            Vector2 vec = null;
 
             float towerX = tower.getX();
             float towerY = tower.getY();
@@ -96,6 +96,7 @@ public class TowerHandler {
             float c = (ex - towerX) * (ex - towerX) + (ey - towerY) * (ey - towerY);
             float d = b * b - 4 * a * c;
 
+            Vector2 vec;
             if (d >= 0) {
                 float sqrtD = (float) Math.sqrt(d);
                 float t1 = (-b + sqrtD) / (2 * a);
