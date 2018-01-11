@@ -169,6 +169,8 @@ public class GameView extends View {
 
             Tower t = world.getBlocks()[(int) block.getCoords()[0]][(int) (world.getBlocks()[0].length - block.getCoords()[1])].getTower();
 
+            //world.getBlocks()[(int) block.getCoords()[0]][(int) (world.getBlocks()[0].length - block.getCoords()[1])].test();
+
             if (t != null) {
                 int x0 = (int) blockCoordToViewCoordX(block.getCoords()[0]);
                 int y0 = (int) blockCoordToViewCoordY((world.getBlocks()[0].length - block.getCoords()[1]));

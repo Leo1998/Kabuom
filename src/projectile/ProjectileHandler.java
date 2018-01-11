@@ -36,49 +36,47 @@ public class ProjectileHandler {
                 }
                 world.removeProjectile(projectile);
                 i--;
-            } else{
+            }
+            //System.out.println(p.getX() + "  " + p.getY());
+            //weite die das Projektil geflogen ist wird aktualisiert
+            projectile.setDistance(projectile.getDistance() + projectile.getSpeed() * dt);
+            //wenn die distanz größer als die reichweite ist wird das projektil entfernt
+            //projektil fliegt in richtung des zieles
+            projectile.setX(projectile.getX() + projectile.getDir().getCoords()[0] * projectile.getSpeed() * dt);
+            projectile.setY(projectile.getY() + projectile.getDir().getCoords()[1] * projectile.getSpeed() * dt);
 
-                //System.out.println(p.getX() + "  " + p.getY());
-                //weite die das Projektil geflogen ist wird aktualisiert
-                projectile.setDistance(projectile.getDistance() + projectile.getSpeed() * dt);
-                //wenn die distanz größer als die reichweite ist wird das projektil entfernt
-                //projektil fliegt in richtung des zieles
-                projectile.setX(projectile.getX() + projectile.getDir().getCoords()[0] * projectile.getSpeed() * dt);
-                projectile.setY(projectile.getY() + projectile.getDir().getCoords()[1] * projectile.getSpeed() * dt);
-
-                for (Enemy enemy : findCollidingEnemies(projectile)) {
-                    enemy.addHp(-projectile.getImpactDamage());
-                    projectile.addHp(-1);
-                    projectile.addToHitEnemies(enemy);
-                    switch (projectile.getProjectileType()) {
-                        case POISON:
-                            spawnPoisonCloud(projectile.getX(), projectile.getY(), projectile.getLevel(), projectile.getDir());
-                            break;
-                        case ICE:
-                            if (Constants.fireBreaksSlow) {
-                                enemy.removeEffect(EffectType.Burning);
-                            }
-                            enemy.addEffect(EffectType.Slow);
-                            break;
-                        case FLAME:
-                        case FRAGGRENADE:
-                            if (Constants.fireBreaksSlow) {
-                                enemy.removeEffect(EffectType.Slow);
-                            }
-                            enemy.addEffect(EffectType.Burning);
-                            break;
-                        case BULLET:
-                        case PIERCINGBULLET:
-                            enemy.addEffect(EffectType.Bleeding);
-                            break;
-                        case LIGHTNING:
-                            randomRotation(projectile);
-                            break;
-                    }
-
-                    if (projectile.getHp() <= 0) {
+            for (Enemy enemy : findCollidingEnemies(projectile)) {
+                enemy.addHp(-projectile.getImpactDamage());
+                projectile.addHp(-1);
+                projectile.addToHitEnemies(enemy);
+                switch (projectile.getProjectileType()) {
+                    case POISON:
+                        spawnPoisonCloud(projectile.getX(), projectile.getY(), projectile.getLevel(), projectile.getDir());
                         break;
-                    }
+                    case ICE:
+                        if (Constants.fireBreaksSlow) {
+                            enemy.removeEffect(EffectType.Burning);
+                        }
+                        enemy.addEffect(EffectType.Slow);
+                        break;
+                    case FLAME:
+                    case FRAGGRENADE:
+                        if (Constants.fireBreaksSlow) {
+                            enemy.removeEffect(EffectType.Slow);
+                        }
+                        enemy.addEffect(EffectType.Burning);
+                        break;
+                    case BULLET:
+                    case PIERCINGBULLET:
+                        enemy.addEffect(EffectType.Bleeding);
+                        break;
+                    case LIGHTNING:
+                        randomRotation(projectile);
+                        break;
+                }
+
+                if (projectile.getHp() <= 0) {
+                    break;
                 }
             }
         }

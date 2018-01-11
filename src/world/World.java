@@ -4,7 +4,6 @@ import controller.Controller;
 import enemy.Enemy;
 import enemy.EnemyHandler;
 import enemy.EnemyType;
-import model.GameObject;
 import projectile.Projectile;
 import projectile.ProjectileHandler;
 import tower.Tower;
@@ -109,7 +108,13 @@ public class World {
 
     public void removeEnemy(Enemy enemy){
         coins += (25 - (25 - 1 - (5) * Math.pow(Math.E, ((-1f / 6f) * (wave - 15f)))));
-        enemy.getBlock().removeEnemy(enemy);
+        if(!enemy.getBlock().removeEnemy(enemy)){
+            for(Block[] blocks:this.blocks){
+                for(Block block:blocks){
+                    block.removeEnemy(enemy);
+                }
+            }
+        }
         enemyList.remove(enemy);
     }
 

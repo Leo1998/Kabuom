@@ -3,7 +3,6 @@ package enemy;
 import enemy.effect.EffectType;
 import enemy.step.MoveStep;
 import enemy.step.Step;
-import graph.Vertex;
 import tower.Tower;
 import tower.TowerType;
 import utility.Constants;

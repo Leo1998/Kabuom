@@ -36,7 +36,14 @@ public class Block {
         enemies.add(enemy);
     }
 
-    public void removeEnemy(Enemy enemy){
-        enemies.remove(enemy);
+    public boolean removeEnemy(Enemy enemy){
+        return enemies.remove(enemy);
+    }
+
+    public void test(){
+        for(Enemy enemy:enemies){
+            System.out.print(enemy.getBlock() == this);
+        }
+        if(enemies.size() > 0) System.out.println();
     }
 }
