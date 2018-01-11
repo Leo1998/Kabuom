@@ -108,13 +108,7 @@ public class World {
 
     public void removeEnemy(Enemy enemy){
         coins += (25 - (25 - 1 - (5) * Math.pow(Math.E, ((-1f / 6f) * (wave - 15f)))));
-        if(!enemy.getBlock().removeEnemy(enemy)){
-            for(Block[] blocks:this.blocks){
-                for(Block block:blocks){
-                    block.removeEnemy(enemy);
-                }
-            }
-        }
+        enemy.getBlock().removeEnemy(enemy);
         enemyList.remove(enemy);
     }
 

@@ -40,10 +40,13 @@ public class Block {
         return enemies.remove(enemy);
     }
 
-    public void test(){
-        for(Enemy enemy:enemies){
-            System.out.print(enemy.getBlock() == this);
+    public void fixEnemies(){
+        for(int i = 0; i < enemies.size(); i++){
+            Enemy enemy = enemies.get(i);
+            if(enemy.getHp() <= 0 || enemy.getBlock() != this){
+                enemies.remove(enemy);
+                i--;
+            }
         }
-        if(enemies.size() > 0) System.out.println();
     }
 }
