@@ -51,14 +51,11 @@ public class TowerHandler {
         Enemy closest = null;
         for (int i = Math.max(0,(int) (Math.floor(tower.getX()) - tower.towerType.attackRadius)); i < Math.min(world.getBlocks().length,Math.ceil(tower.getX()) + tower.towerType.attackRadius); i++) {
             for (int j = Math.max(0, (int) (Math.floor(tower.getY()) - tower.towerType.attackRadius)); j < Math.min(world.getBlocks()[i].length, Math.ceil(tower.getY()) + tower.towerType.attackRadius); j++) {
-                boolean fixBlock = false;
-                for(Enemy enemy:world.getBlocks()[i][j].getEnemies()){
-                    if(enemy.getHp() < 0) fixBlock = true;
+                for(Enemy enemy:world.getBlocks()[i][j]){
                     if(closest == null || getDist(tower,enemy) < getDist(tower,closest)){
                         closest = enemy;
                     }
                 }
-                if (fixBlock) world.getBlocks()[i][j].fixEnemies();
             }
         }
 
