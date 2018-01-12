@@ -47,14 +47,14 @@ public class Enemy extends GameObject {
      * @return
      */
     public float getSpeed() {
-        return enemyType.speed / getStrength(EffectType.Slow);
+        return enemyType.speed / getStrength(EffectType.SLOW);
     }
 
     /**
      * Gibt die Zeit, die zwischen zwei Angriffen des Gegners verstreichen muss, zurück
      */
     public float getAttackSpeed() {
-        return enemyType.attackSpeed * getStrength(EffectType.Slow);
+        return enemyType.attackSpeed * getStrength(EffectType.SLOW);
     }
 
     /**
@@ -153,7 +153,7 @@ public class Enemy extends GameObject {
 
     @Override
     public void addHp(float hp) {
-        float temp = hp * getStrength(EffectType.Bleeding);
+        float temp = hp * getStrength(EffectType.BLEEDING);
         super.addHp(temp);
         enemyHandler.addDamage(-hp,getX(),getY());
     }

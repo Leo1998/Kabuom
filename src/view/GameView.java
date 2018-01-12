@@ -97,7 +97,9 @@ public class GameView extends View {
     private void drawProjectile(Projectile projectile, Batch batch){
         float angle = Utility.calculateAngleBetweenTwoPoints(0, 0, - projectile.getDir().getCoords()[0], - projectile.getDir().getCoords()[1]);
 
-        batch.draw(ViewManager.getTexture(projectile.projectileType.textureID), blockCoordToViewCoordX(projectile.getX()), blockCoordToViewCoordY(projectile.getY()), h2 / world.getBlocks().length, h2 / world.getBlocks().length, h2 / world.getBlocks().length / 2, h2 / world.getBlocks().length / 2, angle, 1, 1, 1, 1);
+        float width = (h2 / world.getBlocks().length) * projectile.projectileType.radius;
+        float height = (h2 / world.getBlocks().length) * projectile.projectileType.radius;
+        batch.draw(ViewManager.getTexture(projectile.projectileType.textureID), blockCoordToViewCoordX(projectile.getX()) - (width-1)/2, blockCoordToViewCoordY(projectile.getY()) - (height-1)/2, width, height , (h2 / world.getBlocks().length) /2, (h2 / world.getBlocks().length) /2, angle, 1, 1, 1, 1);
     }
 
     private void drawTower(Tower tower, Batch batch){
