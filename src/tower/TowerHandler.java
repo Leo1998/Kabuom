@@ -41,16 +41,16 @@ public class TowerHandler {
 
     public void regenerateTowers(ArrayList<Tower> towers){
         for(Tower tower:towers){
-            if(tower.getHp() < tower.getMaxHp()){
-                tower.addHp(tower.getMaxHp()/10);
+            if(tower.getHp() < tower.towerType.getMaxHP()){
+                tower.addHp(tower.towerType.getMaxHP()/10);
             }
         }
     }
 
     private Enemy getClosestEnemy(Tower tower) {
         Enemy closest = null;
-        for (int i = Math.max(0,(int) (Math.floor(tower.getX()) - tower.getRadius())); i < Math.min(world.getBlocks().length,Math.ceil(tower.getX()) + tower.getRadius()); i++) {
-            for (int j = Math.max(0, (int) (Math.floor(tower.getY()) - tower.getRadius())); j < Math.min(world.getBlocks()[i].length, Math.ceil(tower.getY()) + tower.getRadius()); j++) {
+        for (int i = Math.max(0,(int) (Math.floor(tower.getX()) - tower.towerType.getRadius())); i < Math.min(world.getBlocks().length,Math.ceil(tower.getX()) + tower.towerType.getRadius()); i++) {
+            for (int j = Math.max(0, (int) (Math.floor(tower.getY()) - tower.towerType.getRadius())); j < Math.min(world.getBlocks()[i].length, Math.ceil(tower.getY()) + tower.towerType.getRadius()); j++) {
                 boolean fixBlock = false;
                 for(Enemy enemy:world.getBlocks()[i][j].getEnemies()){
                     if(enemy.getHp() < 0) fixBlock = true;

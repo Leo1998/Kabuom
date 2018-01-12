@@ -83,7 +83,7 @@ public class GameView extends View {
     }
 
     private void drawEnemy(Enemy enemy, Batch batch){
-        float percentage = (float) enemy.getHp() / (float) enemy.getMaxHp();
+        float percentage = enemy.getHp() / enemy.enemyType.getMaxHP();
 
         if (percentage < 0)
             percentage = 0;
@@ -175,7 +175,7 @@ public class GameView extends View {
                 int x0 = (int) blockCoordToViewCoordX(block.getCoords()[0]);
                 int y0 = (int) blockCoordToViewCoordY((world.getBlocks()[0].length - block.getCoords()[1]));
 
-                String l1 = t.getName();
+                String l1 = t.towerType.getName();
                 String l2 = "Health: " + t.getHp();
 
                 int w = Math.max(ViewManager.font.getWidth(l1), ViewManager.font.getWidth(l2));
@@ -191,10 +191,10 @@ public class GameView extends View {
          * Alles Was mit dem Towersetzen zu tun hat
          */
         if (setTower != null) {
-            setTower.setX(Mouse.getX() - setTower.getRadius() / 2);
-            setTower.setY(originHeight - Mouse.getY() - setTower.getRadius() / 2);
-            setTower.setRadius(h2 / world.getBlocks().length);
-            batch.draw(ViewManager.getTexture(setTower.towerType.textureID), setTower.getX(), setTower.getY(), setTower.getRadius(), setTower.getRadius());
+            float radius = h2 / world.getBlocks().length;
+            setTower.setX(Mouse.getX() - radius / 2);
+            setTower.setY(originHeight - Mouse.getY() - radius / 2);
+            batch.draw(ViewManager.getTexture(setTower.towerType.textureID), setTower.getX(), setTower.getY(), radius, radius);
         }
     }
 

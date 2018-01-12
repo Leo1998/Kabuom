@@ -141,7 +141,7 @@ public class ProjectileHandler {
             for (int j = Math.max(0,(int) Math.floor(projectile.getY())); j < Math.min(world.getBlocks()[i].length,Math.ceil(projectile.getY()) + 1); j++) {
                 for(Enemy enemy:world.getBlocks()[i][j].getEnemies()){
                     float distance = (float)(Math.sqrt(Math.pow(projectile.getX()-enemy.getX(),2) + Math.pow(projectile.getY()-enemy.getY(),2)));
-                    if(distance <= enemy.getRadius()){
+                    if(distance <= enemy.enemyType.getRadius()){
                         enemies.add(enemy);
                     }
                 }
