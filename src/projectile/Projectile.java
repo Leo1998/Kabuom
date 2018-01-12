@@ -7,41 +7,16 @@ import utility.Vector2;
 import java.util.ArrayList;
 
 public class Projectile extends GameObject {
-    private ProjectileType projectileType;
-    private int impactDamage;
-    private float distance, speed, range;
+    public final ProjectileType projectileType;
+    private float distance;
     private Vector2 dir;
     private ArrayList<Enemy> hitEnemies; // Zur Lösung von Kollisionsproblemen beim durchdringen von Gegnern.
 
     public Projectile(ProjectileType projectileType, int level, float x, float y, Vector2 dir) {
-        super(projectileType.getMaxHP(), level, projectileType.getName(), x, y, projectileType.getRadius(), projectileType.getTextureID());
+        super(projectileType, level, x, y);
         this.projectileType = projectileType;
-        impactDamage = projectileType.getImpactDamage();
-        speed = projectileType.getSpeed();
-        range = projectileType.getRange();
         this.dir = dir;
         this.hitEnemies = new ArrayList<>();
-    }
-
-    /**
-     * Die Anfrage liefert die Schaden des Projektils als Integer.
-     */
-    public int getImpactDamage() {
-        return impactDamage;
-    }
-
-    /**
-     * Die Anfrage liefert die Geschwindigkeit des Projektils als float.
-     */
-    public float getSpeed() {
-        return speed;
-    }
-
-    /**
-     * Die Anfrage liefert die Reichweite des Projektils als float.
-     */
-    public float getRange() {
-        return range;
     }
 
     public Vector2 getDir() {
@@ -60,13 +35,6 @@ public class Projectile extends GameObject {
      */
     public void setDistance(float pDistance) {
         distance = pDistance;
-    }
-
-    /**
-     * Die Anfrage liefert die Projektilart des Projektils als ProjectileType.
-     */
-    public ProjectileType getProjectileType() {
-        return projectileType;
     }
 
     /**

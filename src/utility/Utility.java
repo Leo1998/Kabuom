@@ -1,31 +1,11 @@
 package utility;
 
+import enemy.Enemy;
 import model.GameObject;
 import view.components.ViewComponent;
 
 
 public class Utility {
-
-    public static boolean gameObjectIsCollidingWithGameObject(GameObject o1, GameObject o2) {
-        if (o1 != null && o2 != null) {
-            return new Vector2((o1.getX()) - (o2.getX()), (o1.getY()) - (o2.getY())).getLength() <= o1.getRadius() + o2.getRadius();
-        } else {
-            throw new IllegalArgumentException();
-        }
-    }
-
-    public boolean gameObjectIsCollidingWithMouse(GameObject o1, int mouseX, int mouseY) {
-        if (o1 != null) {
-            return mouseX >= (o1.getX()) &&
-                    mouseX <= (o1.getX()) + (o1.getRadius()) &&
-                    mouseY >= (o1.getY()) &&
-                    mouseY <= (o1.getY()) + (o1.getRadius());
-
-        } else {
-            throw new IllegalArgumentException();
-        }
-
-    }
 
     public static float calculateAngleBetweenTwoPoints(float x1, float y1, float x2, float y2) {
         double deltaX, deltaY;

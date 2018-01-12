@@ -2,37 +2,23 @@ package model;
 
 public abstract class GameObject {
     private int level;
-    private String name;
-    private float x, y, radius, hp, maxHp;
+    public final ObjectType objectType;
+    private float x, y, hp;
 
-    public GameObject(float maxHp, int level, String name, float x, float y, float radius, String textureID) {
-        this.maxHp = maxHp;
+    public GameObject(ObjectType objectType, int level, float x, float y) {
+        this.objectType = objectType;
         this.level = level;
-        this.name = name;
         this.x = x;
         this.y = y;
-        this.radius = radius;
-        this.hp = maxHp;
-    }
-
-    public float getRadius() {
-        return radius;
+        this.hp = objectType.getMaxHP();
     }
 
     public float getHp() {
         return hp;
     }
 
-    public float getMaxHp() {
-        return maxHp;
-    }
-
     public int getLevel() {
         return level;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public float getX() {
@@ -49,8 +35,8 @@ public abstract class GameObject {
 
     public void addHp(float hp) {
         this.hp += hp;
-        if(this.hp > maxHp){
-            this.hp = maxHp;
+        if(this.hp > objectType.getMaxHP()){
+            this.hp = objectType.getMaxHP();
         }
     }
 
@@ -60,9 +46,5 @@ public abstract class GameObject {
 
     public void setY(float y) {
         this.y = y;
-    }
-
-    public void setRadius(float radius) {
-        this.radius = radius;
     }
 }

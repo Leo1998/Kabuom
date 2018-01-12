@@ -3,9 +3,9 @@ package enemy;
 import enemy.effect.EffectType;
 import enemy.step.MoveStep;
 import enemy.step.Step;
-import graph.Vertex;
 import tower.Tower;
 import tower.TowerType;
+import utility.Constants;
 import utility.Vector2;
 import world.Block;
 import world.World;
@@ -23,7 +23,6 @@ public class EnemyHandler {
     private Random random;
 
     /**
-     * Konstruktur von Enemyhandler
      *
      * @param world die World
      */
@@ -36,6 +35,21 @@ public class EnemyHandler {
         this.random = new Random();
     }
 
+    public void addDamage(float damage, float xPos, float yPos){
+        for(int i = Math.max(Math.round(xPos)-2,0); i < Math.min(Math.round(xPos)+2,nodeMap.length); i++){
+            for(int j = Math.max(Math.round(yPos)-2,0); j < Math.min(Math.round(yPos)+2,nodeMap[i].length); j++){
+                nodeMap[Math.round(xPos)][Math.round(yPos)].damage += damage;
+            }
+        }
+    }
+
+    public void newWave(){
+        for(Node[] nodes:nodeMap){
+            for(Node node:nodes){
+                node.damage = node.damage/2;
+            }
+        }
+    }
 
     /**
      * Berechnet die Handlungen aller Gegner und führt diese aus
@@ -45,12 +59,13 @@ public class EnemyHandler {
      * @param recalculate Ist true, wenn in dem Frame ein Turm geädnert oder Drunk aktiviert wurde (einmalig)
      * @param drunk       Ist true, wenn Drunk aktiv ist
      */
-    public void handleEnemies(float dt, ArrayList<Enemy> enemies, boolean recalculate, boolean drunk) {
+    public int handleEnemies(float dt, ArrayList<Enemy> enemies, boolean recalculate, boolean drunk) {
+        int minWave = -1;
         if (!drunk) {
             if (recalculate) {
-                createNodeMap(world.getBlocks());
+                updateNodeMap(world.getBlocks());
             }
-            calcAllPaths(enemies);
+            findPaths(enemies);
         } else {
             for (Enemy enemy : enemies) {
                 if (enemy.getPath().isEmpty() || recalculate) {
@@ -61,9 +76,21 @@ public class EnemyHandler {
             }
             changed = true;
         }
-        for (Enemy currEnemy : enemies) {
-            handleEnemy(dt, currEnemy, drunk, random);
+        for (int i = 0; i < enemies.size(); i++) {
+            Enemy enemy = enemies.get(i);
+
+            if(enemy.getHp() <= 0){
+                world.removeEnemy(enemy);
+                i--;
+            }else{
+                if(enemy.wave < minWave || minWave == -1){
+                    minWave = enemy.wave;
+                }
+            }
+
+            handleEnemy(dt, enemy, drunk, random);
         }
+        return minWave;
     }
 
     private MoveStep getRandomMove(int x, int y, Random random) {
@@ -84,7 +111,7 @@ public class EnemyHandler {
         return new MoveStep(toX, toY);
     }
 
-    private void calcAllPaths(ArrayList<Enemy> enemies) {
+    private void findPaths(ArrayList<Enemy> enemies) {
 
         //Group Enemies at similar places together to reduce total amount of findPath calls
         ArrayList<Enemy>[][] groupMap = new ArrayList[nodeMap.length][nodeMap[0].length];
@@ -147,27 +174,23 @@ public class EnemyHandler {
      * @param enemy Gegner, für den dies entschieden werden soll
      */
     private void handleEnemy(float dt, Enemy enemy, boolean drunk, Random random) {
-        if (enemy.getHp() <= 0) {
-            world.removeGameObject(enemy);
-        } else {
-            enemy.addAttackCooldown(dt);
-            enemy.addEffectDuration(-dt);
-            if (enemy.hasEffect(EffectType.Burning)) {
-                enemy.addHp(Math.round(EffectType.Burning.strength * dt));
-            }
-            Tower tower = getCollidingTower(enemy);
-            if (tower != null && (!drunk || random.nextDouble() < 0.3 || tower.getType() == TowerType.BARRICADE)) {  //Attack
-                enemy.setMovement(new Vector2(0, 0));
-                if (enemy.getAttackCooldown() > enemy.getAttackSpeed()) {
-                    tower.addHp(-enemy.getDamage());
-                    enemy.setAttackCooldown(0);
-                    if (tower.getType() == TowerType.BARRICADE) {
-                        enemy.setHp(Math.round(enemy.getHp() - (enemy.getDamage() * 0.5f)));
-                    }
+        enemy.addAttackCooldown(dt);
+        enemy.addEffectDuration(-dt);
+        if (enemy.hasEffect(EffectType.Burning)) {
+            enemy.addHp(Math.round(EffectType.Burning.strength * dt));
+        }
+        Tower tower = getCollidingTower(enemy);
+        if (tower != null && (!drunk || random.nextDouble() < 0.3 || tower.towerType == TowerType.BARRICADE)) {  //Attack
+            enemy.setMovement(new Vector2(0, 0));
+            if (enemy.getAttackCooldown() > enemy.getAttackSpeed()) {
+                tower.addHp(-enemy.getDamage());
+                enemy.setAttackCooldown(0);
+                if (tower.towerType == TowerType.BARRICADE) {
+                    enemy.setHp(Math.round(enemy.getHp() - (enemy.getDamage() * 0.5f)));
                 }
-            } else {              //Move
-                move(enemy, enemy.getSpeed() * dt, dt);
             }
+        } else {              //Move
+            move(enemy, enemy.getSpeed() * dt, dt);
         }
     }
 
@@ -179,27 +202,42 @@ public class EnemyHandler {
                 float targetX = ((MoveStep) step).x;
                 float targetY = ((MoveStep) step).y;
                 float dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
+                boolean qMove = true;
                 while (dist < moveableDist) {
                     enemy.getPath().pop();
-                    step = enemy.getPath().peek();
-                    if (step instanceof MoveStep) {
-                        targetX = ((MoveStep) step).x;
-                        targetY = ((MoveStep) step).y;
-                        dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
-                    } else {
-                        goTo(enemy, targetX, targetY, dt);
-                        return;
+                    if(!enemy.getPath().isEmpty()) {
+                        step = enemy.getPath().peek();
+                        if (step instanceof MoveStep) {
+
+                            targetX = ((MoveStep) step).x;
+                            targetY = ((MoveStep) step).y;
+
+                            dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
+                        } else {
+                            goTo(enemy, targetX, targetY, dt);
+                            qMove = false;
+                        }
+                    } else{
+                        qMove = false;
                     }
                 }
-                float q = moveableDist / dist;
-                float nX = enemy.getX() + ((targetX - enemy.getX()) * q);
-                float nY = enemy.getY() + ((targetY - enemy.getY()) * q);
-                goTo(enemy, nX, nY, dt);
+                if(qMove) {
+                    float q = moveableDist / dist;
+                    float nX = enemy.getX() + ((targetX - enemy.getX()) * q);
+                    float nY = enemy.getY() + ((targetY - enemy.getY()) * q);
+                    goTo(enemy, nX, nY, dt);
+                }
             }
         }
     }
 
     private void goTo(Enemy enemy, float x, float y, float dt) {
+        if(Math.round(enemy.getX()) != Math.round(x) || Math.round(enemy.getY()) != Math.round(y)) {
+            nodeMap[Math.round(enemy.getX())][Math.round(enemy.getY())].block.removeEnemy(enemy);
+            enemy.setBlock(nodeMap[Math.round(x)][Math.round(y)].block);
+            nodeMap[Math.round(x)][Math.round(y)].block.addEnemy(enemy);
+        }
+
         enemy.setMovement(new Vector2((x - enemy.getX()) / dt, (y - enemy.getY()) / dt));
         enemy.setX(x);
         enemy.setY(y);
@@ -207,8 +245,8 @@ public class EnemyHandler {
 
     private Tower getCollidingTower(Enemy enemy) {
         Tower result = null;
-        for (int i = (int) Math.floor(enemy.getX()); i < Math.ceil(enemy.getX()) + 1 && result == null; i++) {
-            for (int j = (int) Math.floor(enemy.getY()); j < Math.ceil(enemy.getY()) + 1 && result == null; j++) {
+        for (int i = Math.max(0,(int) Math.floor(enemy.getX())); i < Math.min(nodeMap.length,Math.ceil(enemy.getX()) + 1) && result == null; i++) {
+            for (int j = Math.max(0,(int) Math.floor(enemy.getY())); j < Math.min(nodeMap[i].length,Math.ceil(enemy.getY()) + 1) && result == null; j++) {
                 Tower tower = nodeMap[i][j].block.getTower();
                 if (tower != null) {
                     if (getDist(tower.getX(), tower.getY(), enemy.getX(), enemy.getY()) < 2) {
@@ -262,6 +300,7 @@ public class EnemyHandler {
             currX = newX;
             currY = newY;
         }
+
         return result;
     }
 
@@ -277,12 +316,14 @@ public class EnemyHandler {
 
     private void updateNeighbour(int srcX, int srcY, int xPos, int yPos) {
         if (xPos >= 0 && yPos >= 0 && xPos < nodeMap.length && yPos < nodeMap[xPos].length) {
+            Node source = nodeMap[srcX][srcY], current = nodeMap[xPos][yPos];
             float addDist = (srcX == xPos || srcY == yPos) ? 1 : (float) Math.sqrt(2);
-            addDist += Math.max(nodeMap[xPos][yPos].dpsInRange, nodeMap[srcX][srcY].dpsInRange);
-            if (nodeMap[xPos][yPos].fromStart > nodeMap[srcX][srcY].fromStart + addDist) {
-                nodeMap[xPos][yPos].fromStart = nodeMap[srcX][srcY].fromStart + addDist;
-                nodeMap[xPos][yPos].preX = srcX;
-                nodeMap[xPos][yPos].preY = srcY;
+            addDist += ((current.dpsInRange + source.dpsInRange) / 2)* Constants.dpsMultiplier;
+            addDist += (current.damage + source.damage) / 2;
+            if ((current.fromStart > source.fromStart + addDist) || (current.fromStart == source.fromStart + addDist)) {
+                current.fromStart = source.fromStart + addDist;
+                current.preX = srcX;
+                current.preY = srcY;
             }
 
         }
@@ -336,7 +377,8 @@ public class EnemyHandler {
 
             for (int i = (int) Math.max(0, xPos - attackRange); i < (int) Math.min(nodeMap.length, xPos + attackRange + 1); i++) {
                 for (int j = (int) Math.max(0, yPos - attackRange); j < (int) Math.min(nodeMap[i].length, yPos + attackRange + 1); j++) {
-                    if (getDist(xPos, yPos, i, j) <= attackRange) {
+                    float distance = getDist(xPos,yPos,i,j);
+                    if (distance <= attackRange) {
                         nodeMap[i][j].dpsInRange += dps;
                     }
                 }
@@ -364,18 +406,14 @@ public class EnemyHandler {
         updateAllNodes();
     }
 
-    private void createNodeMap(Vertex<Tower>[][] blocks) {
-        nodeMap = new Node[blocks.length][blocks[0].length];
-
-        for (int i = 0; i < blocks.length; i++) {
-            for (int j = 0; j < blocks.length; j++) {
-                nodeMap[i][j] = new Node(new Block(blocks[i][j], blocks[i][j].getContent()), i, j, mainX, mainY);
+    private void updateNodeMap(Block[][] blocks){
+        for(int i = 0; i < blocks.length && i < nodeMap.length; i++){
+            for(int j = 0; j < blocks[i].length && i < nodeMap[i].length; j++){
+                nodeMap[i][j].getFromBlock(blocks[i][j]);
             }
         }
 
         updateAllNodes();
-
-        changed = true;
     }
 
     /**
@@ -393,18 +431,16 @@ public class EnemyHandler {
     }
 
     private class Node {
-        private float dps, attackRange, dpsInRange;
-        private float fromStart;
+        private float dps, attackRange, dpsInRange, fromStart, damage;
         private final float toEnd;
-        private int xPos, yPos, preX, preY;
+        private int preX, preY;
         private boolean visited;
         private Block block;
 
         public Node(Block block, int xPos, int yPos, int endX, int endY) {
-            this.xPos = xPos;
-            this.yPos = yPos;
             this.preX = -1;
             this.preY = -1;
+            damage = 0;
             this.block = block;
             int minDif = Math.min(Math.max(xPos, endX) - Math.min(xPos, endX), Math.max(yPos, endY) - Math.min(yPos, endY));
             int maxDif = Math.max(Math.max(xPos, endX) - Math.min(xPos, endX), Math.max(yPos, endY) - Math.min(yPos, endY));
@@ -420,16 +456,22 @@ public class EnemyHandler {
          */
         private void getFromTower(Tower tower) {
             if (tower != null) {
-                if (tower.getFrequency() == 0) {
+                if (tower.towerType.frequency == 0) {
                     dps = 0;
                 } else {
-                    dps = (tower.getProjectile().getImpactDamage() / tower.getFrequency()) * dpsMultiplier;
+                    dps = (tower.towerType.projectileType.impactDamage / tower.towerType.frequency) * dpsMultiplier;
                 }
-                attackRange = tower.getAttackRadius();
+                attackRange = tower.towerType.attackRadius;
             } else {
                 dps = 0;
                 attackRange = 0;
             }
+        }
+
+        private void getFromBlock(Block block){
+            this.block = block;
+            getFromTower(block.getTower());
+            dpsInRange = 0;
         }
 
         private float getDistance() {

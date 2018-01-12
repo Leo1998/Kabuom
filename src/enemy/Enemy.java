@@ -5,6 +5,7 @@ import enemy.effect.EffectType;
 import enemy.step.Step;
 import model.GameObject;
 import utility.Vector2;
+import world.Block;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -13,9 +14,12 @@ import java.util.Stack;
 public class Enemy extends GameObject {
     private Stack<Step> path;
     private float attackCooldown;
-    private EnemyType enemyType;
+    public final EnemyType enemyType;
     private Vector2 movement;
     private ArrayList<Effect> effects;
+    private EnemyHandler enemyHandler;
+    private Block block;
+    public final int wave;
 
     /**
      * Konstruktor des Enemy
@@ -25,13 +29,16 @@ public class Enemy extends GameObject {
      * @param x         X-Position des Gegners
      * @param y         Y-Position des Gegners
      */
-    public Enemy(EnemyType enemyType, int level, float x, float y) {
-        super(enemyType.getMaxHP(), level, enemyType.getName(), x, y, enemyType.getRadius(), enemyType.getTextureID());
+    public Enemy(EnemyType enemyType, int level, float x, float y, EnemyHandler enemyHandler, int wave) {
+        super(enemyType, level, x, y);
         this.path = new Stack<>();
         this.enemyType = enemyType;
         attackCooldown = 0;
         this.movement = new Vector2(0, 0);
         this.effects = new ArrayList<>();
+        this.enemyHandler = enemyHandler;
+        this.block = null;
+        this.wave = wave;
     }
 
     /**
@@ -40,14 +47,14 @@ public class Enemy extends GameObject {
      * @return
      */
     public float getSpeed() {
-        return enemyType.getSpeed() / getStrength(EffectType.Slow);
+        return enemyType.speed / getStrength(EffectType.Slow);
     }
 
     /**
      * Gibt die Zeit, die zwischen zwei Angriffen des Gegners verstreichen muss, zurück
      */
     public float getAttackSpeed() {
-        return enemyType.getAttackSpeed() * getStrength(EffectType.Slow);
+        return enemyType.attackSpeed * getStrength(EffectType.Slow);
     }
 
     /**
@@ -82,7 +89,7 @@ public class Enemy extends GameObject {
      * Gibt den Schaden, den der Gegner mit einem Angriff verursacht, zurück
      */
     public int getDamage() {
-        return enemyType.getDamage();
+        return enemyType.damage;
     }
 
     /**
@@ -101,10 +108,6 @@ public class Enemy extends GameObject {
 
     public void addAttackCooldown(float attackCooldown) {
         this.attackCooldown += attackCooldown;
-    }
-
-    public EnemyType getEnemyType() {
-        return enemyType;
     }
 
     public void addEffect(EffectType effectType) {
@@ -150,10 +153,20 @@ public class Enemy extends GameObject {
 
     @Override
     public void addHp(float hp) {
-        super.addHp(Math.round(hp * getStrength(EffectType.Bleeding)));
+        float temp = hp * getStrength(EffectType.Bleeding);
+        super.addHp(temp);
+        enemyHandler.addDamage(-hp,getX(),getY());
     }
 
     private float getStrength(EffectType effectType) {
         return (effects.contains(new Effect(effectType)) ? effectType.strength : 1);
+    }
+
+    public Block getBlock() {
+        return block;
+    }
+
+    public void setBlock(Block block) {
+        this.block = block;
     }
 }
