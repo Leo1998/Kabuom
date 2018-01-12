@@ -43,6 +43,13 @@ public class EnemyHandler {
         }
     }
 
+    public void newWave(){
+        for(Node[] nodes:nodeMap){
+            for(Node node:nodes){
+                node.damage = node.damage/2;
+            }
+        }
+    }
 
     /**
      * Berechnet die Handlungen aller Gegner und führt diese aus

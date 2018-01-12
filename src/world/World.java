@@ -140,6 +140,7 @@ public class World {
 
         if (spawnWave) {
             towerHandler.regenerateTowers(towerList);
+            enemyHandler.newWave();
             //this.spawnEnemy(10,0,EnemyType.Cheat);
             Random random = new Random();
             for (int i = 0; i < Math.pow(1 + wave, 3) / 100 + 5; i++) {

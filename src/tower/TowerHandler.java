@@ -49,8 +49,8 @@ public class TowerHandler {
 
     private Enemy getClosestEnemy(Tower tower) {
         Enemy closest = null;
-        for (int i = Math.max(0,(int) (Math.floor(tower.getX()) - tower.towerType.getRadius())); i < Math.min(world.getBlocks().length,Math.ceil(tower.getX()) + tower.towerType.getRadius()); i++) {
-            for (int j = Math.max(0, (int) (Math.floor(tower.getY()) - tower.towerType.getRadius())); j < Math.min(world.getBlocks()[i].length, Math.ceil(tower.getY()) + tower.towerType.getRadius()); j++) {
+        for (int i = Math.max(0,(int) (Math.floor(tower.getX()) - tower.towerType.attackRadius)); i < Math.min(world.getBlocks().length,Math.ceil(tower.getX()) + tower.towerType.attackRadius); i++) {
+            for (int j = Math.max(0, (int) (Math.floor(tower.getY()) - tower.towerType.attackRadius)); j < Math.min(world.getBlocks()[i].length, Math.ceil(tower.getY()) + tower.towerType.attackRadius); j++) {
                 boolean fixBlock = false;
                 for(Enemy enemy:world.getBlocks()[i][j].getEnemies()){
                     if(enemy.getHp() < 0) fixBlock = true;
@@ -76,7 +76,6 @@ public class TowerHandler {
     private void shoot(Tower tower) {
         tower.setCooldown(tower.towerType.frequency);
         tower.setTarget(getClosestEnemy(tower));
-
         if (tower.getTarget() != null) {
 
             float towerX = tower.getX();

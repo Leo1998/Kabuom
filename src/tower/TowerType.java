@@ -33,6 +33,7 @@ public enum TowerType implements ObjectType {
         this.cost = cost;
         this.name = name;
         this.textureID = textureID;
+        this.radius = radius;
     }
 
 
