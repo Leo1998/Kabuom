@@ -176,8 +176,11 @@ public class EnemyHandler {
     private void handleEnemy(float dt, Enemy enemy, boolean drunk, Random random) {
         enemy.addAttackCooldown(dt);
         enemy.addEffectDuration(-dt);
-        if (enemy.hasEffect(EffectType.Burning)) {
-            enemy.addHp(Math.round(EffectType.Burning.strength * dt));
+        if (enemy.hasEffect(EffectType.BURNING)) {
+            enemy.addHp(EffectType.BURNING.strength * dt);
+        }
+        if(enemy.hasEffect(EffectType.POISON)){
+            enemy.addHp(EffectType.POISON.strength*dt);
         }
         Tower tower = getCollidingTower(enemy);
         if (tower != null && (!drunk || random.nextDouble() < 0.3 || tower.towerType == TowerType.BARRICADE)) {  //Attack
@@ -186,7 +189,7 @@ public class EnemyHandler {
                 tower.addHp(-enemy.getDamage());
                 enemy.setAttackCooldown(0);
                 if (tower.towerType == TowerType.BARRICADE) {
-                    enemy.setHp(Math.round(enemy.getHp() - (enemy.getDamage() * 0.5f)));
+                    enemy.setHp(enemy.getHp() - (enemy.getDamage() * 0.5f));
                 }
             }
         } else {              //Move
