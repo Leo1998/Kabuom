@@ -12,10 +12,10 @@ public enum ProjectileType implements ObjectType {
     ICE(1, 1, 0.0625f, "ICE", 5,/*Damage*/ 200, /*Range*/ 10, EffectType.SLOW, "IceBullet.png"),
     LIGHTNING(5, 1, 0.0625f, "LIGHTNING", 15,/*Damage*/3, /*Range*/ 12, null, "Laser.png"),
     PIERCINGBULLET(3, 1, 0.0625f, "PIERCINGBULLET", 27,/*Damage*/150, /*Range*/30, EffectType.BLEEDING, "Piercingprojektil.png"),
-    FRAGGRENADE(1, 1, 0.0625f, "FRAGGRENADE", 30,/*Damage*/100, /*Range*/ 20, EffectType.BURNING, "missile.png"),
+    FRAGGRENADE(1, 1, 0.0625f, "FRAGGRENADE", 30,/*Damage*/25, /*Range*/ 20, EffectType.BURNING, "missile.png"),
     POISON(1, 1, 0.0625f, "POISON", 5,/*Damage*/25,/*Range*/ 10, EffectType.POISON, "toxicBullet.png"),
     POISONTRAIL(1, 1, 0.0625f, "POISON", 0.002f,/*Damage*/15,/*Range*/ 0.01f, EffectType.POISON, "Giftgas.png"),
-    EXPLOSION(Integer.MAX_VALUE, 5, 2.5f, "EXPLOSION", 0.01f, /*Damage*/ 100, /*Range*/ 0.002f, EffectType.BURNING, "Explosion.png");
+    EXPLOSION(Integer.MAX_VALUE, 5, 2.5f, "EXPLOSION", 0.01f, /*Damage*/ 50, /*Range*/ 0.002f, EffectType.BURNING, "Explosion.png");
 
     public final int maxHP;
     public final String name;

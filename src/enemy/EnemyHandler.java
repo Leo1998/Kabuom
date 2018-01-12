@@ -38,7 +38,7 @@ public class EnemyHandler {
     public void addDamage(float damage, float xPos, float yPos){
         for(int i = Math.max(Math.round(xPos)-2,0); i < Math.min(Math.round(xPos)+2,nodeMap.length); i++){
             for(int j = Math.max(Math.round(yPos)-2,0); j < Math.min(Math.round(yPos)+2,nodeMap[i].length); j++){
-                nodeMap[Math.round(xPos)][Math.round(yPos)].damage += damage;
+                nodeMap[i][j].damage = saveAdd(nodeMap[i][j].damage,damage);
             }
         }
     }
@@ -86,9 +86,8 @@ public class EnemyHandler {
                 if(enemy.wave < minWave || minWave == -1){
                     minWave = enemy.wave;
                 }
+                handleEnemy(dt, enemy, drunk, random);
             }
-
-            handleEnemy(dt, enemy, drunk, random);
         }
         return minWave;
     }
@@ -177,10 +176,10 @@ public class EnemyHandler {
         enemy.addAttackCooldown(dt);
         enemy.addEffectDuration(-dt);
         if (enemy.hasEffect(EffectType.BURNING)) {
-            enemy.addHp(EffectType.BURNING.strength * dt);
+            enemy.addHp(-EffectType.BURNING.strength * dt);
         }
         if(enemy.hasEffect(EffectType.POISON)){
-            enemy.addHp(EffectType.POISON.strength*dt);
+            enemy.addHp(-EffectType.POISON.strength*dt);
         }
         Tower tower = getCollidingTower(enemy);
         if (tower != null && (!drunk || random.nextDouble() < 0.3 || tower.towerType == TowerType.BARRICADE)) {  //Attack
@@ -321,10 +320,11 @@ public class EnemyHandler {
         if (xPos >= 0 && yPos >= 0 && xPos < nodeMap.length && yPos < nodeMap[xPos].length) {
             Node source = nodeMap[srcX][srcY], current = nodeMap[xPos][yPos];
             float addDist = (srcX == xPos || srcY == yPos) ? 1 : (float) Math.sqrt(2);
-            addDist += ((current.dpsInRange + source.dpsInRange) / 2)* Constants.dpsMultiplier;
-            addDist += (current.damage + source.damage) / 2;
-            if ((current.fromStart > source.fromStart + addDist) || (current.fromStart == source.fromStart + addDist)) {
-                current.fromStart = source.fromStart + addDist;
+            addDist = saveAdd(addDist,((current.dpsInRange + source.dpsInRange) / 2)* Constants.dpsMultiplier);
+            addDist = saveAdd(addDist,(current.damage + source.damage) / 2);
+            addDist = saveAdd(addDist,source.fromStart);
+            if (current.fromStart > addDist) {
+                current.fromStart = addDist;
                 current.preX = srcX;
                 current.preY = srcY;
             }
@@ -382,7 +382,7 @@ public class EnemyHandler {
                 for (int j = (int) Math.max(0, yPos - attackRange); j < (int) Math.min(nodeMap[i].length, yPos + attackRange + 1); j++) {
                     float distance = getDist(xPos,yPos,i,j);
                     if (distance <= attackRange) {
-                        nodeMap[i][j].dpsInRange += dps;
+                        nodeMap[i][j].dpsInRange = saveAdd(nodeMap[i][j].dpsInRange,dps);
                     }
                 }
             }
@@ -424,6 +424,16 @@ public class EnemyHandler {
      */
     public float getDpsMultiplier() {
         return dpsMultiplier;
+    }
+
+    private float saveAdd(float old, float add){
+        if(old < 0 || add < 0){
+            throw new IllegalArgumentException();
+        }else if(old+add < 0){
+            return Float.MAX_VALUE;
+        }else{
+            return old+add;
+        }
     }
 
     /**

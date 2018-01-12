@@ -155,7 +155,9 @@ public class Enemy extends GameObject {
     public void addHp(float hp) {
         float temp = hp * getStrength(EffectType.BLEEDING);
         super.addHp(temp);
-        enemyHandler.addDamage(-hp,getX(),getY());
+        if(hp < 0) {
+            enemyHandler.addDamage(-hp, getX(), getY());
+        }
     }
 
     private float getStrength(EffectType effectType) {
