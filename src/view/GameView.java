@@ -161,7 +161,11 @@ public class GameView extends View {
         /**
          * Zeichnet die Coin & Wave Zähler an den unteren rand
          */
-        String coinsMessage = "Coins: " + world.getCoins();
+        String coins = Integer.toString(world.getCoins());
+        for(int i = coins.length()-3; i > 0; i-=3){
+            coins = coins.substring(0,i) + "," + coins.substring(i);
+        }
+        String coinsMessage = "Coins: " + coins;
         ViewManager.font.drawText(batch, coinsMessage, (int) (originWidth - ViewManager.font.getWidth(coinsMessage)), (int) (originHeight - ViewManager.font.getLineHeight() * 2 - (originHeight / 10)));
 
         String waveMessage = "Wave: " + world.getWave();

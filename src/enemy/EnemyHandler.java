@@ -488,11 +488,7 @@ public class EnemyHandler {
         }
 
         private float getDistance() {
-            if (fromStart == Float.MAX_VALUE) {
-                return Float.MAX_VALUE;
-            } else {
-                return fromStart + toEnd;
-            }
+            return saveAdd(fromStart,toEnd);
         }
     }
 }
