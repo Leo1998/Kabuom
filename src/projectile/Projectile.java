@@ -40,8 +40,8 @@ public class Projectile extends GameObject {
     /**
      * Die Anfrage liefert die bereits getroffenen Gegner des Projektils als ArrayList.
      */
-    public ArrayList<Enemy> getHitEnemies() {
-        return hitEnemies;
+    public boolean hasHitEnemy(Enemy enemy) {
+        return hitEnemies.contains(enemy);
     }
 
     /**

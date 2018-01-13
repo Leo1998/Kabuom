@@ -6,8 +6,8 @@ package enemy.effect;
 public enum EffectType {
     SLOW(4, 4),
     BLEEDING(0.5f, 2),
-    BURNING(4, 2),
-    POISON(10, 0.5f);
+    BURNING(2, 0.25f),
+    POISON(5, 0.125f);
 
     public final float duration, strength;
 

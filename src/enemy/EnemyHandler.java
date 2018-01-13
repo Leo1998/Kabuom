@@ -174,13 +174,7 @@ public class EnemyHandler {
      */
     private void handleEnemy(float dt, Enemy enemy, boolean drunk, Random random) {
         enemy.addAttackCooldown(dt);
-        enemy.addEffectDuration(-dt);
-        if (enemy.hasEffect(EffectType.BURNING)) {
-            enemy.addHp(-EffectType.BURNING.strength * dt);
-        }
-        if(enemy.hasEffect(EffectType.POISON)){
-            enemy.addHp(-EffectType.POISON.strength*dt);
-        }
+        enemy.updateEffects(dt);
         Tower tower = getCollidingTower(enemy);
         if (tower != null && (!drunk || random.nextDouble() < 0.3 || tower.towerType == TowerType.BARRICADE)) {  //Attack
             enemy.setMovement(new Vector2(0, 0));

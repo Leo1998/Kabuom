@@ -128,18 +128,21 @@ public class Enemy extends GameObject {
         }
     }
 
-    public boolean hasEffect(EffectType effectType) {
-        return effects.contains(new Effect(effectType));
-    }
-
-    public void addEffectDuration(float duration) {
+    public void updateEffects(float duration) {
         for (int i = 0; i < effects.size(); ) {
             Effect effect = effects.get(i);
             if (effect.getDuration() < 0) {
                 effects.remove(effect);
             } else {
-                effect.addDuration(duration);
+                effect.addDuration(-duration);
                 i++;
+                switch (effect.effectType){
+                    case BURNING:
+                    case POISON:
+                        float damage = enemyType.getMaxHP()*effect.effectType.strength*duration;
+                        addHp(-damage);
+                        break;
+                }
             }
         }
     }

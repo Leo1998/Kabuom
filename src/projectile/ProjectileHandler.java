@@ -36,19 +36,21 @@ public class ProjectileHandler {
             projectile.setY(projectile.getY() + projectile.getDir().getCoords()[1] * projectile.projectileType.speed * dt);
 
             for (Enemy enemy : findCollidingEnemies(projectile)) {
-                enemy.addHp(-projectile.projectileType.impactDamage);
-                projectile.addToHitEnemies(enemy);
-                spawnEffects(projectile);
+                if(!projectile.hasHitEnemy(enemy)) {
+                    enemy.addHp(-projectile.projectileType.impactDamage);
+                    projectile.addToHitEnemies(enemy);
+                    spawnEffects(projectile);
 
-                if(projectile.projectileType.effectType != null){
-                    enemy.addEffect(projectile.projectileType.effectType);
-                } else if(projectile.projectileType == ProjectileType.LIGHTNING){
-                    randomRotation(projectile);
-                }
+                    if (projectile.projectileType.effectType != null) {
+                        enemy.addEffect(projectile.projectileType.effectType);
+                    } else if (projectile.projectileType == ProjectileType.LIGHTNING) {
+                        randomRotation(projectile);
+                    }
 
-                projectile.addHp(-1);
-                if (projectile.getHp() <= 0) {
-                    break;
+                    projectile.addHp(-1);
+                    if (projectile.getHp() <= 0) {
+                        break;
+                    }
                 }
             }
 
