@@ -234,7 +234,9 @@ public class EnemyHandler {
             nodeMap[Math.round(x)][Math.round(y)].block.addEnemy(enemy);
         }
 
-        enemy.setMovement(new Vector2((x - enemy.getX()) / dt, (y - enemy.getY()) / dt));
+        Vector2 movement = new Vector2((x - enemy.getX()) / dt, (y - enemy.getY()) / dt);
+        movement.multiply(0.09f);
+        enemy.setMovement(movement);
         enemy.setX(x);
         enemy.setY(y);
     }
