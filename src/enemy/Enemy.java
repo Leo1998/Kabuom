@@ -4,6 +4,7 @@ import enemy.effect.Effect;
 import enemy.effect.EffectType;
 import enemy.step.Step;
 import model.GameObject;
+import utility.Constants;
 import utility.Vector2;
 import world.Block;
 
@@ -110,28 +111,20 @@ public class Enemy extends GameObject {
         this.attackCooldown += attackCooldown;
     }
 
-    public void addEffect(EffectType effectType) {
+    public void addEffect(EffectType effectType){
         boolean inList = false;
-        for (Effect effect : effects) {
-            if (effect.effectType == effectType) {
+        for (int i = 0; i < effects.size(); i++) {
+            Effect effect = effects.get(i);
+            if (effect.effectType.equals(effectType)) {
                 inList = true;
                 effect.setDuration(effectType.duration);
-                break;
+            }else if(effect.breaks(effectType)){
+                effects.remove(i);
+                i--;
             }
         }
         if (!inList) {
             effects.add(new Effect(effectType));
-        }
-    }
-
-    public void removeEffect(EffectType effectType) {
-        for (int i = 0; i < effects.size(); ) {
-            Effect effect = effects.get(i);
-            if (effect.effectType == effectType) {
-                effects.remove(effect);
-            } else {
-                i++;
-            }
         }
     }
 

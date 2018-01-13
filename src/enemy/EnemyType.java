@@ -47,4 +47,6 @@ public enum EnemyType implements ObjectType {
     public String getName() {
         return name;
     }
+
+
 }
