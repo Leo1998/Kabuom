@@ -14,7 +14,7 @@ public enum TowerType implements ObjectType {
     SNIPER(20, true,/*Frequency*/ 3,/*AttackRadius : */ 16, 250, ProjectileType.PIERCINGBULLET, "Sniper", "LaserLampRot.png",0.325f),
     MORTAR(40, true,/*Frequency*/ 4,/*AttackRadius : */ 20, 500, ProjectileType.FRAGGRENADE, "Mortar", "MissileLauncherGruen.png",0.625f),
     BARRICADE(500, false,/*Frequency*/ 0,/*AttackRadius : */ 0, 50, null, "Barricade", "barricade2.png",0.625f),
-    //MAINTOWER(100000, true,/*Frequency*/ 0.25f,/*AttackRadius : */ 40, 0, ProjectileType.FRAGGRENADE, "OP Tower", "MainTower.png",0.5f),
+    //MAINTOWER(100000, true,/*Frequency*/ 0.03125f,/*AttackRadius : */ 20, 0, ProjectileType.FRAGGRENADE, "OP Tower", "MainTower.png",2);
     MAINTOWER(1000, false,/*Frequency*/ 0,/*AttackRadius : */ 0, 0, null, "Maintower", "MainTower.png",0.5f);
 
 
