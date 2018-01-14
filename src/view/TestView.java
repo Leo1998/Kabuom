@@ -64,7 +64,7 @@ public class TestView extends View {
             flame();
 
             for (int i = 100; i < 600; i += 50) {
-                batch.draw(ViewManager.getTexture("test0.png"), (i), (450), (25), (25), 12, 12, rotationRadians, 1f, 1f, 1f, 1f);
+                batch.draw(ViewManager.getTexture("test0.png"), (i), (450), (25), (25), rotationRadians, 1f, 1f, 1f, 1f);
             }
             ViewManager.font.drawText(batch, "Hallo Kabuom!     abcdefghijklmnopqrstuvwxyzß", 100, 400);
         }

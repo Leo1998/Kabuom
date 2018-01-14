@@ -32,6 +32,14 @@ public class Vector2 {
         coords[1] = coords[1] * m;
     }
 
+    public void rotate(float rotationRadians){
+        float tempX = coords[0];
+        float tempY = coords[1];
+
+        coords[0] = (float)(Math.cos(tempX) - Math.sin(tempY));
+        coords[1] = (float)(Math.sin(tempX) + Math.cos(tempY));
+    }
+
     @Override
     public String toString() {
         return "Vector2{" +

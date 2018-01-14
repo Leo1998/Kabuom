@@ -4,6 +4,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import utility.Matrix4;
 import utility.OrthographicCamera;
+import utility.Vector2;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -150,14 +151,14 @@ public class Batch {
     }
 
     public void draw(ITexture tex, float x, float y, float width, float height) {
-        draw(tex, x, y, width, height, 0, 0, 0, 1f, 1f, 1f, 1f);
+        draw(tex, x, y, width, height,0, 1f, 1f, 1f, 1f);
     }
 
     public void draw(ITexture tex, float x, float y, float width, float height, float r, float g, float b, float a) {
-        draw(tex, x, y, width, height, 0, 0, 0, r, g, b, a);
+        draw(tex, x, y, width, height,0, r, g, b, a);
     }
 
-    public void draw(ITexture tex, float x, float y, float width, float height, float originX, float originY, float rotationRadians, float r, float g, float b, float a) {
+    public void draw(ITexture tex, float x, float y, float width, float height, float rotationRadians, float r, float g, float b, float a) {
         checkFlush();
 
         int tid = checkTexture(tex);
@@ -176,32 +177,32 @@ public class Batch {
         float x1, y1, x2, y2, x3, y3, x4, y4;
 
         if (rotationRadians != 0) {
-            float scaleX = 1f;//width/tex.getWidth();
-            float scaleY = 1f;//height/tex.getHeight();
+            //Vector Rotation
 
-            float cx = originX * scaleX;
-            float cy = originY * scaleY;
+            float halfWidth = width/2;
+            float halfHeight = height/2;
 
-            float p1x = -cx;
-            float p1y = -cy;
-            float p2x = width - cx;
-            float p2y = -cy;
-            float p3x = width - cx;
-            float p3y = height - cy;
-            float p4x = -cx;
-            float p4y = height - cy;
+            float centerX = x + halfWidth;
+            float centerY = y + halfHeight;
 
-            final float cos = (float) Math.cos(rotationRadians);
-            final float sin = (float) Math.sin(rotationRadians);
+            float sin = (float) Math.sin(rotationRadians);
+            float cos = (float) Math.cos(rotationRadians);
 
-            x1 = x + (cos * p1x - sin * p1y) + cx; // TOP LEFT
-            y1 = y + (sin * p1x + cos * p1y) + cy;
-            x2 = x + (cos * p2x - sin * p2y) + cx; // TOP RIGHT
-            y2 = y + (sin * p2x + cos * p2y) + cy;
-            x3 = x + (cos * p3x - sin * p3y) + cx; // BOTTOM RIGHT
-            y3 = y + (sin * p3x + cos * p3y) + cy;
-            x4 = x + (cos * p4x - sin * p4y) + cx; // BOTTOM LEFT
-            y4 = y + (sin * p4x + cos * p4y) + cy;
+            //Point 1: -Width, -Height
+            x1 = centerX - cos*halfWidth + sin*halfHeight; // centerX + cos*(-halfWidth) - sin*(-halfHeight)
+            y1 = centerY - sin*halfWidth - cos*halfHeight; // centerX + sin*(-halfWidth) + cos*(-halfHeight)
+
+            //Point 2: +Width, -Height
+            x2 = centerX + cos*halfWidth + sin*halfHeight; // centerX + cos*(halfWidth) - sin*(-halfHeight)
+            y2 = centerY + sin*halfWidth - cos*halfHeight; // centerX + sin*(halfWidth) + cos*(-halfHeight)
+
+            //Point 3: +Width, +Height
+            x3 = centerX + cos*halfWidth - sin*halfHeight; // centerX + cos*(halfWidth) - sin*(halfHeight)
+            y3 = centerY + sin*halfWidth + cos*halfHeight; // centerX + sin*(halfWidth) + cos*(halfHeight)
+
+            //Point 4: -Width, +Height
+            x4 = centerX - cos*halfWidth - sin*halfHeight; // centerX + cos*(-halfWidth) - sin*(halfHeight)
+            y4 = centerY - sin*halfWidth + cos*halfHeight; // centerX + sin*(-halfWidth) + cos*(halfHeight)
         } else {
             x1 = x;
             y1 = y;

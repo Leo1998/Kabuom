@@ -24,7 +24,7 @@ public class TowerButton extends Button {
         super.draw(batch);
         float iconSize = (getHeight()) - ViewManager.font.getLineHeight();
 
-        batch.draw(icon, (getX() + (getWidth() / 2) - (iconSize / 2)), (getY()), iconSize, iconSize, iconSize / 2, iconSize / 2, (float) Math.toRadians(0), 1f, 1f, 1f, 1f);
+        batch.draw(icon, (getX() + (getWidth() / 2) - (iconSize / 2)), (getY()), iconSize, iconSize, (float) Math.toRadians(0), 1f, 1f, 1f, 1f);
 
         ViewManager.font.drawText(batch, description, (int) ((getX()) + (getWidth()) / 2 - ViewManager.font.getWidth(description) / 2), (int) ((getY()) + iconSize));
     }
