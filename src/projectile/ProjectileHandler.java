@@ -44,6 +44,7 @@ public class ProjectileHandler {
                     if (projectile.projectileType.effectType != null) {
                         enemy.addEffect(projectile.projectileType.effectType);
                     } else if (projectile.projectileType == ProjectileType.LIGHTNING) {
+                        projectile.setDistance(projectile.getDistance()/2);
                         randomRotation(projectile);
                     }
 

@@ -113,6 +113,10 @@ public class TowerHandler {
             vec.normalize();
 
             Projectile p = new Projectile(tower.towerType.projectileType, tower.getLevel(), towerX, towerY, vec);
+
+            p.setX(p.getX() + p.getDir().getCoords()[0]*tower.towerType.radius);
+            p.setY(p.getY() + p.getDir().getCoords()[1]*tower.towerType.radius);
+
             world.spawnProjectile(p);
 
             if (tower.towerType == TowerType.CYROGUN) {

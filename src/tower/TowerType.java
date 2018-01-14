@@ -10,7 +10,7 @@ public enum TowerType implements ObjectType {
     FLAMETHROWER(60, true,/*Frequency*/ 0.125f,/*AttackRadius : */ 7, 200, ProjectileType.FLAME, "Flamethrower", "Flamethrower.png",0.5f),
     POISONTOWER(75, true,/*Frequency*/ 3,/*AttackRadius : */ 10, 160, ProjectileType.POISON, "Poisontower", "MgTurretGruen.png",0.5f),
     CYROGUN(90, true,/*Frequency*/ 2,/*AttackRadius : */ 10, 275, ProjectileType.ICE, "Cyrogun", "MgTurret.png",0.5f),
-    TESLACOIL(50, true,/*Frequency*/ 0.0625f,/*AttackRadius : */ 4, 700, ProjectileType.LIGHTNING, "Teslacoil", "LaserLamp.png",0.325f),
+    TESLACOIL(50, true,/*Frequency*/ 0.03125f,/*AttackRadius : */ 7, 700, ProjectileType.LIGHTNING, "Teslacoil", "LaserLamp.png",0.325f),
     SNIPER(20, true,/*Frequency*/ 3,/*AttackRadius : */ 16, 250, ProjectileType.PIERCINGBULLET, "Sniper", "LaserLampRot.png",0.325f),
     MORTAR(40, true,/*Frequency*/ 4,/*AttackRadius : */ 20, 500, ProjectileType.FRAGGRENADE, "Mortar", "MissileLauncherGruen.png",0.625f),
     BARRICADE(500, false,/*Frequency*/ 0,/*AttackRadius : */ 0, 50, null, "Barricade", "barricade2.png",0.625f),

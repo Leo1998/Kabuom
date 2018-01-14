@@ -10,7 +10,7 @@ public enum ProjectileType implements ObjectType {
     MISSILE(1, 0.5f, "MISSILE", 15,/*Damage*/200, /*Range*/14, EffectType.BURNING, "missileKlein.png"),
     FLAME(3, 0.5f, "FLAME", 5,/*Damage*/ 8, /*Range*/ 7, EffectType.BURNING, "flame.png"),
     ICE(1, 0.5f, "ICE", 5,/*Damage*/ 200, /*Range*/ 10, EffectType.SLOW, "IceBullet.png"),
-    LIGHTNING(5, 0.5f, "LIGHTNING", 15,/*Damage*/3, /*Range*/ 12, null, "Laser.png"),
+    LIGHTNING(10, 0.5f, "LIGHTNING", 20,/*Damage*/5, /*Range*/ 16, null, "Laser.png"),
     PIERCINGBULLET(3, 0.5f, "PIERCINGBULLET", 27,/*Damage*/150, /*Range*/30, EffectType.BLEEDING, "Piercingprojektil.png"),
     FRAGGRENADE(1, 0.5f, "FRAGGRENADE", 30,/*Damage*/25, /*Range*/ 20, EffectType.BURNING, "missile.png"),
     POISON(1, 0.5f, "POISON", 5,/*Damage*/25,/*Range*/ 10, EffectType.POISON, "toxicBullet.png"),
