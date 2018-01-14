@@ -84,34 +84,34 @@ public class GameView extends View {
 
     private void drawEnemy(Enemy enemy, Batch batch){
         float percentage = Math.max(0,enemy.getHp() / enemy.enemyType.getMaxHP());
-        float radius = enemy.enemyType.radius;
-        float width = scale * radius;
-        float height = scale * radius;
+        float diameter = enemy.enemyType.radius*2;
+        float width = scale * diameter;
+        float height = scale * diameter;
 
-        batch.draw(ViewManager.getTexture(enemy.enemyType.textureID), blockCoordToViewCoordX(enemy.getX(),radius), blockCoordToViewCoordY(enemy.getY(),radius), width, height);
+        batch.draw(ViewManager.getTexture(enemy.enemyType.textureID), blockCoordToViewCoordX(enemy.getX(),diameter), blockCoordToViewCoordY(enemy.getY(),diameter), width, height);
 
-        batch.draw(null, blockCoordToViewCoordX(enemy.getX(),radius), blockCoordToViewCoordY(enemy.getY(),radius) + height * 1.2f, width, height * 0.2f, 0.6f, 0.6f, 0.6f, 1.0f);
-        batch.draw(null, blockCoordToViewCoordX(enemy.getX(),radius), blockCoordToViewCoordY(enemy.getY(),radius) + height * 1.2f, width * percentage, height * 0.2f, 0.0f, 1.0f, 0.0f, 1.0f);
+        batch.draw(null, blockCoordToViewCoordX(enemy.getX(),diameter), blockCoordToViewCoordY(enemy.getY(),diameter) + height * 1.2f, width, height * 0.2f, 0.6f, 0.6f, 0.6f, 1.0f);
+        batch.draw(null, blockCoordToViewCoordX(enemy.getX(),diameter), blockCoordToViewCoordY(enemy.getY(),diameter) + height * 1.2f, width * percentage, height * 0.2f, 0.0f, 1.0f, 0.0f, 1.0f);
     }
 
     private void drawProjectile(Projectile projectile, Batch batch){
         float angle = Utility.calculateAngleBetweenTwoPoints(0, 0, -projectile.getDir().getCoords()[0], -projectile.getDir().getCoords()[1]);
 
-        float radius = projectile.projectileType.radius;
-        float width = scale * radius;
-        float height = scale * radius;
+        float diameter = projectile.projectileType.radius*2;
+        float width = scale * diameter;
+        float height = scale * diameter;
 
-        batch.draw(ViewManager.getTexture(projectile.projectileType.textureID), blockCoordToViewCoordX(projectile.getX(),radius), blockCoordToViewCoordY(projectile.getY(),radius), width, height, angle, 1, 1, 1, 1);
+        batch.draw(ViewManager.getTexture(projectile.projectileType.textureID), blockCoordToViewCoordX(projectile.getX(),diameter), blockCoordToViewCoordY(projectile.getY(),diameter), width, height, angle, 1, 1, 1, 1);
     }
 
     private void drawTower(Tower tower, Batch batch){
 
-        float radius = tower.towerType.radius;
-        float width = scale * radius;
-        float height = scale * radius;
+        float diameter = tower.towerType.radius*2;
+        float width = scale * diameter;
+        float height = scale * diameter;
 
-        float xCoord = blockCoordToViewCoordX(tower.getX(),radius);
-        float yCoord = blockCoordToViewCoordY(tower.getY(),radius);
+        float xCoord = blockCoordToViewCoordX(tower.getX(),diameter);
+        float yCoord = blockCoordToViewCoordY(tower.getY(),diameter);
 
         float angle = (float) Math.PI;
         if (tower.getTarget() != null && tower.towerType.canShoot) {
@@ -205,9 +205,9 @@ public class GameView extends View {
         if (setTower != null) {
             setTower.setX(Mouse.getX() - scale / 2);
             setTower.setY(originHeight - Mouse.getY() - scale / 2);
-            float radius = setTower.towerType.radius;
-            float width = scale * radius;
-            float height = scale * radius;
+            float diameter = setTower.towerType.radius*2;
+            float width = scale * diameter;
+            float height = scale * diameter;
             batch.draw(ViewManager.getTexture(setTower.towerType.textureID), setTower.getX(), setTower.getY(), width, height);
         }
     }

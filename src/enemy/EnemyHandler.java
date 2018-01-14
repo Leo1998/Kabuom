@@ -182,7 +182,7 @@ public class EnemyHandler {
                 tower.addHp(-enemy.getDamage());
                 enemy.setAttackCooldown(0);
                 if (tower.towerType == TowerType.BARRICADE) {
-                    enemy.setHp(enemy.getHp() - (enemy.getDamage() * 0.5f));
+                    enemy.addHp( -enemy.getDamage() * 0.5f);
                 }
             }
         } else {              //Move
@@ -191,8 +191,7 @@ public class EnemyHandler {
     }
 
     private void move(Enemy enemy, float moveableDist, float dt) {
-        Tower collidingTower = getCollidingTower(enemy);
-        if (collidingTower == null && enemy.getPath() != null && !enemy.getPath().isEmpty()) {
+        if (enemy.getPath() != null && !enemy.getPath().isEmpty()) {
             Step step = enemy.getPath().peek();
             if (step instanceof MoveStep) {
                 float targetX = ((MoveStep) step).x;
@@ -243,11 +242,12 @@ public class EnemyHandler {
 
     private Tower getCollidingTower(Enemy enemy) {
         Tower result = null;
-        for (int i = Math.max(0,(int) Math.floor(enemy.getX())); i < Math.min(nodeMap.length,Math.ceil(enemy.getX()) + 1) && result == null; i++) {
-            for (int j = Math.max(0,(int) Math.floor(enemy.getY())); j < Math.min(nodeMap[i].length,Math.ceil(enemy.getY()) + 1) && result == null; j++) {
+        float radius = enemy.enemyType.radius;
+        for (int i = Math.max(0,(int) Math.floor(enemy.getX()-radius)-1); i < Math.min(nodeMap.length,Math.ceil(enemy.getX()+radius)+1) && result == null; i++) {
+            for (int j = Math.max(0,(int) Math.floor(enemy.getY()-radius)-1); j < Math.min(nodeMap[i].length,Math.ceil(enemy.getY()+radius)+1) && result == null; j++) {
                 Tower tower = nodeMap[i][j].block.getTower();
                 if (tower != null) {
-                    if (getDist(tower.getX(), tower.getY(), enemy.getX(), enemy.getY()) < 2) {
+                    if (getDist(tower.getX(), tower.getY(), enemy.getX(), enemy.getY()) < tower.towerType.radius + radius) {
                         result = tower;
                     }
                 }

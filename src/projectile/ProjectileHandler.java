@@ -77,7 +77,7 @@ public class ProjectileHandler {
 
     private ArrayList<Enemy> findCollidingEnemies(Projectile projectile){
         ArrayList<Enemy> enemies = new ArrayList<>();
-        float radius = projectile.projectileType.damageRadius;
+        float radius = projectile.projectileType.radius;
         for (int i = Math.max(0,(int) Math.floor(projectile.getX() - radius)); i < Math.min(world.getBlocks().length,Math.ceil(projectile.getX()+radius) + 1); i++) {
             for (int j = Math.max(0,(int) Math.floor(projectile.getY()-radius)); j < Math.min(world.getBlocks()[i].length,Math.ceil(projectile.getY()+radius) + 1); j++) {
                 for(Enemy enemy:world.getBlocks()[i][j]){
