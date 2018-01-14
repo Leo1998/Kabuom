@@ -83,44 +83,47 @@ public class GameView extends View {
     }
 
     private void drawEnemy(Enemy enemy, Batch batch){
-        float percentage = Math.max(0,enemy.getHp() / enemy.enemyType.getMaxHP());
+        float angle = Utility.calculateAngleBetweenTwoPoints(0, 0, enemy.getMovement().getCoords()[0], enemy.getMovement().getCoords()[1]);
+
+        drawGameObject(enemy,angle,batch);
+
         float diameter = enemy.enemyType.radius*2;
         float width = scale * diameter;
         float height = scale * diameter;
-
-        batch.draw(ViewManager.getTexture(enemy.enemyType.textureID), blockCoordToViewCoordX(enemy.getX(),diameter), blockCoordToViewCoordY(enemy.getY(),diameter), width, height);
+        float percentage = Math.max(0,enemy.getHp() / enemy.enemyType.getMaxHP());
 
         batch.draw(null, blockCoordToViewCoordX(enemy.getX(),diameter), blockCoordToViewCoordY(enemy.getY(),diameter) + height * 1.1f, width, height * 0.1f, 0.6f, 0.6f, 0.6f, 1.0f);
         batch.draw(null, blockCoordToViewCoordX(enemy.getX(),diameter), blockCoordToViewCoordY(enemy.getY(),diameter) + height * 1.1f, width * percentage, height * 0.1f, 0.0f, 1.0f, 0.0f, 1.0f);
     }
 
     private void drawProjectile(Projectile projectile, Batch batch){
-        float angle = Utility.calculateAngleBetweenTwoPoints(0, 0, -projectile.getDir().getCoords()[0], -projectile.getDir().getCoords()[1]);
+        float angle = Utility.calculateAngleBetweenTwoPoints(projectile.getDir().getCoords()[0], projectile.getDir().getCoords()[1], 0, 0);
 
-        float diameter = projectile.projectileType.radius*2;
-        float width = scale * diameter;
-        float height = scale * diameter;
-
-        batch.draw(ViewManager.getTexture(projectile.projectileType.textureID), blockCoordToViewCoordX(projectile.getX(),diameter), blockCoordToViewCoordY(projectile.getY(),diameter), width, height, angle, 1, 1, 1, 1);
+        drawGameObject(projectile,angle,batch);
     }
 
     private void drawTower(Tower tower, Batch batch){
 
         float diameter = tower.towerType.radius*2;
-        float width = scale * diameter;
-        float height = scale * diameter;
 
         float xCoord = blockCoordToViewCoordX(tower.getX(),diameter);
         float yCoord = blockCoordToViewCoordY(tower.getY(),diameter);
 
-        float angle = (float) Math.PI;
+        float angle = 0;
         if (tower.getTarget() != null && tower.towerType.canShoot) {
-            angle = Utility.calculateAngleBetweenTwoPoints(xCoord, yCoord, blockCoordToViewCoordX(tower.getTarget().getX()), blockCoordToViewCoordY(tower.getTarget().getY()));
+            angle = Utility.calculateAngleBetweenTwoPoints(blockCoordToViewCoordX(tower.getTarget().getX()), blockCoordToViewCoordY(tower.getTarget().getY()), xCoord, yCoord);
             //System.out.println(Utility.calculateAngleBetweenTwoPoints(xCoord, yCoord, blockCoordToViewCoordX(tower.getTarget().getX()), blockCoordToViewCoordY(tower.getTarget().getY())));
         }
-        batch.draw(ViewManager.getTexture(tower.towerType.textureID), xCoord, yCoord, width, height, (float) (angle + Math.PI), 1f, 1f, 1f, 1f);
+        drawGameObject(tower,angle,batch);
     }
 
+    private void drawGameObject(GameObject gameObject, float rotation, Batch batch){
+        float diameter = gameObject.objectType.getRadius()*2;
+        float width = scale * diameter;
+        float height = scale * diameter;
+
+        batch.draw(ViewManager.getTexture(gameObject.objectType.getTextureId()), blockCoordToViewCoordX(gameObject.getX(),diameter), blockCoordToViewCoordY(gameObject.getY(),diameter), width, height, rotation, 1, 1, 1, 1);
+    }
 
     @Override
     public void render(float deltaTime, Batch batch) {

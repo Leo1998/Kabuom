@@ -33,7 +33,7 @@ public enum EnemyType implements ObjectType {
         this.textureID = textureID;
     }
 
-
+    @Override
     public float getMaxHP() {
         return maxHP;
     }
@@ -48,5 +48,9 @@ public enum EnemyType implements ObjectType {
         return name;
     }
 
+    @Override
+    public String getTextureId() {
+        return textureID;
+    }
 
 }

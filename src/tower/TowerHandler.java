@@ -71,9 +71,9 @@ public class TowerHandler {
     }
 
     private void shoot(Tower tower) {
-        tower.setCooldown(tower.towerType.frequency);
         tower.setTarget(getClosestEnemy(tower));
         if (tower.getTarget() != null) {
+            tower.setCooldown(tower.towerType.frequency);
 
             float towerX = tower.getX();
             float towerY = tower.getY();
@@ -129,53 +129,9 @@ public class TowerHandler {
                 world.spawnProjectile(p2);
 
             }
+        }else{
+            tower.setCooldown(tower.towerType.frequency/2);
         }
-
-        /*if (tower.getType() == TowerType.MGTURRET){
-            //main idea
-            //     angle of the slope of a straight through P1(enemyX|enemyY) and P2(turretX|turretY) = tan^-1 of ((distance of enemyY and towerY)/(distance of enemyX and towerX)
-            double alpha = Math.atan((towerEnemyDistanceY) / (towerEnemyDistanceX));
-            //                                                              x coordinate on circle of radius of tower,y coordinate on circle of radius of tower
-            new Projectile(ProjectileType.BULLET, tower.getLevel(),(float) Math.cos(alpha)*tower.getRadius()+towerX,(float) Math.sin(alpha)*tower.getRadius()+towerY,enemyX,enemyY);
-
-        }else  if (tower.getType() == TowerType.SNIPER) {
-
-            double alpha = Math.atan((towerEnemyDistanceY) / (towerEnemyDistanceX));
-            new Projectile(ProjectileType.PIERCINGBULLET,tower.getLevel(),(float) Math.cos(alpha)*tower.getRadius()+towerX,(float) Math.sin(alpha)*tower.getRadius()+towerY, enemyX,enemyY);
-
-        }else  if (tower.getType() == TowerType.POISONTOWER) {
-
-            double alpha = Math.atan((towerEnemyDistanceY) / (towerEnemyDistanceX));
-            new Projectile(ProjectileType.POISON,tower.getLevel(),(float) Math.cos(alpha)*tower.getRadius()+towerX,(float) Math.sin(alpha)*tower.getRadius()+towerY, enemyX,enemyY);
-
-        }else if (tower.getType() == TowerType.MISSILELAUNCHER) {
-
-            double alpha = Math.atan((towerEnemyDistanceY) / (towerEnemyDistanceX));
-            new Projectile(ProjectileType.MISSILE,tower.getLevel(),(float) Math.cos(alpha)*tower.getRadius()+towerX,(float) Math.sin(alpha)*tower.getRadius()+towerY, enemyX,enemyY);
-
-        }else if (tower.getType() == TowerType.TESLACOIL){
-            //does not need the formula shit, lightning starts in middle of tower XD
-            new Projectile(ProjectileType.LIGHTNING,tower.getLevel(),towerX,towerY,enemyX,enemyY);
-
-
-        }else if (tower.getType() == TowerType.CYROGUN) {
-
-            double alpha = Math.atan((towerEnemyDistanceY) / (towerEnemyDistanceX));
-            new Projectile(ProjectileType.ICE,tower.getLevel(),(float) Math.cos(alpha)*tower.getRadius()+towerX,(float) Math.sin(alpha)*tower.getRadius()+towerY,enemyX,enemyY);
-
-
-        }else if (tower.getType() == TowerType.FLAMETHROWER){
-
-            double alpha = Math.atan((towerEnemyDistanceY) / (towerEnemyDistanceX));
-            new Projectile(ProjectileType.FLAME, tower.getLevel(),(float) Math.cos(alpha)*tower.getRadius()+towerX,(float) Math.sin(alpha)*tower.getRadius()+towerY,enemyX,enemyY);
-            //does not only shoot one fire bullet, shoots like a hopper
-            for (int i=1;i<=10;i++){
-                double betha=alpha+i;
-                double gamma=alpha-i;
-                new Projectile(ProjectileType.FLAME,tower.getLevel(),(float) Math.cos(betha)*towerEnemyDistanceX+towerX,(float) Math.sin(betha)*towerEnemyDistanceY+towerY,enemyX,enemyY);
-                new Projectile(ProjectileType.FLAME,tower.getLevel(),(float) Math.cos(gamma)*towerEnemyDistanceX+towerX,(float) Math.sin(gamma)*towerEnemyDistanceY+towerY,enemyX,enemyY);
-            }
-        }*/
     }
 
 }

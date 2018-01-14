@@ -37,7 +37,7 @@ public enum TowerType implements ObjectType {
         this.radius = radius;
     }
 
-
+    @Override
     public float getMaxHP() {
         return maxHP;
     }
@@ -50,5 +50,10 @@ public enum TowerType implements ObjectType {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String getTextureId() {
+        return textureID;
     }
 }

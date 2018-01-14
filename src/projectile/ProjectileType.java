@@ -35,7 +35,7 @@ public enum ProjectileType implements ObjectType {
         this.textureID = textureID;
     }
 
-
+    @Override
     public float getMaxHP() {
         return maxHP;
     }
@@ -48,5 +48,10 @@ public enum ProjectileType implements ObjectType {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String getTextureId() {
+        return textureID;
     }
 }
