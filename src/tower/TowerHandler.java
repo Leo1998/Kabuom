@@ -71,7 +71,7 @@ public class TowerHandler {
     }
 
     private void shoot(Tower tower) {
-        tower.setCooldown(tower.towerType.frequency);
+        tower.setCooldown(tower.towerType.frequency * (random.nextFloat()*0.25f + 0.75f));
         tower.setTarget(getClosestEnemy(tower));
         if (tower.getTarget() != null) {
 

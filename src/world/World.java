@@ -62,9 +62,9 @@ public class World {
 
         newTower = false;
 
-        this.enemyHandler = new EnemyHandler(this, mainTowerCoordX, mainTowerCoordY);
-        this.projectileHandler = new ProjectileHandler(this);
-        this.towerHandler = new TowerHandler(this);
+        enemyHandler = new EnemyHandler(this, mainTowerCoordX, mainTowerCoordY);
+        projectileHandler = new ProjectileHandler(this);
+        towerHandler = new TowerHandler(this);
 
         setDifficulty(difficulty);
 
@@ -154,7 +154,9 @@ public class World {
             Controller.instance.getConfig().setMaxWave(minWave-1);
         }
         projectileHandler.handleProjectiles(dt, projectileList);
-        towerHandler.handleTowers(dt, towerList);
+        if(!enemyList.isEmpty()) {
+            towerHandler.handleTowers(dt, towerList);
+        }
 
         if(newTower) newTower = false;
 
