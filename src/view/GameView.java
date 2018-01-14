@@ -83,7 +83,11 @@ public class GameView extends View {
     }
 
     private void drawEnemy(Enemy enemy, Batch batch){
-        float angle = Utility.calculateAngleBetweenTwoPoints(0, 0, enemy.getMovement().getCoords()[0], enemy.getMovement().getCoords()[1]);
+        float angle = 0;
+        if(enemy.getMovement().getCoords()[0] != 0 || enemy.getMovement().getCoords()[1] != 0) {
+            angle = Utility.calculateAngleBetweenTwoPoints(0, 0, enemy.getMovement().getCoords()[0], enemy.getMovement().getCoords()[1]);
+        }
+
 
         drawGameObject(enemy,angle,batch);
 
