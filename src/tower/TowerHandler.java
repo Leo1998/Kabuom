@@ -71,9 +71,9 @@ public class TowerHandler {
     }
 
     private void shoot(Tower tower) {
+        tower.setCooldown(tower.towerType.frequency);
         tower.setTarget(getClosestEnemy(tower));
         if (tower.getTarget() != null) {
-            tower.setCooldown(tower.towerType.frequency);
 
             float towerX = tower.getX();
             float towerY = tower.getY();
@@ -129,8 +129,6 @@ public class TowerHandler {
                 world.spawnProjectile(p2);
 
             }
-        }else{
-            tower.setCooldown(tower.towerType.frequency/2);
         }
     }
 
