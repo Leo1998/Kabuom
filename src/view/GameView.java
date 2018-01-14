@@ -90,8 +90,8 @@ public class GameView extends View {
 
         batch.draw(ViewManager.getTexture(enemy.enemyType.textureID), blockCoordToViewCoordX(enemy.getX(),diameter), blockCoordToViewCoordY(enemy.getY(),diameter), width, height);
 
-        batch.draw(null, blockCoordToViewCoordX(enemy.getX(),diameter), blockCoordToViewCoordY(enemy.getY(),diameter) + height * 1.2f, width, height * 0.2f, 0.6f, 0.6f, 0.6f, 1.0f);
-        batch.draw(null, blockCoordToViewCoordX(enemy.getX(),diameter), blockCoordToViewCoordY(enemy.getY(),diameter) + height * 1.2f, width * percentage, height * 0.2f, 0.0f, 1.0f, 0.0f, 1.0f);
+        batch.draw(null, blockCoordToViewCoordX(enemy.getX(),diameter), blockCoordToViewCoordY(enemy.getY(),diameter) + height * 1.1f, width, height * 0.1f, 0.6f, 0.6f, 0.6f, 1.0f);
+        batch.draw(null, blockCoordToViewCoordX(enemy.getX(),diameter), blockCoordToViewCoordY(enemy.getY(),diameter) + height * 1.1f, width * percentage, height * 0.1f, 0.0f, 1.0f, 0.0f, 1.0f);
     }
 
     private void drawProjectile(Projectile projectile, Batch batch){

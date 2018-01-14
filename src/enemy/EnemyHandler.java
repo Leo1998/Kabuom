@@ -1,6 +1,5 @@
 package enemy;
 
-import enemy.effect.EffectType;
 import enemy.step.MoveStep;
 import enemy.step.Step;
 import tower.Tower;
