@@ -10,10 +10,10 @@ public enum TowerType implements ObjectType {
     FLAMETHROWER(60, true,/*Frequency*/ 0.125f,/*AttackRadius : */ 7, 200, ProjectileType.FLAME, "Flamethrower", "Flamethrower.png",1),
     POISONTOWER(75, true,/*Frequency*/ 3,/*AttackRadius : */ 10, 160, ProjectileType.POISON, "Poisontower", "MgTurretGruen.png",1),
     CYROGUN(90, true,/*Frequency*/ 2,/*AttackRadius : */ 10, 275, ProjectileType.ICE, "Cyrogun", "MgTurret.png",1),
-    TESLACOIL(50, true,/*Frequency*/ 0.0625f,/*AttackRadius : */ 4, 700, ProjectileType.LIGHTNING, "Teslacoil", "LaserLamp.png",1),
-    SNIPER(20, true,/*Frequency*/ 3,/*AttackRadius : */ 16, 250, ProjectileType.PIERCINGBULLET, "Sniper", "LaserLampRot.png",1),
+    TESLACOIL(50, true,/*Frequency*/ 0.0625f,/*AttackRadius : */ 4, 700, ProjectileType.LIGHTNING, "Teslacoil", "LaserLamp.png",0.75f),
+    SNIPER(20, true,/*Frequency*/ 3,/*AttackRadius : */ 16, 250, ProjectileType.PIERCINGBULLET, "Sniper", "LaserLampRot.png",0.75f),
     MORTAR(40, true,/*Frequency*/ 4,/*AttackRadius : */ 20, 500, ProjectileType.FRAGGRENADE, "Mortar", "MissileLauncherGruen.png",1),
-    BARRICADE(500, false,/*Frequency*/ 0,/*AttackRadius : */ 0, 50, null, "Barricade", "barricade2.png",1),
+    BARRICADE(500, false,/*Frequency*/ 0,/*AttackRadius : */ 0, 50, null, "Barricade", "barricade2.png",1.25f),
     //MAINTOWER(100000, true,/*Frequency*/ 0.25f,/*AttackRadius : */ 40, 0, ProjectileType.FRAGGRENADE, "OP Tower", "MainTower.png",1),
     MAINTOWER(1000, false,/*Frequency*/ 0,/*AttackRadius : */ 0, 0, null, "Maintower", "MainTower.png",1);
 
