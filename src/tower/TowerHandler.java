@@ -136,4 +136,10 @@ public class TowerHandler {
         }
     }
 
+    public void resetCooldown(ArrayList<Tower> towers){
+        for(Tower tower:towers){
+            tower.setCooldown(-1);
+        }
+    }
+
 }

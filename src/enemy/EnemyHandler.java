@@ -64,6 +64,7 @@ public class EnemyHandler {
         int minWave = -1;
         if (!drunk) {
             if (recalculate) {
+                changed = true;
                 updateNodeMap(world.getBlocks());
             }
             findPaths(enemies);
