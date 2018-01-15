@@ -139,9 +139,6 @@ public class World {
         gameTime = gameTime + dt;
 
         if (spawnWave) {
-            if(enemyList.isEmpty()){
-                towerHandler.randomCooldown(towerList);
-            }
             towerHandler.regenerateTowers(towerList);
             enemyHandler.newWave();
             //this.spawnEnemy(10,0,EnemyType.Cheat);
@@ -159,6 +156,8 @@ public class World {
         projectileHandler.handleProjectiles(dt, projectileList);
         if(!enemyList.isEmpty()) {
             towerHandler.handleTowers(dt, towerList);
+        }else{
+            towerHandler.noWave(towerList,dt);
         }
 
         if(newTower) newTower = false;

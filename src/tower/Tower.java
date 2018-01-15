@@ -12,6 +12,7 @@ public class Tower extends GameObject {
     public Tower(TowerType type, int level, float x, float y) {
         super(type, level, x, y);
         this.towerType = type;
+        cooldown = towerType.frequency;
     }
 
     public Enemy getTarget() {

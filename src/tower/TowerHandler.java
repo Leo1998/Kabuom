@@ -136,9 +136,16 @@ public class TowerHandler {
         }
     }
 
-    public void randomCooldown(ArrayList<Tower> towers){
+    public void noWave(ArrayList<Tower> towers, float dt){
         for(Tower tower:towers){
-            tower.setCooldown(tower.towerType.frequency*random.nextFloat());
+            float cooldown = tower.getCooldown();
+            if(cooldown > 0) {
+                if (cooldown - dt < 0) {
+                    tower.setCooldown(0);
+                }else{
+                    tower.setCooldown(cooldown-dt);
+                }
+            }
         }
     }
 
