@@ -1,6 +1,6 @@
 package projectile;
 
-import enemy.effect.EffectType;
+import enemy.EffectType;
 import model.ObjectType;
 
 public enum ProjectileType implements ObjectType {

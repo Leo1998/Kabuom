@@ -20,6 +20,7 @@ public class EnemyHandler {
     private float dpsMultiplier = 1;
     private final int mainX, mainY;
     private Random random;
+    private int index;
 
     /**
      *
@@ -32,6 +33,7 @@ public class EnemyHandler {
         changed = true;
         this.world = world;
         this.random = new Random();
+        index = Integer.MIN_VALUE;
     }
 
     public void addDamage(float damage, float xPos, float yPos){
@@ -172,6 +174,10 @@ public class EnemyHandler {
      * @param enemy Gegner, für den dies entschieden werden soll
      */
     private void handleEnemy(float dt, Enemy enemy, boolean drunk, Random random) {
+        if(enemy.getBlock() == null){
+            enemy.setBlock(nodeMap[Math.round(enemy.getX())][Math.round(enemy.getY())].block);
+            nodeMap[Math.round(enemy.getX())][Math.round(enemy.getY())].block.addEnemy(enemy);
+        }
         enemy.addAttackCooldown(dt);
         enemy.updateEffects(dt);
         Tower tower = getCollidingTower(enemy);
@@ -265,7 +271,19 @@ public class EnemyHandler {
         if (startX >= nodeMap.length || startY >= nodeMap[0].length || mainX >= nodeMap.length || mainY >= nodeMap[0].length)
             return null;
 
-        prepareNodeMap(startX, startY);
+        if(index == Integer.MAX_VALUE){
+            resetIndex();
+        }else {
+            index++;
+        }
+
+        Node start = nodeMap[startX][startY];
+        start.index = index;
+        start.fromStart = 0;
+        start.preX = -1;
+        start.preY = -1;
+        start.visited = true;
+
         int currX = startX, currY = startY;
         boolean unreachable = false;
 
@@ -314,11 +332,15 @@ public class EnemyHandler {
     private void updateNeighbour(int srcX, int srcY, int xPos, int yPos) {
         if (xPos >= 0 && yPos >= 0 && xPos < nodeMap.length && yPos < nodeMap[xPos].length) {
             Node source = nodeMap[srcX][srcY], current = nodeMap[xPos][yPos];
+
             float addDist = (srcX == xPos || srcY == yPos) ? 1 : (float) Math.sqrt(2);
             addDist = saveAdd(addDist,((current.dpsInRange + source.dpsInRange) / 2)* Constants.dpsMultiplier);
             addDist = saveAdd(addDist,(current.damage + source.damage) / 2);
             addDist = saveAdd(addDist,source.fromStart);
-            if (current.fromStart > addDist) {
+
+            if (index != current.index || current.fromStart > addDist) {
+                current.visited = false;
+                current.index = index;
                 current.fromStart = addDist;
                 current.preX = srcX;
                 current.preY = srcY;
@@ -331,31 +353,24 @@ public class EnemyHandler {
         int minX = -1, minY = -1;
         for (int i = 0; i < nodeMap.length; i++) {
             for (int j = 0; j < nodeMap[i].length; j++) {
-                if (!nodeMap[i][j].visited && (minX == -1 || nodeMap[i][j].getDistance() < nodeMap[minX][minY].getDistance())) {
+                if (nodeMap[i][j].index == index && !nodeMap[i][j].visited && (minX == -1 || nodeMap[i][j].getDistance() < nodeMap[minX][minY].getDistance())) {
                     minX = i;
                     minY = j;
                 }
             }
         }
-        if (minX == -1 || nodeMap[minX][minY].fromStart == Float.MAX_VALUE) {
+        if (minX == -1 || nodeMap[minX][minY].fromStart == Float.MAX_VALUE || nodeMap[minX][minY].index != index) {
             return null;
         } else {
             return new int[]{minX, minY};
         }
     }
 
-    private void prepareNodeMap(int startX, int startY) {
+    private void resetIndex() {
+        index = Integer.MIN_VALUE;
         for (int i = 0; i < nodeMap.length; i++) {
             for (int j = 0; j < nodeMap.length; j++) {
-                Node current = nodeMap[i][j];
-                current.preX = -1;
-                current.preY = -1;
-                current.visited = false;
-                if (i == startX && j == startY) {
-                    current.fromStart = 0;
-                } else {
-                    current.fromStart = Float.MAX_VALUE;
-                }
+                nodeMap[i][j].index = Integer.MIN_VALUE;
             }
         }
     }
@@ -441,7 +456,7 @@ public class EnemyHandler {
     private class Node {
         private float dps, attackRange, dpsInRange, fromStart, damage;
         private final float toEnd;
-        private int preX, preY;
+        private int preX, preY, index;
         private boolean visited;
         private Block block;
 
@@ -457,6 +472,7 @@ public class EnemyHandler {
             getFromTower(block.getTower());
             dpsInRange = 0;
             visited = false;
+            index = Integer.MIN_VALUE;
         }
 
         /**

@@ -1,7 +1,6 @@
 package projectile;
 
 import enemy.Enemy;
-import enemy.effect.EffectType;
 import utility.Constants;
 import utility.Vector2;
 import world.World;

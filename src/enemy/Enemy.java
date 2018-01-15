@@ -1,14 +1,11 @@
 package enemy;
 
-import enemy.effect.Effect;
-import enemy.effect.EffectType;
 import enemy.step.Step;
 import model.GameObject;
 import utility.Constants;
 import utility.Vector2;
 import world.Block;
 
-import java.util.ArrayList;
 import java.util.Stack;
 
 
@@ -17,7 +14,7 @@ public class Enemy extends GameObject {
     private float attackCooldown;
     public final EnemyType enemyType;
     private Vector2 movement;
-    private ArrayList<Effect> effects;
+    private float[] effects;
     private EnemyHandler enemyHandler;
     private Block block;
     public final int wave;
@@ -36,7 +33,7 @@ public class Enemy extends GameObject {
         this.enemyType = enemyType;
         attackCooldown = 0;
         this.movement = new Vector2(0, 0);
-        this.effects = new ArrayList<>();
+        this.effects = new float[EffectType.values().length];
         this.enemyHandler = enemyHandler;
         this.block = null;
         this.wave = wave;
@@ -112,34 +109,24 @@ public class Enemy extends GameObject {
     }
 
     public void addEffect(EffectType effectType){
-        boolean inList = false;
-        for (int i = 0; i < effects.size(); i++) {
-            Effect effect = effects.get(i);
-            if (effect.effectType.equals(effectType)) {
-                inList = true;
-                effect.setDuration(effectType.duration);
-            }else if(effect.breaks(effectType)){
-                effects.remove(i);
-                i--;
-            }
-        }
-        if (!inList) {
-            effects.add(new Effect(effectType));
+        effects[effectType.id] = effectType.duration;
+        if(effectType == EffectType.BURNING && Constants.fireBreaksSlow){
+            effects[EffectType.SLOW.id] = 0;
+        }else if(effectType == EffectType.SLOW && Constants.fireBreaksSlow){
+            effects[EffectType.BURNING.id] = 0;
         }
     }
 
     public void updateEffects(float duration) {
-        for (int i = 0; i < effects.size(); ) {
-            Effect effect = effects.get(i);
-            if (effect.getDuration() < 0) {
-                effects.remove(effect);
-            } else {
-                effect.addDuration(-duration);
-                i++;
-                switch (effect.effectType){
+        for (int i = 0; i < effects.length; i++) {
+            if (effects[i] < 0) {
+                effects[i] = 0;
+            } else if(effects[i] > 0){
+                effects[i] -= duration;
+                switch (EffectType.values()[i]){
                     case BURNING:
                     case POISON:
-                        float damage = enemyType.getMaxHP()*effect.effectType.strength*duration;
+                        float damage = enemyType.getMaxHP()*EffectType.values()[i].strength*duration;
                         addHp(-damage);
                         break;
                 }
@@ -157,7 +144,7 @@ public class Enemy extends GameObject {
     }
 
     private float getStrength(EffectType effectType) {
-        return (effects.contains(new Effect(effectType)) ? effectType.strength : 1);
+        return (effects[effectType.id] > 0) ? effectType.strength : 1;
     }
 
     public Block getBlock() {
