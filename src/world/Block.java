@@ -36,6 +36,10 @@ public class Block implements Iterable<Enemy> {
         return enemies.remove(enemy);
     }
 
+    public ArrayList<Enemy> getEnemies() {
+        return enemies;
+    }
+
     public BlockIterator iterator(){
         return new BlockIterator(enemies,this);
     }

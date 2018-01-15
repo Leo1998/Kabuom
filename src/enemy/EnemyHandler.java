@@ -15,7 +15,6 @@ import java.util.*;
 public class EnemyHandler {
 
     private Node[][] nodeMap;
-    private boolean changed;
     private World world;
     private float dpsMultiplier = 1;
     private final int mainX, mainY;
@@ -30,7 +29,6 @@ public class EnemyHandler {
         this.mainX = mainX;
         this.mainY = mainY;
         createNodeMap(world.getBlocks());
-        changed = true;
         this.world = world;
         this.random = new Random();
         index = Integer.MIN_VALUE;
@@ -61,36 +59,71 @@ public class EnemyHandler {
      * @param drunk       Ist true, wenn Drunk aktiv ist
      */
     public int handleEnemies(float dt, ArrayList<Enemy> enemies, boolean recalculate, boolean drunk) {
+        //Return Value
         int minWave = -1;
-        if (!drunk) {
-            if (recalculate) {
-                changed = true;
-                updateNodeMap(world.getBlocks());
-            }
-            findPaths(enemies);
-        } else {
-            for (Enemy enemy : enemies) {
-                if (enemy.getPath().isEmpty() || recalculate) {
-                    Stack<Step> newPath = new Stack<>();
-                    newPath.push(getRandomMove(Math.round(enemy.getX()), Math.round(enemy.getY()), random));
-                    enemy.setPath(newPath);
-                }
-            }
-            changed = true;
+
+        //Update nodeMap if needed
+        if (recalculate) {
+            updateNodeMap(world.getBlocks());
         }
+
+        //Prepare Variables
+        boolean noPathfinding = !(drunk || enemies.isEmpty());
+        boolean[][] findPath = new boolean[nodeMap.length][nodeMap[0].length];
+
+        //Iterate all Enemies (Can not use foreach because Arraylist needs to be modified while iterating)
         for (int i = 0; i < enemies.size(); i++) {
             Enemy enemy = enemies.get(i);
 
+            //Remove Enemy if Dead (i-- needed for proper for-loop)
             if(enemy.getHp() <= 0){
                 world.removeEnemy(enemy);
                 i--;
             }else{
+                //Return Value
                 if(enemy.wave < minWave || minWave == -1){
                     minWave = enemy.wave;
                 }
-                handleEnemy(dt, enemy, drunk, random);
+
+                //If needs new Path: give Random move (drunk) or mark position on findPath array to find path later (not drunk). Otherwise call handleEnemy
+                if (enemy.getPath().isEmpty() || recalculate) {
+                    if(drunk) {
+                        Stack<Step> newPath = new Stack<>();
+                        newPath.push(getRandomMove(Math.round(enemy.getX()), Math.round(enemy.getY()), random));
+                        enemy.setPath(newPath);
+                    }else{
+                        findPath[Math.round(enemy.getX())][Math.round(enemy.getY())] = true;
+                        noPathfinding = false;
+                    }
+                }else {
+                    handleEnemy(dt, enemy, drunk, random);
+                }
             }
         }
+
+        //If no Enemy needs pathfinding: find a new Path for a random Enemy
+        if(noPathfinding && !enemies.isEmpty()){
+            Enemy randomEnemy = enemies.get(random.nextInt(enemies.size()));
+            findPath[Math.round(randomEnemy.getX())][Math.round(randomEnemy.getY())] = true;
+        }
+
+        //Iterate findPath array to get a new path for every Enemy that needs one
+        for(int i = 0; i < findPath.length; i++){
+            for(int j = 0; j < findPath[i].length; j++){
+                if(findPath[i][j]){
+                    ArrayList<Enemy> group = nodeMap[i][j].block.getEnemies();
+                    Queue<Step> path = findPath(i, j);
+                    Stack<Step>[] paths = createStackClones(path, group.size());
+                    if (paths != null) {
+                        for (int k = 0; k < group.size(); k++) {
+                            group.get(k).setPath(paths[k]);
+                        }
+                    }
+                }
+            }
+        }
+
+        //Return value
         return minWave;
     }
 
@@ -110,40 +143,6 @@ public class EnemyHandler {
         }
 
         return new MoveStep(toX, toY);
-    }
-
-    private void findPaths(ArrayList<Enemy> enemies) {
-
-        //Group Enemies at similar places together to reduce total amount of findPath calls
-        ArrayList<Enemy>[][] groupMap = new ArrayList[nodeMap.length][nodeMap[0].length];
-        for (Enemy enemy : enemies) {
-            if (changed || enemy.getPath().isEmpty()) {
-                int i = Math.max(Math.min(Math.round(enemy.getX()), groupMap.length), 0);
-                int j = Math.max(Math.min(Math.round(enemy.getY()), groupMap[i].length), 0);
-                if (groupMap[i][j] == null) {
-                    groupMap[i][j] = new ArrayList<>();
-                }
-                groupMap[i][j].add(enemy);
-            }
-        }
-
-        //Call findPath for every enemy-Group
-        for (int i = 0; i < groupMap.length; i++) {
-            for (int j = 0; j < groupMap[i].length; j++) {
-                ArrayList<Enemy> group = groupMap[i][j];
-                if (group != null) {
-                    Queue<Step> path = findPath(i, j);
-                    Stack<Step>[] paths = createStackClones(path, group.size());
-                    if (paths != null) {
-                        for (int k = 0; k < group.size(); k++) {
-                            group.get(k).setPath(paths[k]);
-                        }
-                    }
-                }
-            }
-        }
-
-        changed = false;
     }
 
     private Stack<Step>[] createStackClones(Queue<Step> steps, int amount) {

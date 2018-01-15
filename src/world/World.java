@@ -149,7 +149,11 @@ public class World {
             spawnWave = false;
         }
 
-        int minWave = enemyHandler.handleEnemies(dt, enemyList, newTower, isDrunk);
+
+        int minWave = 0;
+        if(!enemyList.isEmpty())
+            enemyHandler.handleEnemies(dt, enemyList, newTower, isDrunk);
+
         if (minWave != -1 && minWave-1 > Controller.instance.getConfig().getMaxWave()) {
             Controller.instance.getConfig().setMaxWave(minWave-1);
         }
