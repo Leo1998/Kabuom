@@ -140,7 +140,7 @@ public class World {
 
         if (spawnWave) {
             if(enemyList.isEmpty()){
-                towerHandler.resetCooldown(towerList);
+                towerHandler.randomCooldown(towerList);
             }
             towerHandler.regenerateTowers(towerList);
             enemyHandler.newWave();

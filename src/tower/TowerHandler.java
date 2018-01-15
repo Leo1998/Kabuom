@@ -136,9 +136,9 @@ public class TowerHandler {
         }
     }
 
-    public void resetCooldown(ArrayList<Tower> towers){
+    public void randomCooldown(ArrayList<Tower> towers){
         for(Tower tower:towers){
-            tower.setCooldown(-1);
+            tower.setCooldown(tower.towerType.frequency*random.nextFloat());
         }
     }
 
