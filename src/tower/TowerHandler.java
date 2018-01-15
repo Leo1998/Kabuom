@@ -138,6 +138,7 @@ public class TowerHandler {
 
     public void noWave(ArrayList<Tower> towers, float dt){
         for(Tower tower:towers){
+            tower.setTarget(null);
             float cooldown = tower.getCooldown();
             if(cooldown > 0) {
                 if (cooldown - dt < 0) {
