@@ -1,19 +1,125 @@
 package world;
 
+import controller.Config;
 import controller.Controller;
 import enemy.Enemy;
 import enemy.EnemyHandler;
 import enemy.EnemyType;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import projectile.Projectile;
 import projectile.ProjectileHandler;
 import tower.Tower;
 import tower.TowerHandler;
 import tower.TowerType;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Random;
 
 public class World {
+
+    public static World createWorld(File worldFile, int difficulty) {
+        if (worldFile.exists()) {
+            try {
+                JSONObject obj = new JSONObject(new JSONTokener(new FileInputStream(worldFile)));
+
+                int width = obj.getInt("width");
+                int height = obj.getInt("height");
+                int wave = obj.getInt("wave");
+                int coins = obj.getInt("coins");
+
+                World world = new World(width, height, difficulty, worldFile);
+                world.wave = wave;
+                world.coins = coins;
+
+                JSONArray blocksX = obj.getJSONArray("blocks");
+                for (int x = 0; x < width; x++) {
+                    JSONArray blocksY = blocksX.getJSONArray(x);
+
+                    for (int y = 0; y < height; y++) {
+                        JSONObject o = blocksY.getJSONObject(y);
+
+                        if (o.has("towerType")) {
+                            float hp = (float) o.getDouble("hp");
+                            int level = o.getInt("level");
+
+                            TowerType type = TowerType.valueOf(o.getString("towerType"));
+                            Tower tower = new Tower(type, level, x, y);
+                            tower.setHp(hp);
+
+                            world.spawnTower(tower);
+                        }
+                    }
+                }
+
+                return world;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        } else {
+            try {
+                worldFile.createNewFile();
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+
+            return new World(19, 19, difficulty, worldFile);
+        }
+    }
+
+    public static void saveWorld(World world) {
+        File worldFile = world.getWorldFile();
+
+        try {
+            JSONObject obj = new JSONObject();
+
+            obj.put("width", world.getWidth());
+            obj.put("height", world.getHeight());
+            obj.put("wave", world.getWave());
+            obj.put("coins", world.getCoins());
+
+            JSONArray blocksX = new JSONArray();
+            for (int x = 0; x < world.getWidth(); x++) {
+                JSONArray blocksY = new JSONArray();
+
+                for (int y = 0; y < world.getHeight(); y++) {
+                    Tower t = world.getBlocks()[x][y].getTower();
+
+                    if (t != null) {
+                        JSONObject o = new JSONObject();
+                        o.put("towerType", t.towerType.name());
+                        o.put("hp", (double) t.getHp());
+                        o.put("level", t.getLevel());
+
+                        blocksY.put(o);
+                    } else {
+                        blocksY.put(new JSONObject());
+                    }
+                }
+
+                blocksX.put(blocksY);
+            }
+
+            obj.put("blocks", blocksX);
+
+            String json = obj.toString();
+
+            BufferedWriter writer = new BufferedWriter(new FileWriter(worldFile));
+            writer.write(json);
+            writer.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private File worldFile;
 
     private ArrayList<Enemy> enemyList;
     private ArrayList<Projectile> projectileList;
@@ -39,10 +145,11 @@ public class World {
     private boolean newTower;
     private boolean isDrunk;
 
-    public World(int width, int height, int difficulty) {
+    public World(int width, int height, int difficulty, File worldFile) {
         this.width = width;
         this.height = height;
         timePassed = 0;
+        this.worldFile = worldFile;
 
         int mainTowerCoordX = width / 2;
         int mainTowerCoordY = height - 2;
@@ -115,7 +222,7 @@ public class World {
     public void removeTower(Tower tower){
         if (tower.towerType == TowerType.MAINTOWER) {
             towerList.clear();
-            Controller.instance.endGame();
+            Controller.instance.endGame(true);
         } else {
             newTower = true;
             blocks[Math.round(tower.getX())][Math.round(tower.getY())].setTower(null);
@@ -211,6 +318,18 @@ public class World {
     public ArrayList<Enemy> getEnemyList() {
 
         return enemyList;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public File getWorldFile() {
+        return worldFile;
     }
 
     public void startWave() {

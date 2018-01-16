@@ -29,7 +29,7 @@ public class MenuView extends BaseMenuView {
         startButton.setListener(new ButtonListener() {
             @Override
             public void onClick() {
-                viewManager.getCtrl().createNewWorld();
+                viewManager.getCtrl().startGame();
 
                 viewManager.setCurrentView(new GameView(originWidth, originHeight, viewManager, viewManager.getCtrl().getWorld()));
             }

@@ -30,6 +30,9 @@ public class Controller {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
+                if (world != null)
+                    World.saveWorld(world);
+
                 config.save();
             }
         }));
@@ -65,11 +68,16 @@ public class Controller {
         viewManager.dispose();
     }
 
-    public void createNewWorld() {
-        this.world = new World(19, 19, config.getDifficulty());
+    public void startGame() {
+        this.world = World.createWorld(new File("save/world1.json"), config.getDifficulty());
     }
 
-    public void endGame() {
+    public void endGame(boolean gameOver) {
+        if (gameOver)
+            world.getWorldFile().delete();
+        else
+            World.saveWorld(world);
+
         world = null;
 
         viewManager.setCurrentView(new MenuView(Display.getWidth(), Display.getHeight(), viewManager));

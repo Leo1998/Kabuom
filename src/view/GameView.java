@@ -345,6 +345,10 @@ public class GameView extends View {
         if (key == Keyboard.KEY_LSHIFT) {
             shiftdown = true;
         }
+
+        if (key == Keyboard.KEY_ESCAPE && world.getEnemyList().isEmpty()) {
+            getViewManager().getCtrl().endGame(false);
+        }
     }
 
     @Override
