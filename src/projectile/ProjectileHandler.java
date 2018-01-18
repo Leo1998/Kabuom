@@ -8,15 +8,14 @@ import world.World;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static utility.Utility.random;
+
 public class ProjectileHandler {
 
     private World world;
 
-    private Random random;
-
     public ProjectileHandler(World world) {
         this.world = world;
-        random = new Random();
     }
 
     // Projektile bewegen & Kollisionen mit Gegner überprüfen -> schaden
@@ -44,7 +43,7 @@ public class ProjectileHandler {
                         enemy.addEffect(projectile.projectileType.effectType);
                     } else if (projectile.projectileType == ProjectileType.LIGHTNING) {
                         projectile.setDistance(projectile.getDistance()/2);
-                        randomRotation(projectile);
+                        projectile.getDir().rotate((float)(random.nextDouble()*Math.PI*2));
                     }
 
                     projectile.addHp(-1);
@@ -54,7 +53,7 @@ public class ProjectileHandler {
                 }
             }
 
-            if(projectile.getHp() <= 0 || projectile.getDistance() >= projectile.projectileType.range){
+            if(!world.inWorld(projectile) || projectile.getHp() <= 0 || projectile.getDistance() >= projectile.projectileType.range){
                 spawnEffects(projectile);
                 world.removeProjectile(projectile);
                 i--;
@@ -101,14 +100,6 @@ public class ProjectileHandler {
             float y = yPos + (float) (Math.sin(alpha) * distance);
             world.spawnProjectile(new Projectile(ProjectileType.POISONTRAIL, level, x, y, direction));
         }
-    }
-
-    private void randomRotation(Projectile projectile){
-        float oldX = projectile.getDir().getCoords()[0];
-        float oldY = projectile.getDir().getCoords()[1];
-        double rand = random.nextDouble() * (float) (Math.PI*2);
-        projectile.getDir().getCoords()[0] = (float)(Math.cos(rand)*oldX - Math.sin(rand)*oldY);
-        projectile.getDir().getCoords()[1] = (float)(Math.sin(rand)*oldX + Math.cos(rand)*oldY);
     }
 
 }

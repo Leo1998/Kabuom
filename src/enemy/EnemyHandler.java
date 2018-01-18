@@ -11,6 +11,7 @@ import world.World;
 
 import java.util.*;
 
+import static utility.Utility.random;
 
 public class EnemyHandler {
 
@@ -18,7 +19,6 @@ public class EnemyHandler {
     private World world;
     private float dpsMultiplier = 1;
     private final int mainX, mainY;
-    private Random random;
     private int index;
 
     /**
@@ -30,7 +30,6 @@ public class EnemyHandler {
         this.mainY = mainY;
         createNodeMap(world.getBlocks());
         this.world = world;
-        this.random = new Random();
         index = Integer.MIN_VALUE;
     }
 
@@ -202,26 +201,19 @@ public class EnemyHandler {
                 float targetX = ((MoveStep) step).x;
                 float targetY = ((MoveStep) step).y;
                 float dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
-                boolean qMove = true;
-                while (dist < moveableDist) {
+                while (dist < moveableDist && !enemy.getPath().isEmpty()) {
                     enemy.getPath().pop();
-                    if(!enemy.getPath().isEmpty()) {
-                        step = enemy.getPath().peek();
-                        if (step instanceof MoveStep) {
+                    step = enemy.getPath().peek();
+                    if (step instanceof MoveStep) {
+                        targetX = ((MoveStep) step).x;
+                        targetY = ((MoveStep) step).y;
 
-                            targetX = ((MoveStep) step).x;
-                            targetY = ((MoveStep) step).y;
-
-                            dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
-                        } else {
-                            goTo(enemy, targetX, targetY, dt);
-                            qMove = false;
-                        }
-                    } else{
-                        qMove = false;
+                        dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
                     }
                 }
-                if(qMove) {
+                if(dist < moveableDist) {
+                    goTo(enemy, targetX, targetY, dt);
+                }else{
                     float q = moveableDist / dist;
                     float nX = enemy.getX() + ((targetX - enemy.getX()) * q);
                     float nY = enemy.getY() + ((targetY - enemy.getY()) * q);

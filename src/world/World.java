@@ -1,10 +1,10 @@
 package world;
 
-import controller.Config;
 import controller.Controller;
 import enemy.Enemy;
 import enemy.EnemyHandler;
 import enemy.EnemyType;
+import model.GameObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -19,7 +19,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.Random;
+
+import static utility.Utility.random;
 
 public class World {
 
@@ -249,7 +250,6 @@ public class World {
             towerHandler.regenerateTowers(towerList);
             enemyHandler.newWave();
             //this.spawnEnemy(10,0,EnemyType.Cheat);
-            Random random = new Random();
             for (int i = 0; i < Math.pow(1 + wave, 3) / 100 + 5; i++) {
                 this.spawnEnemy(new Enemy(EnemyType.values()[random.nextInt(EnemyType.values().length - 1)], 1, random.nextInt(width), 0, enemyHandler, wave));
             }
@@ -339,5 +339,18 @@ public class World {
 
     public void setDifficulty(int difficulty) {
         enemyHandler.setDpsMultiplier(((float) difficulty - 1) / 10);
+    }
+
+    public boolean inWorld(GameObject gameObject){
+        if(gameObject.getX() < -0.5f)
+            return false;
+        if(gameObject.getX() > width-0.5f)
+            return false;
+        if(gameObject.getY() < -0.5f)
+            return false;
+        if(gameObject.getY() > height-0.5f)
+            return false;
+
+        return true;
     }
 }

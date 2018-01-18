@@ -36,8 +36,8 @@ public class Vector2 {
         float tempX = coords[0];
         float tempY = coords[1];
 
-        coords[0] = (float)(Math.cos(tempX) - Math.sin(tempY));
-        coords[1] = (float)(Math.sin(tempX) + Math.cos(tempY));
+        coords[0] = (float)(Math.cos(rotationRadians)*tempX - Math.sin(rotationRadians)*tempY);
+        coords[1] = (float)(Math.sin(rotationRadians)*tempX + Math.cos(rotationRadians)*tempY);
     }
 
     @Override
@@ -45,5 +45,10 @@ public class Vector2 {
         return "Vector2{" +
                 "coords=" + Arrays.toString(coords) +
                 '}';
+    }
+
+    @Override
+    public Vector2 clone() {
+        return new Vector2(coords[0],coords[1]);
     }
 }
