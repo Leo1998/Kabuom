@@ -2,6 +2,7 @@ package enemy;
 
 import enemy.step.Step;
 import model.GameObject;
+import model.ObjectType;
 import utility.Constants;
 import utility.Vector2;
 import world.Block;
@@ -153,5 +154,10 @@ public class Enemy extends GameObject {
 
     public void setBlock(Block block) {
         this.block = block;
+    }
+
+    @Override
+    public ObjectType getObjectType() {
+        return enemyType;
     }
 }

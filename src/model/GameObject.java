@@ -1,12 +1,11 @@
 package model;
 
-public abstract class GameObject {
+
+public abstract class GameObject implements Position {
     private int level;
-    public final ObjectType objectType;
     private float x, y, hp;
 
     public GameObject(ObjectType objectType, int level, float x, float y) {
-        this.objectType = objectType;
         this.level = level;
         this.x = x;
         this.y = y;
@@ -35,8 +34,8 @@ public abstract class GameObject {
 
     public void addHp(float hp) {
         this.hp += hp;
-        if(this.hp > objectType.getMaxHP()){
-            this.hp = objectType.getMaxHP();
+        if(this.hp > getObjectType().getMaxHP()){
+            this.hp = getObjectType().getMaxHP();
         }
     }
 
@@ -47,4 +46,6 @@ public abstract class GameObject {
     public void setY(float y) {
         this.y = y;
     }
+
+    public abstract ObjectType getObjectType();
 }

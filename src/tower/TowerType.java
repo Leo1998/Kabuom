@@ -11,10 +11,10 @@ public enum TowerType implements ObjectType {
     POISONTOWER(75, true,/*Frequency*/ 3,/*AttackRadius : */ 10, 160, ProjectileType.POISON, "Poisontower", "MgTurretGruen.png",0.5f, 0.01f, 1),
     CYROGUN(90, true,/*Frequency*/ 2,/*AttackRadius : */ 10, 275, ProjectileType.ICE, "Cyrogun", "MgTurret.png",0.5f, 2, 3),
     TESLACOIL(50, true,/*Frequency*/ 0.03125f,/*AttackRadius : */ 7, 250, ProjectileType.LIGHTNING, "Teslacoil", "LaserLamp.png",0.325f, 0.5f, 1),
-    SNIPER(20, true,/*Frequency*/ 3,/*AttackRadius : */ 16, 250, ProjectileType.PIERCINGBULLET, "Sniper", "LaserLampRot.png",0.325f, 0, 0),
-    MORTAR(40, true,/*Frequency*/ 4,/*AttackRadius : */ 20, 500, ProjectileType.FRAGGRENADE, "Mortar", "MissileLauncherGruen.png",0.625f, 0.01f, 0),
+    SNIPER(20, true,/*Frequency*/ 3,/*AttackRadius : */ 16, 250, ProjectileType.PIERCINGBULLET, "Sniper", "LaserLampRot.png",0.325f, 0, 1),
+    MORTAR(40, true,/*Frequency*/ 4,/*AttackRadius : */ 20, 500, ProjectileType.FRAGGRENADE, "Mortar", "MissileLauncherGruen.png",0.625f, 0.01f, 1),
     BARRICADE(500, false,/*Frequency*/ 0,/*AttackRadius : */ 0, 50, null, "Barricade", "barricade2.png",0.625f, 0, 0),
-    //MAINTOWER(100000, true,/*Frequency*/ 0.03125f,/*AttackRadius : */ 20, 0, ProjectileType.LIGHTNING, "OP Tower", "MainTower.png",2, 2, 128);
+    //MAINTOWER(100000, true,/*Frequency*/ 0.03125f,/*AttackRadius : */ 20, 0, ProjectileType.MISSILE, "OP Tower", "MainTower.png",2, 2, 128);
     MAINTOWER(1000, false,/*Frequency*/ 0,/*AttackRadius : */ 0, 0, null, "Maintower", "MainTower.png",0.5f, 0, 0);
 
 
@@ -57,5 +57,30 @@ public enum TowerType implements ObjectType {
     @Override
     public String getTextureId() {
         return textureID;
+    }
+
+
+    public float getFrequency() {
+        return frequency;
+    }
+
+
+    public float getAimRadius() {
+        return attackRadius;
+    }
+
+
+    public float getAccuracy() {
+        return accuracy;
+    }
+
+
+    public int getShots() {
+        return shots;
+    }
+
+
+    public ProjectileType getProjectileType() {
+        return projectileType;
     }
 }

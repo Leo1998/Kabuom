@@ -1,6 +1,5 @@
 package tower;
 
-import utility.Vector2;
 import world.World;
 
 import java.util.ArrayList;
@@ -25,7 +24,8 @@ public class TowerHandler {
                 if (curTower.towerType.canShoot) {
 
                     if (curTower.getCooldown() <= 0) {
-                        shoot(curTower);
+                        curTower.setCooldown(curTower.towerType.frequency * (random.nextFloat()*0.25f + 0.75f));
+                        curTower.setTarget(shootEnemy(curTower,curTower.towerType,world));
                     }
                     if (curTower.getCooldown() >= 0) {
                         curTower.setCooldown(curTower.getCooldown() - dt);
@@ -40,22 +40,6 @@ public class TowerHandler {
             if(tower.getHp() < tower.towerType.getMaxHP()){
                 tower.addHp(tower.towerType.getMaxHP()/10);
             }
-        }
-    }
-
-    private void shoot(Tower tower) {
-        tower.setCooldown(tower.towerType.frequency * (random.nextFloat()*0.25f + 0.75f));
-        tower.setTarget(getTargetEnemy(tower,tower.towerType.attackRadius,world));
-        if (tower.getTarget() != null) {
-
-            Vector2 aiming = aim(tower,tower.getTarget(),tower.getTarget().getMovement(),tower.towerType.projectileType.speed);
-
-            for (int i = 0; i < tower.towerType.shots; i++) {
-                Vector2 copy = aiming.clone();
-
-                world.spawnProjectile(createProjectile(tower,copy,tower.towerType.accuracy,tower.towerType.projectileType));
-            }
-
         }
     }
 

@@ -6,7 +6,7 @@ public enum EnemyType implements ObjectType {
 
 
     Cheap(0.3f,/* maxHP*/ 30,/*speed*/ 2, 5, 0.375f, false, "Cheap", "enemyTextures/Gegner1SLinks.png"),
-    Tank(1,/* maxHP*/ 480, /*speed*/ 1.5f, 5, 0.625f, false, "Tank", "enemyTextures/Gegner2SLinks.png"),
+    Tank(1,/* maxHP*/ 480, /*speed*/ 1.5f, 5, 0.625f, false, "MoveEntity", "enemyTextures/Gegner2SLinks.png"),
     Speed(0.2f,/* maxHP*/ 75, /*speed*/ 3, 15, 0.25f, false, "Speed", "enemyTextures/Gegner3SLinks.png"),
     Damage(0.1f,/* maxHP*/ 150, /*speed*/ 2, 60, 0.5f, false, "Damage", "enemyTextures/Endgegner1SLinks.png"),
     Super(0.5f,/* maxHP*/ 480, /*speed*/ 1f, 70, 0.5f, true, "Super", "enemyTextures/Endgegner2SLinks.png"),

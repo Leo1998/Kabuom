@@ -2,6 +2,7 @@ package tower;
 
 import enemy.Enemy;
 import model.GameObject;
+import model.ObjectType;
 import projectile.ProjectileType;
 
 public class Tower extends GameObject {
@@ -31,4 +32,8 @@ public class Tower extends GameObject {
         cooldown = newCooldown;
     }
 
+    @Override
+    public ObjectType getObjectType() {
+        return towerType;
+    }
 }

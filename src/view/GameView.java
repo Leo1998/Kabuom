@@ -122,11 +122,11 @@ public class GameView extends View {
     }
 
     private void drawGameObject(GameObject gameObject, float rotation, Batch batch){
-        float diameter = gameObject.objectType.getRadius()*2;
+        float diameter = gameObject.getObjectType().getRadius()*2;
         float width = scale * diameter;
         float height = scale * diameter;
 
-        batch.draw(ViewManager.getTexture(gameObject.objectType.getTextureId()), blockCoordToViewCoordX(gameObject.getX(),diameter), blockCoordToViewCoordY(gameObject.getY(),diameter), width, height, rotation, 1, 1, 1, 1);
+        batch.draw(ViewManager.getTexture(gameObject.getObjectType().getTextureId()), blockCoordToViewCoordX(gameObject.getX(),diameter), blockCoordToViewCoordY(gameObject.getY(),diameter), width, height, rotation, 1, 1, 1, 1);
     }
 
     @Override

@@ -2,11 +2,12 @@ package utility;
 
 import enemy.Enemy;
 import model.GameObject;
+import model.Position;
 import projectile.Projectile;
 import projectile.ProjectileType;
 import tower.Tower;
+import tower.TowerType;
 import view.components.ViewComponent;
-import view.rendering.RadialBlurEffect;
 import world.World;
 
 import java.util.Random;
@@ -80,6 +81,42 @@ public class Utility {
         } else {
             return false;
         }
+    }
+
+    public static Enemy shootEnemy(GameObject source, TowerType shootable, World world){
+        Enemy target = getTargetEnemy(source,shootable.getAimRadius(),world);
+
+        if(target != null) {
+            Vector2 aiming = aim(source, target, target.getMovement(), shootable.getProjectileType().speed);
+
+            for (int i = 0; i < shootable.getShots(); i++) {
+                Vector2 copy = aiming.clone();
+
+                Projectile projectile = createProjectile(source, copy, shootable.getAccuracy(), shootable.getProjectileType());
+
+                world.spawnProjectile(projectile);
+            }
+        }
+
+        return target;
+    }
+
+    public static Tower shootTower(GameObject source, TowerType shootable, World world){
+        Tower target = getTargetTower(source,shootable.getAimRadius(), world);
+
+        if(target != null){
+            Vector2 aiming = aim(source,target);
+
+            for(int i = 0; i < shootable.getShots(); i++){
+                Vector2 copy = aiming.clone();
+
+                Projectile projectile = createProjectile(source, copy, shootable.getAccuracy(), shootable.getProjectileType());
+
+                world.spawnProjectile(projectile);
+            }
+        }
+
+        return target;
     }
 
     public static Enemy getTargetEnemy(GameObject source, float range, World world){
@@ -175,18 +212,28 @@ public class Utility {
 
         Projectile p = new Projectile(projectileType, source.getLevel(), source.getX(), source.getY(), vec);
 
-        p.setX(p.getX() + p.getDir().getCoords()[0] * source.objectType.getRadius());
-        p.setY(p.getY() + p.getDir().getCoords()[1] * source.objectType.getRadius());
+        p.setX(p.getX() + p.getDir().getCoords()[0] * source.getObjectType().getRadius());
+        p.setY(p.getY() + p.getDir().getCoords()[1] * source.getObjectType().getRadius());
 
         return p;
     }
 
-    public static float getDist(GameObject gO1, GameObject gO2){
-        return getDist(gO1.getX(),gO1.getY(),gO2.getX(),gO2.getY());
+    public static float getDist(Position p1, Position p2){
+        return getDist(p1.getX(),p1.getY(),p2.getX(),p2.getY());
     }
 
     public static float getDist(float x1, float y1, float x2, float y2){
         return (float) Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2));
+    }
+
+    public static float saveAdd(float old, float add){
+        if(old < 0 || add < 0){
+            throw new IllegalArgumentException();
+        }else if(old+add < 0){
+            return Float.MAX_VALUE;
+        }else{
+            return old+add;
+        }
     }
 
 }

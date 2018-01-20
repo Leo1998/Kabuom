@@ -2,6 +2,7 @@ package projectile;
 
 import enemy.Enemy;
 import model.GameObject;
+import model.ObjectType;
 import utility.Vector2;
 
 import java.util.ArrayList;
@@ -49,5 +50,10 @@ public class Projectile extends GameObject {
      */
     public void addToHitEnemies(Enemy pEnemy) {
         hitEnemies.add(pEnemy);
+    }
+
+    @Override
+    public ObjectType getObjectType() {
+        return projectileType;
     }
 }
