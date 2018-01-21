@@ -201,7 +201,7 @@ public class EnemyHandler {
                 float targetX = ((MoveStep) step).x;
                 float targetY = ((MoveStep) step).y;
                 float dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
-                while (dist < moveableDist && !enemy.getPath().isEmpty()) {
+                while (dist < moveableDist+2 && !enemy.getPath().isEmpty()) {
                     enemy.getPath().pop();
                     step = enemy.getPath().peek();
                     if (step instanceof MoveStep) {

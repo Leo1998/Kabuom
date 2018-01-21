@@ -4,6 +4,7 @@ import entity.model.Entity;
 import entity.model.MoveEntity;
 import entity.model.Partisan;
 import entity.movement.MoveGroup;
+import model.Position;
 import projectile.Projectile;
 import utility.Vector2;
 import world.Block;
@@ -12,9 +13,7 @@ import world.World;
 import java.util.ArrayList;
 
 import static utility.Constants.dpsMultiplier;
-import static utility.Utility.getDist;
-import static utility.Utility.random;
-import static utility.Utility.saveAdd;
+import static utility.Utility.*;
 
 public class EntityHandler {
 
@@ -36,49 +35,15 @@ public class EntityHandler {
 
         for(int i = 0; i < entities.size(); i++){
             Entity entity = entities.get(i);
-            boolean moved = false;
 
-            //Movement
-            if(entity instanceof MoveEntity){
-                //Movement, set moved = true if entity moved
-                MoveEntity moveEntity = (MoveEntity) entity;
+            entity.updateEffects(dt);
 
-                if(moveEntity.getGroup() != null){
-                    MoveGroup group = moveEntity.getGroup();
-                    if(getDist(moveEntity,group) < 2){
-                        // Move according to Group
-                    } else {
-                        if(group.removeMember()){
-                            groups.remove(group);
-                            moveEntity.setGroup(null);
-                        }
-                    }
-                } else {
-                    // Find/Create group for Entity to join
-                }
+            if(entity.addAttackCooldown(dt)){
+                attack(entity);
             }
 
-            //Attack
-            if(!moved){
-                if(entity.addAttackCooldown(dt)){
-                    //Find Target
-                    if(entity instanceof MoveEntity && ((MoveEntity)entity).getGroup().getTarget() != null && getDist(((MoveEntity)entity).getGroup().getTarget(),entity) < entity.entityType.range){
-                        entity.setTarget(((MoveEntity) entity).getGroup().getTarget());
-                    }else{
-                        if(entity.getTarget() == null || getDist(entity,entity.getTarget()) > entity.entityType.range) {
-                            entity.setTarget(findTarget(entity));
-                        }
-                    }
-
-                    //Attack Target
-                    if(entity.getTarget() != null) {
-                        if (entity.entityType.isRanged()) {
-                            shotEntity(entity,entity.getTarget());
-                        } else {
-                            attackEntity(entity,entity.getTarget());
-                        }
-                    }
-                }
+            if(entity instanceof MoveEntity){
+                move((MoveEntity) entity, dt);
             }
 
             //Remove if dead
@@ -100,35 +65,56 @@ public class EntityHandler {
 
     /*
      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-     *                  Methods for Attacking
+     *                      Attacking
      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
      */
+    private void attack(Entity entity){
+        //*
+        if (entity.getTarget() == null || getDist(entity, entity.getTarget()) > entity.entityType.range) {
+            if(entity instanceof MoveEntity){
+                entity.setTarget(findTarget(entity,-1));
+            }else {
+                entity.setTarget(findTarget(entity));
+            }
+        }
+
+        if (entity.getTarget() != null && getDist(entity,entity.getTarget()) < entity.entityType.range) {
+            if (entity.entityType.isRanged()) {
+                shootEntity(entity, entity.getTarget());
+            } else {
+                attackEntity(entity, entity.getTarget());
+            }
+        }//*/
+    }
 
     private Entity findTarget(Entity source){
         return findTarget(source,source.entityType.range);
     }
 
     private Entity findTarget(Partisan source, float range){
-        float x = source.getX(), y = source.getY();
+        int x = Math.round(source.getX()), y = Math.round(source.getY());
+
         Entity closest = null;
-        for (int i = Math.max(0,(int) (Math.floor(x - range))); i < Math.min(world.getBlocks().length,Math.ceil(x + range) + 1); i++) {
-            for (int j = Math.max(0, (int) (Math.floor(y - range))); j < Math.min(world.getBlocks()[i].length, Math.ceil(y + range) + 1); j++) {
-                /* Comment because Block does not yet support Entities
-                for(Entity entity : nodeMap[i][j].block.getEnemies()){
-                    if(!source.allyOf(entity)){
-                        if (closest == null || getDist(source, entity) < getDist(source, closest)) {
+
+        int maxDist = Math.min(Math.round(range),Math.max(Math.max(x, world.getBlocks().length-x),Math.max(y, world.getBlocks()[x].length-y)));
+        for(int dist = 0; closest == null && dist <= maxDist; dist++) {
+            for (int i = Math.max(0, x - dist); i < Math.min(world.getBlocks().length, x + dist + 1); i++) {
+                boolean full = (i == x - dist || i == x + dist);
+                for (int j = full ? Math.max(0, y - dist) : (y - dist < 0) ? y + dist : y - dist; j < Math.min(world.getBlocks()[i].length, y + dist + 1); j += full ? 1 : 2 * dist) {
+                    Block block = world.getBlocks()[i][j];
+                    /*
+                    for(Entity entity:block){
+                        if(closest == null || getDist(entity,source) < getDist(entity,closest)){
                             closest = entity;
                         }
-                    }
-                }*/
+                    }//*/
+                }
             }
         }
 
-        if(closest != null && getDist(source,closest) > range){
-            closest = null;
-        }
         return closest;
     }
+
 
     private void attackEntity(Entity source, Entity target){
         if(random.nextFloat() > source.entityType.accuracy) {
@@ -136,7 +122,7 @@ public class EntityHandler {
         }
     }
 
-    private void shotEntity(Entity source, Entity target){
+    private void shootEntity(Entity source, Entity target){
         Vector2 aiming = aim(source, target);
 
         for (int i = 0; i < source.entityType.attack; i++) {
@@ -208,7 +194,57 @@ public class EntityHandler {
 
     /*
      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-     *             Methods for Movement/Pathfinding
+     *                      Movement
+     * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+     */
+
+    private void move(MoveEntity entity, float dt){
+        if(entity.getGroup() != null){
+            Entity collidingEntity = findCollidingEntity(entity, world.getBlocks());
+            if(collidingEntity != null){
+                MoveGroup group = entity.getGroup();
+                float dist = getDist(group,entity);
+
+                if(dist > 2){
+                    goTo(entity,group,dt);
+                } else {
+
+                }
+            }else{
+                entity.setTarget(collidingEntity);
+                if(!entity.getMovement().nullVector()) {
+                    entity.setMovement(new Vector2(0, 0));
+                }
+            }
+        }else{
+            if(!entity.getMovement().nullVector()) {
+                entity.setMovement(new Vector2(0, 0));
+            }
+        }
+    }
+
+    private void goTo(MoveEntity entity, Position position, float dt) {
+        float q = (entity.entityType.speed*dt) / getDist(entity,position);
+
+        float x = entity.getX() + ((position.getX() - entity.getX()) * q);
+        float y = entity.getY() + ((position.getY() - entity.getY()) * q);
+
+        if(Math.round(entity.getX()) != Math.round(x) || Math.round(entity.getY()) != Math.round(y)) {
+            //nodeMap[Math.round(entity.getX())][Math.round(entity.getY())].block.removeEnemy(enemy);
+            entity.setBlock(nodeMap[Math.round(x)][Math.round(y)].block);
+            //nodeMap[Math.round(x)][Math.round(y)].block.addEnemy(entity);
+        }
+
+        Vector2 movement = new Vector2((x - entity.getX()) / dt, (y - entity.getY()) / dt);
+        movement.multiply(0.09f);
+        entity.setMovement(movement);
+        entity.setX(x);
+        entity.setY(y);
+    }
+
+    /*
+     * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+     *                      Pathfinding
      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
      */
 

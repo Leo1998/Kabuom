@@ -1,15 +1,12 @@
 package entity.movement;
 
-import entity.model.Entity;
 import entity.model.Partisan;
-import model.Position;
 
 import java.util.Stack;
 
-public class MoveGroup implements Partisan, Position {
+public class MoveGroup implements Partisan {
     private Stack<Step> steps;
     private float x,y;
-    private Entity target;
     private int members;
 
     private final boolean isEnemy;
@@ -32,32 +29,28 @@ public class MoveGroup implements Partisan, Position {
         return steps;
     }
 
-    public float getX() {
-        return x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public Entity getTarget() {
-        return target;
-    }
-
     public void setSteps(Stack<Step> steps) {
         this.steps = steps;
     }
 
+    @Override
+    public float getX() {
+        return x;
+    }
+
+    @Override
+    public float getY() {
+        return y;
+    }
+
+    @Override
     public void setX(float x) {
         this.x = x;
     }
 
+    @Override
     public void setY(float y) {
         this.y = y;
-    }
-
-    public void setTarget(Entity target) {
-        this.target = target;
     }
 
     @Override

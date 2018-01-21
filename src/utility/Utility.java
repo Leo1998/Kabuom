@@ -1,6 +1,7 @@
 package utility;
 
 import enemy.Enemy;
+import entity.model.Entity;
 import model.GameObject;
 import model.Position;
 import projectile.Projectile;
@@ -8,6 +9,7 @@ import projectile.ProjectileType;
 import tower.Tower;
 import tower.TowerType;
 import view.components.ViewComponent;
+import world.Block;
 import world.World;
 
 import java.util.Random;
@@ -83,6 +85,28 @@ public class Utility {
         }
     }
 
+    public static Entity findCollidingEntity(Entity source, Block[][] blocks){
+        float x = source.getX(), y = source.getY(), radius = source.entityType.getRadius();
+        Entity closest = null;
+        for (int i = Math.max(0,(int) (Math.floor(x - 1))); i < Math.min(blocks.length,Math.ceil(x + 2)); i++) {
+            for (int j = Math.max(0, (int) (Math.floor(y - 1))); j < Math.min(blocks[i].length, Math.ceil(y + 2)); j++) {
+                /* Comment because Block does not yet support Entities
+                for(Entity entity : blocks[i][j].getEnemies()){
+                    if(!source.allyOf(entity)){
+                        if (closest == null || getDist(source, entity) - entity.entityType.getRadius() < getDist(source, closest) - closest.entityType.getRadius()) {
+                            closest = entity;
+                        }
+                    }
+                }//*/
+            }
+        }
+
+        if(closest != null && getDist(source,closest) > closest.entityType.getRadius() + radius){
+            closest = null;
+        }
+        return closest;
+    }
+
     public static Enemy shootEnemy(GameObject source, TowerType shootable, World world){
         Enemy target = getTargetEnemy(source,shootable.getAimRadius(),world);
 
@@ -120,13 +144,19 @@ public class Utility {
     }
 
     public static Enemy getTargetEnemy(GameObject source, float range, World world){
-        float x = source.getX(), y = source.getY();
+        int x = Math.round(source.getX()), y = Math.round(source.getY());
         Enemy closest = null;
-        for (int i = Math.max(0,(int) (Math.floor(x - range))); i < Math.min(world.getBlocks().length,Math.ceil(x + range) + 1); i++) {
-            for (int j = Math.max(0, (int) (Math.floor(y - range))); j < Math.min(world.getBlocks()[i].length, Math.ceil(y + range) + 1); j++) {
-                for(Enemy enemy:world.getBlocks()[i][j]){
-                    if(closest == null || getDist(source,enemy) < getDist(source,closest)){
-                        closest = enemy;
+
+        int maxDist = Math.min(Math.round(range),Math.max(Math.max(x, world.getBlocks().length-x),Math.max(y, world.getBlocks()[x].length-y)));
+        for(int dist = 0; closest == null && dist <= maxDist; dist++) {
+            for (int i = Math.max(0, x - dist); i < Math.min(world.getBlocks().length, x + dist + 1); i++) {
+                boolean full = (i == x - dist || i == x + dist);
+                for (int j = full ? Math.max(0, y - dist) : (y - dist < 0) ? y + dist : y - dist; j < Math.min(world.getBlocks()[i].length, y + dist + 1); j += full ? 1 : 2 * dist) {
+                    Block block = world.getBlocks()[i][j];
+                    for(Enemy enemy:block){
+                        if(closest == null || getDist(enemy,source) < getDist(enemy,closest)){
+                            closest = enemy;
+                        }
                     }
                 }
             }
@@ -139,14 +169,16 @@ public class Utility {
     }
 
     public static Tower getTargetTower(GameObject source, float range, World world){
-        float x = source.getX(), y = source.getY();
+        int x = Math.round(source.getX()), y = Math.round(source.getY());
         Tower closest = null;
-        for (int i = Math.max(0,(int) (Math.floor(x - range))); i < Math.min(world.getBlocks().length,Math.ceil(x + range) + 1); i++) {
-            for (int j = Math.max(0, (int) (Math.floor(y - range))); j < Math.min(world.getBlocks()[i].length, Math.ceil(y + range) + 1); j++) {
-                Tower tower = world.getBlocks()[i][j].getTower();
-                if(tower != null) {
-                    if (closest == null || getDist(source, tower) < getDist(source, closest)) {
-                        closest = tower;
+        int maxDist = Math.min(Math.round(range),Math.max(Math.max(x, world.getBlocks().length-x),Math.max(y, world.getBlocks()[x].length-y)));
+        for(int dist = 0; closest == null && dist <= maxDist; dist++) {
+            for (int i = Math.max(0, x - dist); i < Math.min(world.getBlocks().length, x + dist + 1); i++) {
+                boolean full = (i == x - dist || i == x + dist);
+                for (int j = full ? Math.max(0, y - dist) : (y - dist < 0) ? y + dist : y - dist; j < Math.min(world.getBlocks()[i].length, y + dist + 1); j += full ? 1 : 2 * dist) {
+                    Block block = world.getBlocks()[i][j];
+                    if(block.getTower() != null && (closest == null || getDist(closest,source) > getDist(block.getTower(),source))){
+                        closest = block.getTower();
                     }
                 }
             }

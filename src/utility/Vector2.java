@@ -40,6 +40,10 @@ public class Vector2 {
         coords[1] = (float)(Math.sin(rotationRadians)*tempX + Math.cos(rotationRadians)*tempY);
     }
 
+    public boolean nullVector(){
+        return coords[0] == 0f && coords[1] == 0f;
+    }
+
     @Override
     public String toString() {
         return "Vector2{" +
