@@ -203,12 +203,14 @@ public class EnemyHandler {
                 float dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
                 while (dist < moveableDist+2 && !enemy.getPath().isEmpty()) {
                     enemy.getPath().pop();
-                    step = enemy.getPath().peek();
-                    if (step instanceof MoveStep) {
-                        targetX = ((MoveStep) step).x;
-                        targetY = ((MoveStep) step).y;
+                    if(!enemy.getPath().isEmpty()) {
+                        step = enemy.getPath().peek();
+                        if (step instanceof MoveStep) {
+                            targetX = ((MoveStep) step).x;
+                            targetY = ((MoveStep) step).y;
 
-                        dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
+                            dist = (float) (Math.sqrt(Math.pow(enemy.getX() - targetX, 2) + Math.pow(enemy.getY() - targetY, 2)));
+                        }
                     }
                 }
                 if(dist < moveableDist) {
