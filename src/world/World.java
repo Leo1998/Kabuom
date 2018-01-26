@@ -126,6 +126,8 @@ public class World {
 
     private LinkedList<Projectile> projectileList;
     private LinkedList<Entity> entityList;
+    private LinkedList<Projectile> newProjectiles;
+    private LinkedList<Entity> newEntities;
 
     private Block[][] blocks;
     private int width, height;
@@ -157,6 +159,8 @@ public class World {
 
         projectileList = new LinkedList<>();
         entityList = new LinkedList<>();
+        newProjectiles = new LinkedList<>();
+        newEntities = new LinkedList<>();
         blocks = new Block[width][height];
 
         for(int i = 0; i < blocks.length; i++){
@@ -180,11 +184,11 @@ public class World {
     }
 
     public void spawnProjectile(Projectile projectile) {
-        this.projectileList.add(projectile);
+        newProjectiles.add(projectile);
     }
 
     public void spawnEntity(Entity entity, int x, int y){
-        entityList.add(entity);
+        newEntities.add(entity);
         blocks[x][y].addEntity(entity);
     }
 
@@ -197,7 +201,7 @@ public class World {
             newTower = true;
             blocks[xPos][yPos].setTower(tower);
             tower.setBlock(blocks[xPos][yPos]);
-            entityList.add(tower);
+            newEntities.add(tower);
             entityHandler.newTower(xPos,yPos);
             return true;
         }
@@ -260,6 +264,18 @@ public class World {
                 Controller.instance.getConfig().setMaxWave(minWave - 1);
             }
             projectileHandler.handleProjectiles(dt, projectileList);
+
+            if(!newProjectiles.isEmpty()) {
+                projectileList.addAll(newProjectiles);
+
+                newProjectiles.clear();
+            }
+
+            if(!newEntities.isEmpty()) {
+                entityList.addAll(newEntities);
+
+                newEntities.clear();
+            }
         }
     }
 

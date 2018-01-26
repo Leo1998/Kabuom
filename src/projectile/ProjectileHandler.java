@@ -39,7 +39,6 @@ public class ProjectileHandler {
                 if(!projectile.hasHitEntity(entity)) {
                     entity.addHp(-projectile.projectileType.impactDamage);
                     projectile.addToHitEntities(entity);
-                    spawnEffects(projectile);
 
                     if (projectile.projectileType.effectType != null) {
                         entity.addEffect(projectile.projectileType.effectType);
@@ -56,22 +55,20 @@ public class ProjectileHandler {
             }
 
             if(!world.inWorld(projectile) || projectile.getHp() <= 0 || projectile.getDistance() >= projectile.projectileType.range){
-                spawnEffects(projectile);
                 iterator.remove();
+                spawnEffects(projectile);
             }
         }
     }
 
     private void spawnEffects(Projectile projectile){
-        if(projectile.getHp() > 0) {
-            switch (projectile.projectileType) {
-                case POISON:
-                    spawnPoisonCloud(projectile.getX(), projectile.getY(), projectile.getLevel(), Constants.poisonCloudAmount, projectile.getDir());
-                    break;
-                case FRAGGRENADE:
-                    world.spawnProjectile(new Projectile(ProjectileType.EXPLOSION, projectile.getLevel(), projectile.getX(), projectile.getY(), projectile.getDir()));
-                    break;
-            }
+        switch (projectile.projectileType) {
+            case POISON:
+                spawnPoisonCloud(projectile.getX(), projectile.getY(), projectile.getLevel(), Constants.poisonCloudAmount, projectile.getDir());
+                break;
+            case FRAGGRENADE:
+                world.spawnProjectile(new Projectile(ProjectileType.EXPLOSION, projectile.getLevel(), projectile.getX(), projectile.getY(), projectile.getDir()));
+                break;
         }
     }
 
