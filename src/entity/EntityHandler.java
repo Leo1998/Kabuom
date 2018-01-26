@@ -300,9 +300,7 @@ public class EntityHandler {
     private Entity createEntity(Entity source){
         int wave = (random.nextFloat() > source.entityType.accuracy) ? source.wave : (source.wave > 0) ? 0 : 1;
 
-        Entity e = new Entity((EntityType)source.entityType.projectile,source.getLevel(),source.getX(),source.getY(),wave,source.getBlock());
-
-        return e;
+        return new Entity((EntityType)source.entityType.projectile,source.getLevel(),source.getX(),source.getY(),wave,source.getBlock());
     }
 
     /*
@@ -347,8 +345,7 @@ public class EntityHandler {
                         goTo(entity,entity.getTarget(),dt);
                     } else {
                         Vector2 vec = entity.getMovement();
-                        vec.rotate(random.nextFloat()*0.125f - 0.0625f);
-                        vec.multiply(8);
+                        vec.multiply(32);
 
                         goTo(entity,vec,dt);
 
@@ -557,9 +554,9 @@ public class EntityHandler {
 
     private void resetIndex(){
         index = Integer.MIN_VALUE;
-        for (int i = 0; i < nodeMap.length; i++) {
-            for (int j = 0; j < nodeMap.length; j++) {
-                nodeMap[i][j].index = Integer.MIN_VALUE;
+        for(Node[] nodes : nodeMap) {
+            for (Node node : nodes) {
+                node.index = Integer.MIN_VALUE;
             }
         }
     }
@@ -631,7 +628,7 @@ public class EntityHandler {
         private boolean visited;
         private Block block;
 
-        public Node(Block block, int xPos, int yPos, float endX, float endY) {
+        private Node(Block block, int xPos, int yPos, float endX, float endY) {
             this.preX = -1;
             this.preY = -1;
             damage = 0;
