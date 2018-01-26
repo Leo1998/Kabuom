@@ -30,8 +30,8 @@ public class Controller {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
-                if (world != null)
-                    World.saveWorld(world);
+                //if (world != null)
+                //    World.saveWorld(world);
 
                 config.save();
             }
@@ -69,14 +69,16 @@ public class Controller {
     }
 
     public void startGame() {
-        this.world = World.createWorld(new File("save/world1.json"), config.getDifficulty());
+        //this.world = World.createWorld(new File("save/world1.json"), config.getDifficulty());
+        this.world = new World(19,19,config.getDifficulty(),new File("save/world1.json"));
     }
 
     public void endGame(boolean gameOver) {
         if (gameOver)
             world.getWorldFile().delete();
         else
-            World.saveWorld(world);
+            //World.saveWorld(world);
+        world.end();
 
         world = null;
 

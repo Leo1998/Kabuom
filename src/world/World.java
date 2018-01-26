@@ -1,29 +1,29 @@
 package world;
 
 import controller.Controller;
-import enemy.Enemy;
-import enemy.EnemyHandler;
-import enemy.EnemyType;
+import entity.EntityHandler;
+import entity.model.Entity;
+import entity.model.EntityType;
+import entity.model.MoveEntity;
 import model.GameObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 import projectile.Projectile;
 import projectile.ProjectileHandler;
-import tower.Tower;
-import tower.TowerHandler;
-import tower.TowerType;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import static utility.Utility.random;
 
 public class World {
 
+    /*
     public static World createWorld(File worldFile, int difficulty) {
         if (worldFile.exists()) {
             try {
@@ -119,26 +119,25 @@ public class World {
             e.printStackTrace();
         }
     }
+    */
 
     private File worldFile;
 
-    private ArrayList<Enemy> enemyList;
-    private ArrayList<Projectile> projectileList;
-    private ArrayList<Tower> towerList;
+    private LinkedList<Projectile> projectileList;
+    private LinkedList<Entity> entityList;
 
     private Block[][] blocks;
     private int width, height;
     private float timePassed;
 
     private int wave = 0;
-    private boolean spawnWave = false;
+    private boolean spawnWave = false, inWave = false, ended = false;
     private float gameTime;
 
     private int coins = 1000;
 
-    private EnemyHandler enemyHandler;
+    private EntityHandler entityHandler;
     private ProjectileHandler projectileHandler;
-    private TowerHandler towerHandler;
 
     /**
      * Attribute für den EnemyHandler
@@ -155,9 +154,8 @@ public class World {
         int mainTowerCoordX = width / 2;
         int mainTowerCoordY = height - 2;
 
-        enemyList = new ArrayList<>();
-        projectileList = new ArrayList<>();
-        towerList = new ArrayList<>();
+        projectileList = new LinkedList<>();
+        entityList = new LinkedList<>();
         blocks = new Block[width][height];
 
         for(int i = 0; i < blocks.length; i++){
@@ -166,41 +164,25 @@ public class World {
             }
         }
 
-        this.spawnTower(new Tower(TowerType.MAINTOWER, 1, mainTowerCoordX, mainTowerCoordY));
+        Entity mainTower = new Entity(EntityType.MAINTOWER, 1, mainTowerCoordX, mainTowerCoordY, -1, blocks[mainTowerCoordX][mainTowerCoordY]);
+        this.setTower(mainTower);
 
         newTower = false;
 
-        enemyHandler = new EnemyHandler(this, mainTowerCoordX, mainTowerCoordY);
         projectileHandler = new ProjectileHandler(this);
-        towerHandler = new TowerHandler(this);
-
-        setDifficulty(difficulty);
-
-         /**for(int i = 0; i < width;i++){
-         for(int j = 0; j < height;j++){
-         if(i != mainTowerCoordX || j != mainTowerCoordY){
-         this.spawnTower(i,j,new Tower(TowerType.FLAMETHROWER,1,i,j,8));
-         }
-         }
-         }*/
-    }
-
-    public void spawnEnemy(Enemy enemy) {
-        this.enemyList.add(enemy);
-        int xPos = Math.round(enemy.getX());
-        int yPos = Math.round(enemy.getY());
-        blocks[xPos][yPos].addEnemy(enemy);
+        entityHandler = new EntityHandler(this,mainTower);
     }
 
     public void spawnProjectile(Projectile projectile) {
         this.projectileList.add(projectile);
     }
 
-    /**
-     * Setzt einen Tower in den angegebenen Vertex, wenn dieser frei ist
-     * Gibt zürück, ob dies möglich war oder nicht
-     */
-    public boolean spawnTower(Tower tower) {
+    public void spawnEntity(Entity entity, int x, int y){
+        entityList.add(entity);
+        blocks[x][y].addEntity(entity);
+    }
+
+    public boolean setTower(Entity tower){
         int xPos = (int)(tower.getX());
         int yPos = (int)(tower.getY());
         if (xPos >= 0 && xPos < blocks.length && yPos >= 0 && yPos < blocks[xPos].length && blocks[xPos][yPos].getTower() == null) {
@@ -208,31 +190,28 @@ public class World {
             tower.setY(yPos);
             newTower = true;
             blocks[xPos][yPos].setTower(tower);
-            towerList.add(tower);
+            tower.setBlock(blocks[xPos][yPos]);
+            entityList.add(tower);
             return true;
         }
         return false;
     }
 
-    public void removeEnemy(Enemy enemy){
-        coins += (25 - (25 - 1 - (5) * Math.pow(Math.E, ((-1f / 6f) * (enemy.wave - 15f)))));
-        enemy.getBlock().removeEnemy(enemy);
-        enemyList.remove(enemy);
-    }
-
-    public void removeTower(Tower tower){
-        if (tower.towerType == TowerType.MAINTOWER) {
-            towerList.clear();
-            Controller.instance.endGame(true);
-        } else {
-            newTower = true;
-            blocks[Math.round(tower.getX())][Math.round(tower.getY())].setTower(null);
-            towerList.remove(tower);
+    public void sellTower(int x, int y){
+        Entity entity = blocks[x][y].getTower();
+        if (entity != null && entity.entityType != EntityType.MAINTOWER) {
+            coins += entity.entityType.cost / 2;
+            removeEntity(entity);
         }
     }
 
-    public void removeProjectile(Projectile projectile){
-        projectileList.remove(projectile);
+    public void removeEntity(Entity entity){
+        entity.setHp(0);
+        if(entity.isEnemy()){
+            coins += (25 - (25 - 1 - (5) * Math.pow(Math.E, ((-1f / 6f) * (entity.wave - 15f)))));
+        } else if(entity.entityType == EntityType.MAINTOWER){
+            Controller.instance.endGame(true);
+        }
     }
 
     /**
@@ -246,33 +225,35 @@ public class World {
 
         gameTime = gameTime + dt;
 
-        if (spawnWave) {
-            towerHandler.regenerateTowers(towerList);
-            enemyHandler.newWave();
-            //this.spawnEnemy(10,0,EnemyType.Cheat);
-            for (int i = 0; i < Math.pow(1 + wave, 3) / 100 + 5; i++) {
-                this.spawnEnemy(new Enemy(EnemyType.values()[random.nextInt(EnemyType.values().length - 1)], 1, random.nextInt(width), 0, enemyHandler, wave));
+        if(!ended) {
+
+            if (spawnWave) {
+                entityHandler.startWave();
+                for (int i = 0; i < Math.pow(1 + wave, 3) / 100 + 5; i++) {
+                    int x = random.nextInt(width);
+                    int y = 0;
+                    int entityIndex = random.nextInt(EntityType.values().length - EntityType.firstEnemyIndex) + EntityType.firstEnemyIndex;
+                    Entity entity;
+                    if (EntityType.values()[entityIndex].speed > 0) {
+                        entity = new MoveEntity(EntityType.values()[entityIndex], 1, x, y, wave, blocks[x][y]);
+                    } else {
+                        entity = new Entity(EntityType.values()[entityIndex], 1, x, y, wave, blocks[x][y]);
+                    }
+                    spawnEntity(entity, x, y);
+                }
+                spawnWave = false;
             }
-            spawnWave = false;
+
+            int minWave = entityHandler.handleEntities(entityList, dt);
+
+            if (minWave == -1) {
+                inWave = false;
+            } else if (minWave > Controller.instance.getConfig().getMaxWave()) {
+                inWave = true;
+                Controller.instance.getConfig().setMaxWave(minWave - 1);
+            }
+            projectileHandler.handleProjectiles(dt, projectileList);
         }
-
-
-        int minWave = 0;
-        if(!enemyList.isEmpty())
-            enemyHandler.handleEnemies(dt, enemyList, newTower, isDrunk);
-
-        if (minWave != -1 && minWave-1 > Controller.instance.getConfig().getMaxWave()) {
-            Controller.instance.getConfig().setMaxWave(minWave-1);
-        }
-        projectileHandler.handleProjectiles(dt, projectileList);
-        if(!enemyList.isEmpty()) {
-            towerHandler.handleTowers(dt, towerList);
-        }else{
-            towerHandler.noWave(towerList,dt);
-        }
-
-        if(newTower) newTower = false;
-
     }
 
     public int getCoins() {
@@ -287,11 +268,8 @@ public class World {
         return wave;
     }
 
-    /**
-     * Die Anfrage liefert die Schwierigkeit der Welt als Integer.
-     */
-    public float getDifficulty() {
-        return (enemyHandler.getDpsMultiplier() + 1) * 10;
+    public boolean isInWave() {
+        return inWave;
     }
 
     /**
@@ -307,17 +285,13 @@ public class World {
         return blocks;
     }
 
-    public ArrayList<Projectile> getProjectileList() {
+    public LinkedList<Projectile> getProjectileList() {
         return projectileList;
     }
 
-    public ArrayList<Tower> getTowerList() {
-        return towerList;
-    }
+    public LinkedList<Entity> getEntityList() {
 
-    public ArrayList<Enemy> getEnemyList() {
-
-        return enemyList;
+        return entityList;
     }
 
     public int getWidth() {
@@ -337,10 +311,6 @@ public class World {
         this.wave++;
     }
 
-    public void setDifficulty(int difficulty) {
-        enemyHandler.setDpsMultiplier(((float) difficulty - 1) / 10);
-    }
-
     public boolean inWorld(GameObject gameObject){
         if(gameObject.getX() < -0.5f)
             return false;
@@ -352,5 +322,9 @@ public class World {
             return false;
 
         return true;
+    }
+
+    public void end(){
+        ended = true;
     }
 }

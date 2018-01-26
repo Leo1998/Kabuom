@@ -1,25 +1,28 @@
 package world;
 
-import enemy.Enemy;
-import tower.Tower;
+import entity.model.Entity;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
 /**
  * Created by 204g10 on 15.06.2016.
  */
-public class Block implements Iterable<Enemy> {
+public class Block implements Iterable<Entity> {
 
-    private Tower tower;
-    private ArrayList<Enemy> enemies;
+    //private Tower tower;
+    //private ArrayList<Enemy> enemies;
+    private Entity tower;
+    private LinkedList<Entity> entities;
 
     public Block() {
         this.tower = null;
-        enemies = new ArrayList<>();
+        //enemies = new ArrayList<>();
+        entities = new LinkedList<>();
     }
 
+    /*
     public Tower getTower() {
         return tower;
     }
@@ -39,53 +42,77 @@ public class Block implements Iterable<Enemy> {
     public ArrayList<Enemy> getEnemies() {
         return enemies;
     }
+    */
 
-    public BlockIterator iterator(){
-        return new BlockIterator(enemies,this);
+    public Entity getTower(){
+        return tower;
     }
 
-    private class BlockIterator implements Iterator<Enemy> {
-        private ArrayList<Enemy> enemies;
+    public void setTower(Entity entity){
+        tower = entity;
+        if(!entities.contains(tower)){
+            entities.add(tower);
+        }
+    }
+
+    public void addEntity(Entity entity){
+        entities.add(entity);
+    }
+
+    public LinkedList<Entity> getEntities() {
+        return entities;
+    }
+
+    public BlockIterator iterator(){
+        return new BlockIterator(this);
+    }
+
+    private class BlockIterator implements Iterator<Entity> {
+        private Iterator<Entity> iterator;
         private Block block;
-        private int index;
+        private Entity next;
 
-
-        private BlockIterator(ArrayList<Enemy> enemies, Block block) {
-            this.enemies = enemies;
+        private BlockIterator(Block block) {
+            this.iterator = entities.iterator();
             this.block = block;
-            index = 0;
             cleanUp();
         }
 
         @Override
         public boolean hasNext() {
-            return index < enemies.size();
+            return next != null;
         }
 
         @Override
-        public Enemy next() {
-            if(hasNext()){
-                Enemy result = enemies.get(index);
-                index++;
+        public Entity next() {
+            if(next != null) {
+                Entity result = next;
                 cleanUp();
                 return result;
-            }else{
+            } else {
                 throw new NoSuchElementException();
             }
         }
 
         @Override
         public void remove() {
-            if(hasNext()){
-                enemies.remove(index);
-            }else{
-                throw new IllegalStateException();
-            }
+            iterator.remove();
+            cleanUp();
         }
 
         private void cleanUp(){
-            while (hasNext() && (enemies.get(index).getHp() <= 0 || enemies.get(index).getBlock() != block)){
-                enemies.remove(index);
+            if(iterator.hasNext()) {
+                next = iterator.next();
+                while (next != null && (next.getBlock() != block || next.getHp() <= 0)){
+                    iterator.remove();
+                    if(iterator.hasNext()) {
+                        next = iterator.next();
+                    } else {
+                        next = null;
+                    }
+                }
+            } else {
+                next = null;
             }
         }
     }

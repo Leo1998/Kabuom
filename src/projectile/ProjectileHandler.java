@@ -1,11 +1,12 @@
 package projectile;
 
-import enemy.Enemy;
+import entity.model.Entity;
 import utility.Constants;
 import utility.Vector2;
 import world.World;
 
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Random;
 
 import static utility.Utility.random;
@@ -19,10 +20,11 @@ public class ProjectileHandler {
     }
 
     // Projektile bewegen & Kollisionen mit Gegner überprüfen -> schaden
-    public void handleProjectiles(float dt, ArrayList<Projectile> projectiles) {
+    public void handleProjectiles(float dt, LinkedList<Projectile> projectiles) {
 
-        for (int i = 0; i < projectiles.size(); i++) {
-            Projectile projectile = projectiles.get(i);
+        Iterator<Projectile> iterator = projectiles.iterator();
+        while (iterator.hasNext()) {
+            Projectile projectile = iterator.next();
 
 
             //System.out.println(p.getX() + "  " + p.getY());
@@ -33,14 +35,14 @@ public class ProjectileHandler {
             projectile.setX(projectile.getX() + projectile.getDir().getCoords()[0] * projectile.projectileType.speed * dt);
             projectile.setY(projectile.getY() + projectile.getDir().getCoords()[1] * projectile.projectileType.speed * dt);
 
-            for (Enemy enemy : findCollidingEnemies(projectile)) {
-                if(!projectile.hasHitEnemy(enemy)) {
-                    enemy.addHp(-projectile.projectileType.impactDamage);
-                    projectile.addToHitEnemies(enemy);
+            for (Entity entity : findCollidingEnemies(projectile)) {
+                if(!projectile.hasHitEntity(entity)) {
+                    entity.addHp(-projectile.projectileType.impactDamage);
+                    projectile.addToHitEntities(entity);
                     spawnEffects(projectile);
 
                     if (projectile.projectileType.effectType != null) {
-                        enemy.addEffect(projectile.projectileType.effectType);
+                        entity.addEffect(projectile.projectileType.effectType);
                     } else if (projectile.projectileType == ProjectileType.LIGHTNING) {
                         projectile.setDistance(projectile.getDistance()/2);
                         projectile.getDir().rotate((float)(random.nextDouble()*Math.PI*2));
@@ -55,8 +57,7 @@ public class ProjectileHandler {
 
             if(!world.inWorld(projectile) || projectile.getHp() <= 0 || projectile.getDistance() >= projectile.projectileType.range){
                 spawnEffects(projectile);
-                world.removeProjectile(projectile);
-                i--;
+                iterator.remove();
             }
         }
     }
@@ -74,21 +75,23 @@ public class ProjectileHandler {
         }
     }
 
-    private ArrayList<Enemy> findCollidingEnemies(Projectile projectile){
-        ArrayList<Enemy> enemies = new ArrayList<>();
+    private LinkedList<Entity> findCollidingEnemies(Projectile projectile){
+        LinkedList<Entity> entities = new LinkedList<>();
         float radius = projectile.projectileType.radius;
         for (int i = Math.max(0,(int) Math.floor(projectile.getX() - radius)); i < Math.min(world.getBlocks().length,Math.ceil(projectile.getX()+radius) + 1); i++) {
             for (int j = Math.max(0,(int) Math.floor(projectile.getY()-radius)); j < Math.min(world.getBlocks()[i].length,Math.ceil(projectile.getY()+radius) + 1); j++) {
-                for(Enemy enemy:world.getBlocks()[i][j]){
-                    float distance = (float)(Math.sqrt(Math.pow(projectile.getX()-enemy.getX(),2) + Math.pow(projectile.getY()-enemy.getY(),2)));
-                    if(distance <= enemy.enemyType.getRadius() + radius){
-                        enemies.add(enemy);
+                for(Entity entity:world.getBlocks()[i][j]){
+                    if(projectile.hits(entity)) {
+                        float distance = (float) (Math.sqrt(Math.pow(projectile.getX() - entity.getX(), 2) + Math.pow(projectile.getY() - entity.getY(), 2)));
+                        if (distance <= entity.entityType.getRadius() + radius) {
+                            entities.add(entity);
+                        }
                     }
                 }
             }
         }
 
-        return enemies;
+        return entities;
     }
 
     private void spawnPoisonCloud(float xPos, float yPos, int level, int amount, Vector2 direction) {

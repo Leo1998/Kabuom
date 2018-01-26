@@ -1,7 +1,6 @@
 package entity.model;
 
 import entity.EntityHandler;
-import enemy.EffectType;
 import model.GameObject;
 import model.ObjectType;
 import utility.Constants;
@@ -13,7 +12,7 @@ public class Entity extends GameObject implements Partisan {
     public final EntityType entityType;
     private final float[] effects;
     public final int wave;
-    private Block block;
+    protected Block block;
     private float attackCooldown;
 
     private static EntityHandler entityHandler;
@@ -45,11 +44,11 @@ public class Entity extends GameObject implements Partisan {
     }
 
     public void addEffect(EffectType effectType){
-        effects[effectType.id] = effectType.duration;
+        effects[effectType.ordinal()] = effectType.duration;
         if(effectType == EffectType.BURNING && Constants.fireBreaksSlow){
-            effects[EffectType.SLOW.id] = 0;
+            effects[EffectType.SLOW.ordinal()] = 0;
         }else if(effectType == EffectType.SLOW && Constants.fireBreaksSlow){
-            effects[EffectType.BURNING.id] = 0;
+            effects[EffectType.BURNING.ordinal()] = 0;
         }
     }
 
@@ -70,17 +69,17 @@ public class Entity extends GameObject implements Partisan {
         }
     }
 
-    /*@Override
+    @Override
     public void addHp(float hp) {
         float temp = hp * getStrength(EffectType.BLEEDING);
         super.addHp(temp);
-        if(!player) {
-            entityHandler.addDamage(temp, getX(), getY());
+        if(isEnemy()) {
+            entityHandler.addDamage(-temp, this);
         }
-    }*/
+    }
 
     private float getStrength(EffectType effectType) {
-        return (effects[effectType.id] > 0) ? effectType.strength : 1;
+        return (effects[effectType.ordinal()] > 0) ? effectType.strength : 1;
     }
 
     public Block getBlock() {
@@ -92,11 +91,15 @@ public class Entity extends GameObject implements Partisan {
     }
 
     public boolean addAttackCooldown(float dt){
-        attackCooldown += dt;
-        if(attackCooldown > entityType.frequency){
-            attackCooldown = 0;
-            return true;
-        }else{
+        if(entityType.frequency > 0) {
+            attackCooldown += dt;
+            if (attackCooldown > entityType.frequency) {
+                attackCooldown = 0;
+                return true;
+            } else {
+                return false;
+            }
+        } else {
             return false;
         }
     }
@@ -108,6 +111,21 @@ public class Entity extends GameObject implements Partisan {
 
     @Override
     public boolean allyOf(Partisan partisan) {
-        return partisan.isEnemy() == isEnemy();
+        if(partisan == null){
+            return true;
+        } else {
+            return partisan.isEnemy() == isEnemy();
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Entity{" +
+                "x=" + getX() +
+                ", y=" + getY() +
+                ", entityType=" + entityType +
+                ", wave=" + wave +
+                ", block=" + block +
+                '}';
     }
 }

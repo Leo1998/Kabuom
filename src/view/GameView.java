@@ -1,12 +1,12 @@
 package view;
 
-import enemy.Enemy;
+import entity.model.Entity;
+import entity.model.EntityType;
+import entity.model.MoveEntity;
 import model.GameObject;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import projectile.Projectile;
-import tower.Tower;
-import tower.TowerType;
 import utility.Utility;
 import utility.Vector2;
 import view.components.Button;
@@ -22,11 +22,9 @@ import java.util.List;
 
 public class GameView extends View {
 
-    private Utility u;
-
     private World world;
     private TowerButton[] towerButtons;
-    private Tower setTower;
+    private Entity setTower;
     private float w2, h2, scale;
     private ITexture blockTexture, towerButtonBackgroundTexture;
     private Button startButton;
@@ -40,18 +38,15 @@ public class GameView extends View {
         towerButtonBackgroundTexture = ViewManager.getTexture("viewTextures/mainButton.png");
 
         float towerButtonX = width * 7 / 8;
-        float towerButtonHeight = (height - ViewManager.font.getLineHeight() - (originHeight / 10)) / TowerType.values().length;
+        float towerButtonHeight = (height - ViewManager.font.getLineHeight() - (originHeight / 10)) / EntityType.firstEnemyIndex;
         float towerButtonWidth = width * 1 / 8;
 
 
         this.world = world;
-        towerButtons = new TowerButton[TowerType.values().length];
+        towerButtons = new TowerButton[EntityType.mainTowerIndex];
         for (int i = 0; i < towerButtons.length; i++) {
-            if (TowerType.values()[i] == TowerType.MAINTOWER) {
-                continue;
-            }
 
-            final TowerButton towerButton = new TowerButton(towerButtonX, i * towerButtonHeight, towerButtonWidth, towerButtonHeight, this, null, TowerType.values()[i]);
+            final TowerButton towerButton = new TowerButton(towerButtonX, i * towerButtonHeight, towerButtonWidth, towerButtonHeight, this, null, EntityType.values()[i]);
 
             towerButtons[i] = towerButton;
             this.components.add(towerButton);
@@ -60,11 +55,11 @@ public class GameView extends View {
                 @Override
                 public void onClick() {
                     if (setTower == null) {
-                        int cost = towerButton.getTowerType().cost;
+                        int cost = towerButton.getEntityType().cost;
                         if (world.getCoins() >= cost) {
                             viewManager.getPostProcessingManager().enableEffect(PostProcessingManager.Effect.RadialBlur);
 
-                            setTower = new Tower(towerButton.getTowerType(), 0, 0, 0);
+                            setTower = new Entity(towerButton.getEntityType(), 0, 0, 0, -1, null);
                         }
                     }
                 }
@@ -78,47 +73,35 @@ public class GameView extends View {
             }
         });
         components.add(startButton);
-
-        u = new Utility();
     }
 
-    private void drawEnemy(Enemy enemy, Batch batch){
+    private void drawEntity(Entity entity, Batch batch){
         float angle = 0;
-        if(enemy.getMovement().getCoords()[0] != 0 || enemy.getMovement().getCoords()[1] != 0) {
-            angle = Utility.calculateAngleBetweenTwoPoints(0, 0, enemy.getMovement().getCoords()[0], enemy.getMovement().getCoords()[1]);
+        if(entity instanceof MoveEntity){
+            MoveEntity mEntity = (MoveEntity) entity;
+            if(!mEntity.getMovement().nullVector()) {
+                angle = Utility.calculateAngleBetweenTwoPoints(0, 0, mEntity.getMovement().getCoords()[0], mEntity.getMovement().getCoords()[1]);
+            }
+            float diameter = entity.entityType.radius*2;
+            float width = scale * diameter;
+            float height = scale * diameter;
+            float percentage = Math.max(0,entity.getHp() / entity.entityType.getMaxHP());
+
+            batch.draw(null, blockCoordToViewCoordX(entity.getX(),diameter), blockCoordToViewCoordY(entity.getY(),diameter) + height * 1.1f, width, height * 0.1f, 0.6f, 0.6f, 0.6f, 1.0f);
+            batch.draw(null, blockCoordToViewCoordX(entity.getX(),diameter), blockCoordToViewCoordY(entity.getY(),diameter) + height * 1.1f, width * percentage, height * 0.1f, 0.0f, 1.0f, 0.0f, 1.0f);
+        } else {
+            if (entity.getTarget() != null && entity.entityType.isRanged()) {
+                angle = Utility.calculateAngleBetweenTwoPoints(entity.getTarget().getX(), entity.getTarget().getY(), entity.getX(), entity.getY());
+            }
         }
 
-
-        drawGameObject(enemy,angle,batch);
-
-        float diameter = enemy.enemyType.radius*2;
-        float width = scale * diameter;
-        float height = scale * diameter;
-        float percentage = Math.max(0,enemy.getHp() / enemy.enemyType.getMaxHP());
-
-        batch.draw(null, blockCoordToViewCoordX(enemy.getX(),diameter), blockCoordToViewCoordY(enemy.getY(),diameter) + height * 1.1f, width, height * 0.1f, 0.6f, 0.6f, 0.6f, 1.0f);
-        batch.draw(null, blockCoordToViewCoordX(enemy.getX(),diameter), blockCoordToViewCoordY(enemy.getY(),diameter) + height * 1.1f, width * percentage, height * 0.1f, 0.0f, 1.0f, 0.0f, 1.0f);
+        drawGameObject(entity,angle,batch);
     }
 
     private void drawProjectile(Projectile projectile, Batch batch){
         float angle = Utility.calculateAngleBetweenTwoPoints(projectile.getDir().getCoords()[0], projectile.getDir().getCoords()[1], 0, 0);
 
         drawGameObject(projectile,angle,batch);
-    }
-
-    private void drawTower(Tower tower, Batch batch){
-
-        float diameter = tower.towerType.radius*2;
-
-        float xCoord = blockCoordToViewCoordX(tower.getX(),diameter);
-        float yCoord = blockCoordToViewCoordY(tower.getY(),diameter);
-
-        float angle = 0;
-        if (tower.getTarget() != null && tower.towerType.canShoot) {
-            angle = Utility.calculateAngleBetweenTwoPoints(blockCoordToViewCoordX(tower.getTarget().getX()), blockCoordToViewCoordY(tower.getTarget().getY()), xCoord, yCoord);
-            //System.out.println(Utility.calculateAngleBetweenTwoPoints(xCoord, yCoord, blockCoordToViewCoordX(tower.getTarget().getX()), blockCoordToViewCoordY(tower.getTarget().getY())));
-        }
-        drawGameObject(tower,angle,batch);
     }
 
     private void drawGameObject(GameObject gameObject, float rotation, Batch batch){
@@ -150,12 +133,9 @@ public class GameView extends View {
             }
         }
 
-        for(Tower tower: world.getTowerList()){
-            drawTower(tower,batch);
-        }
 
-        for(Enemy enemy: world.getEnemyList()){
-            drawEnemy(enemy,batch);
+        for(Entity entity: world.getEntityList()){
+            drawEntity(entity,batch);
         }
 
         for(Projectile projectile: world.getProjectileList()){
@@ -186,7 +166,7 @@ public class GameView extends View {
         if (block != null) {
             batch.draw(null, blockCoordToViewCoordX((int) block.getCoords()[0]), blockCoordToViewCoordY((int) (world.getBlocks()[0].length - block.getCoords()[1])), w2 / world.getBlocks().length, h2 / world.getBlocks()[0].length, 0, 1f, 1f, 1f, 0.45f);
 
-            Tower t = world.getBlocks()[(int) block.getCoords()[0]][(int) (world.getBlocks()[0].length - block.getCoords()[1])].getTower();
+            Entity t = world.getBlocks()[(int) block.getCoords()[0]][(int) (world.getBlocks()[0].length - block.getCoords()[1])].getTower();
 
             //world.getBlocks()[(int) block.getCoords()[0]][(int) (world.getBlocks()[0].length - block.getCoords()[1])].test();
 
@@ -194,7 +174,7 @@ public class GameView extends View {
                 int x0 = (int) blockCoordToViewCoordX(block.getCoords()[0]);
                 int y0 = (int) blockCoordToViewCoordY((world.getBlocks()[0].length - block.getCoords()[1]));
 
-                String l1 = t.towerType.getName();
+                String l1 = t.entityType.getName();
                 String l2 = "Health: " + t.getHp();
 
                 int w = Math.max(ViewManager.font.getWidth(l1), ViewManager.font.getWidth(l2));
@@ -212,10 +192,10 @@ public class GameView extends View {
         if (setTower != null) {
             setTower.setX(Mouse.getX() - scale / 2);
             setTower.setY(originHeight - Mouse.getY() - scale / 2);
-            float diameter = setTower.towerType.radius*2;
+            float diameter = setTower.entityType.getRadius()*2;
             float width = scale * diameter;
             float height = scale * diameter;
-            batch.draw(ViewManager.getTexture(setTower.towerType.textureID), setTower.getX(), setTower.getY(), width, height);
+            batch.draw(ViewManager.getTexture(setTower.entityType.getTextureId()), setTower.getX(), setTower.getY(), width, height);
         }
     }
 
@@ -223,11 +203,11 @@ public class GameView extends View {
     @Override
     public void layout(float width, float height) {
         super.layout(width, height);
-        for (int i = 0; i < towerButtons.length - 1; i++) {
+        for (int i = 0; i < towerButtons.length; i++) {
             towerButtons[i].setX(width * 7 / 8);
-            towerButtons[i].setY(i * ((height - ViewManager.font.getLineHeight() - (originHeight / 10)) / TowerType.values().length));
+            towerButtons[i].setY(i * ((height - ViewManager.font.getLineHeight() - (originHeight / 10)) / EntityType.firstEnemyIndex));
             towerButtons[i].setWidth(width * 1 / 8);
-            towerButtons[i].setHeight((height - ViewManager.font.getLineHeight() - (originHeight / 10)) / TowerType.values().length);
+            towerButtons[i].setHeight((height - ViewManager.font.getLineHeight() - (originHeight / 10)) / EntityType.firstEnemyIndex);
         }
 
         startButton.setX(width * 7 / 8);
@@ -301,11 +281,11 @@ public class GameView extends View {
                     Vector2 blockId = getBlockIDOfMouse(mouseX,mouseY);
                     setTower.setX(blockId.getCoords()[0]);
                     setTower.setY(blockId.getCoords()[1]);
-                    if (world.spawnTower(setTower)) {
-                        world.setCoins(world.getCoins() - setTower.towerType.cost);
+                    if (world.setTower(setTower)) {
+                        world.setCoins(world.getCoins() - setTower.entityType.cost);
 
-                        if (shiftdown && world.getCoins() - setTower.towerType.cost >= 0) {
-                            setTower = new Tower(setTower.towerType, 0, 0, 0);
+                        if (shiftdown && world.getCoins() - setTower.entityType.cost >= 0) {
+                            setTower = new Entity(setTower.entityType, 0, 0, 0, -1, null);
                         } else {
                             setTower = null;
                             viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);
@@ -314,14 +294,10 @@ public class GameView extends View {
                 }
             }
         } else {
-            Vector2 block = getBlockIDOfMouse(Mouse.getX(), Mouse.getY());
-            if (block != null) {
-                Tower t = world.getBlocks()[(int) block.getCoords()[0]][(int) (world.getBlocks()[0].length - block.getCoords()[1])].getTower();
-                if (t != null && t.towerType != TowerType.MAINTOWER) {
-                    if (button == 1) {
-                        world.setCoins(world.getCoins() + t.towerType.cost / 2);
-                        world.removeTower(t);
-                    }
+            if(button == 1){
+                Vector2 block = getBlockIDOfMouse(Mouse.getX(), Mouse.getY());
+                if(block != null) {
+                    world.sellTower((int) block.getCoords()[0], (int) block.getCoords()[1]);
                 }
             }
         }
@@ -346,7 +322,7 @@ public class GameView extends View {
             shiftdown = true;
         }
 
-        if (key == Keyboard.KEY_ESCAPE && world.getEnemyList().isEmpty()) {
+        if (key == Keyboard.KEY_ESCAPE && !world.isInWave()) {
             getViewManager().getCtrl().endGame(false);
         }
     }

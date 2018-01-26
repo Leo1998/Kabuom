@@ -5,32 +5,59 @@ import entity.model.Partisan;
 import java.util.Stack;
 
 public class MoveGroup implements Partisan {
-    private Stack<Step> steps;
-    private float x,y;
-    private int members;
-
     private final boolean isEnemy;
+    private float x, y, speed;
+    private Stack<Step> steps;
+    private boolean hasMembers;
 
-    public MoveGroup(boolean isEnemy){
-        members = 0;
+    public MoveGroup(boolean isEnemy, float x, float y) {
         this.isEnemy = isEnemy;
+        this.x = x;
+        this.y = y;
+        speed = 1;
+        steps = null;
+        hasMembers = false;
     }
 
-    public void addMember(){
-        members++;
-    }
-
-    public boolean removeMember(){
-        members--;
-        return members <= 0;
+    public float getSpeed() {
+        return speed;
     }
 
     public Stack<Step> getSteps() {
         return steps;
     }
 
+    public boolean hasMembers() {
+        return hasMembers;
+    }
+
+    public void setSpeed(float speed) {
+        if(speed < this.speed) {
+            this.speed = speed;
+        }
+    }
+
+    public void register(){
+        hasMembers = true;
+    }
+
+    public void resetSpeed(){
+        this.speed *= 2;
+        hasMembers = false;
+    }
+
     public void setSteps(Stack<Step> steps) {
         this.steps = steps;
+    }
+
+    @Override
+    public boolean isEnemy() {
+        return isEnemy;
+    }
+
+    @Override
+    public boolean allyOf(Partisan partisan) {
+        return isEnemy == partisan.isEnemy();
     }
 
     @Override
@@ -51,15 +78,5 @@ public class MoveGroup implements Partisan {
     @Override
     public void setY(float y) {
         this.y = y;
-    }
-
-    @Override
-    public boolean isEnemy() {
-        return isEnemy;
-    }
-
-    @Override
-    public boolean allyOf(Partisan partisan) {
-        return partisan.isEnemy() == isEnemy;
     }
 }

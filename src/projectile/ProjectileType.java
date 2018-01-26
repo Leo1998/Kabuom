@@ -1,6 +1,6 @@
 package projectile;
 
-import enemy.EffectType;
+import entity.model.EffectType;
 import model.ObjectType;
 
 public enum ProjectileType implements ObjectType {
@@ -23,9 +23,9 @@ public enum ProjectileType implements ObjectType {
     public final int impactDamage;
     public final String textureID;
     public final EffectType effectType;
-    public final boolean hitTower, hitEnemy;
+    public final boolean hitPlayer, hitEnemy;
 
-    ProjectileType(int maxHP, float radius, String name, float speed, int impactDamage, float range, EffectType effectType, String textureID, boolean hitTower, boolean hitEnemy) {
+    ProjectileType(int maxHP, float radius, String name, float speed, int impactDamage, float range, EffectType effectType, String textureID, boolean hitPlayer, boolean hitEnemy) {
         this.maxHP = maxHP;
         this.radius = radius;
         this.name = name;
@@ -34,7 +34,7 @@ public enum ProjectileType implements ObjectType {
         this.range = range;
         this.effectType = effectType;
         this.textureID = textureID;
-        this.hitTower = hitTower;
+        this.hitPlayer = hitPlayer;
         this.hitEnemy = hitEnemy;
     }
 

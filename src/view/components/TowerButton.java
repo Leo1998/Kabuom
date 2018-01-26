@@ -1,6 +1,6 @@
 package view.components;
 
-import tower.TowerType;
+import entity.model.EntityType;
 import view.View;
 import view.ViewManager;
 import view.rendering.Batch;
@@ -8,15 +8,15 @@ import view.rendering.ITexture;
 
 public class TowerButton extends Button {
 
-    private TowerType towerType;
+    private EntityType entityType;
     private ITexture icon;
     private String description;
 
-    public TowerButton(float x, float y, float width, float height, View v, String buttontext, TowerType towerType) {
+    public TowerButton(float x, float y, float width, float height, View v, String buttontext, EntityType entityType) {
         super(x, y, width, height, v, buttontext);
-        this.towerType = towerType;
-        this.icon = ViewManager.getTexture(towerType.textureID);
-        this.description = towerType.getName() + " (" + towerType.cost + ")";
+        this.entityType = entityType;
+        this.icon = ViewManager.getTexture(entityType.getTextureId());
+        this.description = entityType.getName() + " (" + entityType.cost + ")";
     }
 
     @Override
@@ -29,7 +29,7 @@ public class TowerButton extends Button {
         ViewManager.font.drawText(batch, description, (int) ((getX()) + (getWidth()) / 2 - ViewManager.font.getWidth(description) / 2), (int) ((getY()) + iconSize));
     }
 
-    public TowerType getTowerType() {
-        return towerType;
+    public EntityType getEntityType() {
+        return entityType;
     }
 }

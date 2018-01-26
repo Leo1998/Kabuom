@@ -12,7 +12,6 @@ public class MoveEntity extends Entity {
     public MoveEntity(EntityType entityType, int level, float x, float y, int wave, Block block) {
         super(entityType, level, x, y, wave, block);
         movement = new Vector2(0,0);
-        group = null;
     }
 
     public Vector2 getMovement() {
@@ -29,5 +28,18 @@ public class MoveEntity extends Entity {
 
     public void setGroup(MoveGroup group) {
         this.group = group;
+    }
+
+    @Override
+    public String toString() {
+        return "MoveEntity{" +
+                "x=" + getX() +
+                ", y=" + getY() +
+                ", entityType=" + entityType +
+                ", wave=" + wave +
+                ", block=" + block +
+                ", movement=" + movement +
+                ", group=" + group +
+                '}';
     }
 }
