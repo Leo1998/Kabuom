@@ -31,16 +31,19 @@ public class MoveGroup implements Partisan {
         return hasMembers;
     }
 
-    public void multiplySpeed(float m) {
-        speed *= m;
+    public void addSpeed(float m, float max) {
+        if(speed + 0.0625f * m < max){
+            speed += 0.0625f * m;
+        }
+        speed = Math.max(0.25f,speed);
     }
 
     public void register(){
         hasMembers = true;
     }
 
-    public void resetSpeed(){
-        this.speed *= 2;
+    public void reset(){
+        //this.speed *= 2;
         hasMembers = false;
     }
 

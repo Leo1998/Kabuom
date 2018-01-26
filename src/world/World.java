@@ -5,6 +5,7 @@ import entity.EntityHandler;
 import entity.model.Entity;
 import entity.model.EntityType;
 import entity.model.MoveEntity;
+import entity.movement.MoveGroup;
 import model.GameObject;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -165,12 +166,17 @@ public class World {
         }
 
         Entity mainTower = new Entity(EntityType.MAINTOWER, 1, mainTowerCoordX, mainTowerCoordY, -1, blocks[mainTowerCoordX][mainTowerCoordY]);
-        this.setTower(mainTower);
-
-        newTower = false;
 
         projectileHandler = new ProjectileHandler(this);
         entityHandler = new EntityHandler(this,mainTower);
+
+        this.setTower(mainTower);
+
+        newTower = false;
+    }
+
+    public LinkedList<MoveGroup> getGroups(){
+        return entityHandler.getGroups();
     }
 
     public void spawnProjectile(Projectile projectile) {
@@ -192,6 +198,7 @@ public class World {
             blocks[xPos][yPos].setTower(tower);
             tower.setBlock(blocks[xPos][yPos]);
             entityList.add(tower);
+            entityHandler.newTower(xPos,yPos);
             return true;
         }
         return false;
@@ -312,16 +319,7 @@ public class World {
     }
 
     public boolean inWorld(GameObject gameObject){
-        if(gameObject.getX() < -0.5f)
-            return false;
-        if(gameObject.getX() > width-0.5f)
-            return false;
-        if(gameObject.getY() < -0.5f)
-            return false;
-        if(gameObject.getY() > height-0.5f)
-            return false;
-
-        return true;
+        return !(gameObject.getX() < -0.5f) && !(gameObject.getX() > width-0.5f) && !(gameObject.getY() < -0.5f) && !(gameObject.getY() > height-0.5f);
     }
 
     public void end(){

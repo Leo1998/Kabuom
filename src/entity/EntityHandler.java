@@ -117,7 +117,7 @@ public class EntityHandler {
                     groupIterator.remove();
                 }
 
-                group.resetSpeed();
+                group.reset();
             }
         }
 
@@ -162,6 +162,10 @@ public class EntityHandler {
         updateNode(x,y, nodeMap[x][y].block);
     }
 
+    public LinkedList<MoveGroup> getGroups() {
+        return groups;
+    }
+
     /*
      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
      *                      Attacking
@@ -173,9 +177,9 @@ public class EntityHandler {
             if(entity instanceof MoveEntity){
                 MoveGroup group = ((MoveEntity) entity).getGroup();
                 if(group != null) {
-                    entity.setTarget(findTarget(group, 20));
+                    entity.setTarget(findTarget(group, entity.entityType.speed*2));
                 }else{
-                    entity.setTarget(findTarget(entity, 20));
+                    entity.setTarget(findTarget(entity, entity.entityType.speed*2));
                 }
             }else {
                 entity.setTarget(findTarget(entity));
@@ -339,21 +343,18 @@ public class EntityHandler {
             MoveGroup group = entity.getGroup();
             float dist = getDist(group,entity);
 
-            if(dist < entity.entityType.speed*2){
-                if(entity.getTarget() != null){
-                    if(getDist(entity.getTarget(),entity) > entity.entityType.range/2){
+            if(dist < entity.entityType.speed){
+                entity.getGroup().addSpeed((entity.entityType.speed*2 - dist)/4, entity.entityType.speed);
+                if(entity.getTarget() != null && getDist(entity.getTarget(),entity) > entity.entityType.range/2){
                         goTo(entity,entity.getTarget(),dt);
-                    } else {
-                        Vector2 vec = entity.getMovement();
-                        vec.multiply(32);
+                } else {
+                    Vector2 vec = entity.getMovement();
+                    vec.multiply(32);
 
-                        goTo(entity,vec,dt);
-
-                        entity.getGroup().multiplySpeed(2);
-                    }
+                    goTo(entity,vec,dt);
                 }
             } else {
-                entity.getGroup().multiplySpeed(0.5f);
+                entity.getGroup().addSpeed((entity.entityType.speed - dist)*2, Float.MAX_VALUE);
                 goTo(entity,group,dt);
             }
         }else{
@@ -364,7 +365,7 @@ public class EntityHandler {
         }
 
         // If entity moved to far away from group: remove from group. Otherwise register at group
-        if(getDist(entity,entity.getGroup()) < entity.entityType.speed*3){
+        if(getDist(entity,entity.getGroup()) < entity.entityType.speed*2){
             entity.getGroup().register();
         } else {
             entity.setGroup(null);
@@ -395,10 +396,18 @@ public class EntityHandler {
     private void goTo(MoveEntity entity, Vector2 vec, float dt){
         if(!vec.nullVector()){
             vec.normalize();
-            vec.multiply(dt);
+            vec.rotate(random.nextFloat()*dt*2 - dt);
+            vec.multiply(dt*entity.entityType.speed);
 
-            entity.setX(entity.getX() + vec.getCoords()[0]);
-            entity.setY(entity.getY() + vec.getCoords()[1]);
+            float x = Math.max(-0.4f,Math.min(nodeMap.length - 0.6f,entity.getX() + vec.getCoords()[0])), y = Math.max(-0.4f,Math.min(nodeMap[Math.round(x)].length - 0.6f,entity.getY() + vec.getCoords()[1]));
+
+            if (Math.round(entity.getX()) != Math.round(x) || Math.round(entity.getY()) != Math.round(y)) {
+                entity.setBlock(nodeMap[Math.round(x)][Math.round(y)].block);
+                nodeMap[Math.round(x)][Math.round(y)].block.addEntity(entity);
+            }
+
+            entity.setX(x);
+            entity.setY(y);
 
             vec.multiply(0.09f);
             entity.setMovement(vec);
@@ -635,7 +644,7 @@ public class EntityHandler {
             this.block = block;
             this.toEnd = getDist(xPos,yPos,endX,endY);
             this.fromStart = Float.MAX_VALUE;
-            //getFromEntity(block.getTower());
+            getFromEntity(block.getTower());
             dpsInRange = 0;
             visited = false;
             index = Integer.MIN_VALUE;
