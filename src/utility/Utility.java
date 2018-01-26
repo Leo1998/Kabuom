@@ -78,44 +78,4 @@ public class Utility {
             return false;
         }
     }
-
-    public static Entity findCollidingEntity(Entity source, Block[][] blocks){
-        float x = source.getX(), y = source.getY(), radius = source.entityType.getRadius();
-        Entity closest = null;
-        for (int i = Math.max(0,(int) (Math.floor(x - 1))); i < Math.min(blocks.length,Math.ceil(x + 2)); i++) {
-            for (int j = Math.max(0, (int) (Math.floor(y - 1))); j < Math.min(blocks[i].length, Math.ceil(y + 2)); j++) {
-                for(Entity entity : blocks[i][j].getEntities()){
-                    if(!source.allyOf(entity)){
-                        if (closest == null || getDist(source, entity) - entity.entityType.getRadius() < getDist(source, closest) - closest.entityType.getRadius()) {
-                            closest = entity;
-                        }
-                    }
-                }
-            }
-        }
-
-        if(closest != null && getDist(source,closest) > closest.entityType.getRadius() + radius){
-            closest = null;
-        }
-        return closest;
-    }
-
-    public static float getDist(Position p1, Position p2){
-        return getDist(p1.getX(),p1.getY(),p2.getX(),p2.getY());
-    }
-
-    public static float getDist(float x1, float y1, float x2, float y2){
-        return (float) Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2));
-    }
-
-    public static float addo(float old, float add){
-        if(old < 0 || add < 0){
-            throw new IllegalArgumentException();
-        }else if(old+add < 0){
-            return Float.MAX_VALUE;
-        }else{
-            return old+add;
-        }
-    }
-
 }

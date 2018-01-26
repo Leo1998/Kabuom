@@ -15,7 +15,7 @@ public enum ProjectileType implements ObjectType {
     FRAGGRENADE(1, 0.5f, "FRAGGRENADE", 30,/*Damage*/25, /*Range*/ 20, EffectType.BURNING, "missile.png", false, true),
     POISON(1, 0.5f, "POISON", 5,/*Damage*/25,/*Range*/ 10, EffectType.POISON, "toxicBullet.png", false, true),
     POISONTRAIL(5, 0.5f, "POISON", 0.002f,/*Damage*/15,/*Range*/ 0.01f, EffectType.POISON, "Giftgas.png", false, true),
-    EXPLOSION(Integer.MAX_VALUE, 2.5f, "EXPLOSION", 0.01f, /*Damage*/ 50, /*Range*/ 0.002f, EffectType.BURNING, "Explosion.png", false, true);
+    EXPLOSION(Integer.MAX_VALUE, 2.5f, "EXPLOSION", 0.01f, /*Damage*/ 50, /*Range*/ 0.002f, EffectType.BURNING, "Explosion.png", true, true);
 
     public final int maxHP;
     public final String name;
@@ -23,9 +23,9 @@ public enum ProjectileType implements ObjectType {
     public final int impactDamage;
     public final String textureID;
     public final EffectType effectType;
-    public final boolean hitPlayer, hitEnemy;
+    public final boolean hitHostiles, hitAllies;
 
-    ProjectileType(int maxHP, float radius, String name, float speed, int impactDamage, float range, EffectType effectType, String textureID, boolean hitPlayer, boolean hitEnemy) {
+    ProjectileType(int maxHP, float radius, String name, float speed, int impactDamage, float range, EffectType effectType, String textureID, boolean hitAllies, boolean hitHostiles) {
         this.maxHP = maxHP;
         this.radius = radius;
         this.name = name;
@@ -34,8 +34,8 @@ public enum ProjectileType implements ObjectType {
         this.range = range;
         this.effectType = effectType;
         this.textureID = textureID;
-        this.hitPlayer = hitPlayer;
-        this.hitEnemy = hitEnemy;
+        this.hitAllies = hitAllies;
+        this.hitHostiles = hitHostiles;
     }
 
     @Override

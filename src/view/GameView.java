@@ -157,11 +157,7 @@ public class GameView extends View {
         /**
          * Zeichnet die Coin & Wave Zähler an den unteren rand
          */
-        String coins = Integer.toString(world.getCoins());
-        for(int i = coins.length()-3; i > 0; i-=3){
-            coins = coins.substring(0,i) + "," + coins.substring(i);
-        }
-        String coinsMessage = "Coins: " + coins;
+        String coinsMessage = "Coins: " + niceNumber(world.getCoins());
         ViewManager.font.drawText(batch, coinsMessage, (int) (originWidth - ViewManager.font.getWidth(coinsMessage)), (int) (originHeight - ViewManager.font.getLineHeight() * 2 - (originHeight / 10)));
 
         String waveMessage = "Wave: " + world.getWave();
@@ -184,7 +180,7 @@ public class GameView extends View {
                 int y0 = (int) blockCoordToViewCoordY((world.getBlocks()[0].length - block.getCoords()[1]));
 
                 String l1 = t.entityType.getName();
-                String l2 = "Health: " + t.getHp();
+                String l2 = "Health: " + niceNumber(Math.round(t.getHp()));
 
                 int w = Math.max(ViewManager.font.getWidth(l1), ViewManager.font.getWidth(l2));
                 int h = ViewManager.font.getLineHeight() * 2;
@@ -259,15 +255,13 @@ public class GameView extends View {
         return h2 / world.getBlocks()[0].length * coord + (originHeight - h2) / 2f;
     }
 
-    /*
-    private float viewCoordToBlockCoordX(float vx) {
-        return w2 / world.getBlocks().length / (vx - (originWidth * 7 / 8 - w2) / 2);
+    private String niceNumber(int number){
+        String result = Integer.toString(number);
+        for(int i = result.length()-3; i > 0; i-=3){
+            result = result.substring(0,i) + "," + result.substring(i);
+        }
+        return result;
     }
-
-    private float viewCoordToBlockCoordY(float vy) {
-        return h2 / world.getBlocks()[0].length / (vy - (originHeight - h2) / 2);
-    }
-    */
 
     @Override
     public List<ViewComponent> getComponents() {

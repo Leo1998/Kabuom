@@ -177,9 +177,17 @@ public class EntityHandler {
             if(entity instanceof MoveEntity){
                 MoveGroup group = ((MoveEntity) entity).getGroup();
                 if(group != null) {
-                    entity.setTarget(findTarget(group, entity.entityType.speed*2));
+                    if(entity.entityType.isRanged()){
+                        entity.setTarget(findTarget(group, entity.entityType.range*2));
+                    } else {
+                        entity.setTarget(findTarget(group, entity.entityType.speed*2));
+                    }
                 }else{
-                    entity.setTarget(findTarget(entity, entity.entityType.speed*2));
+                    if(entity.entityType.isRanged()){
+                        entity.setTarget(findTarget(entity, entity.entityType.range*2));
+                    } else {
+                        entity.setTarget(findTarget(entity, entity.entityType.speed*2));
+                    }
                 }
             }else {
                 entity.setTarget(findTarget(entity));
@@ -277,8 +285,8 @@ public class EntityHandler {
                 vec = new Vector2(tX - sX, tY - sY);
             }
         }else{
-            float aimX = source.getX() - target.getY();
-            float aimY = source.getY() - target.getY();
+            float aimX = target.getX() - source.getX();
+            float aimY = target.getY() - source.getY();
 
             vec = new Vector2(aimX,aimY);
         }
@@ -293,7 +301,7 @@ public class EntityHandler {
             vec.rotate((float) ((random.nextDouble() - 0.5) * source.entityType.accuracy));
         }
 
-        Projectile p = new Projectile((ProjectileType)source.entityType.projectile, source.getLevel(), source.getX(), source.getY(), vec);
+        Projectile p = new Projectile((ProjectileType)source.entityType.projectile, source.getLevel(), source.getX(), source.getY(), vec, source.wave >= 0);
 
         p.setX(p.getX() + p.getDir().getCoords()[0] * source.getObjectType().getRadius());
         p.setY(p.getY() + p.getDir().getCoords()[1] * source.getObjectType().getRadius());
@@ -338,7 +346,7 @@ public class EntityHandler {
         }
 
         // Move entity towards group or target, depending on distance
-        Entity collidingEntity = findCollidingEntity(entity, world.getBlocks());
+        Entity collidingEntity = findCollidingEntity(entity);
         if(collidingEntity == null){
             MoveGroup group = entity.getGroup();
             float dist = getDist(group,entity);
@@ -441,6 +449,27 @@ public class EntityHandler {
                 entity.setMovement(new Vector2(0,0));
             }
         }
+    }
+
+    private Entity findCollidingEntity(Entity source){
+        float x = source.getX(), y = source.getY(), radius = source.entityType.getRadius();
+        Entity closest = null;
+        for (int i = Math.max(0,(int) (Math.floor(x - 1))); i < Math.min(nodeMap.length,Math.ceil(x + 2)); i++) {
+            for (int j = Math.max(0, (int) (Math.floor(y - 1))); j < Math.min(nodeMap[i].length, Math.ceil(y + 2)); j++) {
+                for(Entity entity : nodeMap[i][j].block){
+                    if(!source.allyOf(entity)){
+                        if (closest == null || getDist(source, entity) - entity.entityType.getRadius() < getDist(source, closest) - closest.entityType.getRadius()) {
+                            closest = entity;
+                        }
+                    }
+                }
+            }
+        }
+
+        if(closest != null && getDist(source,closest) > closest.entityType.getRadius() + radius){
+            closest = null;
+        }
+        return closest;
     }
 
     /*
@@ -567,6 +596,30 @@ public class EntityHandler {
             for (Node node : nodes) {
                 node.index = Integer.MIN_VALUE;
             }
+        }
+    }
+
+    /*
+     * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+     *                      Utility Methods
+     * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+     */
+
+    private float getDist(Position p1, Position p2){
+        return getDist(p1.getX(),p1.getY(),p2.getX(),p2.getY());
+    }
+
+    private float getDist(float x1, float y1, float x2, float y2){
+        return (float) Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2));
+    }
+
+    private float addo(float old, float add){
+        if(old < 0 || add < 0){
+            throw new IllegalArgumentException();
+        }else if(old+add < 0){
+            return Float.MAX_VALUE;
+        }else{
+            return old+add;
         }
     }
 

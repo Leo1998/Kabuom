@@ -240,10 +240,11 @@ public class World {
 
             if (spawnWave) {
                 entityHandler.startWave();
-                for (int i = 0; i < Math.pow(1 + wave, 3) / 100 + 5; i++) {
+                for (int i = 0; i < Math.pow(1 + wave, 3) / 100 + 5;) {
                     int x = random.nextInt(width);
                     int y = 0;
                     int entityIndex = random.nextInt(EntityType.values().length - EntityType.firstEnemyIndex) + EntityType.firstEnemyIndex;
+                    i+= EntityType.values()[entityIndex].cost;
                     Entity entity;
                     if (EntityType.values()[entityIndex].speed > 0) {
                         entity = new MoveEntity(EntityType.values()[entityIndex], 1, x, y, wave, blocks[x][y]);

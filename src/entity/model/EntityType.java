@@ -13,17 +13,21 @@ public enum EntityType implements ObjectType {
     TESLACOIL(  50,     0.325f, 0,      "Teslacoil",    "LaserLamp.png",    0.03125f,   7,      0.5f,   1,  false,  true,   false,  true,   ProjectileType.LIGHTNING,       400),
     SNIPER(     20,     0.325f, 0,      "Sniper",       "LaserLampRot.png", 3,          16,     0,      1,  false,  true,   false,  true,   ProjectileType.PIERCINGBULLET,  500),
     MORTAR(     40,     0.625f, 0,      "Mortar",       "MissileLauncherGruen.png",4,   20,     0.01f,  1,  false,  true,   false,  true,   ProjectileType.FRAGGRENADE,     750),
-    BARRICADE(  1000,   0.625f, 0,      "Barricade",    "barricade2.png",   0,          1,      1,      8,  false,  true,   false,  true,   null,                           75),
+    BARRICADE(  1000,   0.625f, 0,      "Barricade",    "barricade2.png",   0.5f,       2,      1,      8,  false,  true,   false,  true,   null,                           75),
     MAINTOWER(  1000,   0.625f, 0,      "Maintower",    "MainTower.png",    0,          0,      0,      0,  false,  false,  false,  false,  null,                           0),
     //MAINTOWER(  100000, 2,      0,      "OP Tower",     "MainTower.png",    0.03125f,   20,     7,      128,false,  true,   false,  true,   ProjectileType.LIGHTNING        0),
 
     //Enemy     maxHp   radius  speed   name            textureId           frequency   range   accur   att aAlly   aHost   hAlly   hHost   projectile                      cost
-    CHEAP(      30,     0.375f, 2,      "Cheap",        "Cheap.png",        0.3f,       0.375f, 1,      5,  false,  true,   false,  true,   null,                           1),
-    TANK(       480,    0.625f, 1.5f,   "Tank",         "Tank.png",         1,          0.625f, 1,      5,  false,  true,   false,  true,   null,                           1),
-    SPEED(      75,     0.25f,  3,      "Speed",        "Speed.png",        0.2f,       0.25f,  1,      15, false,  true,   false,  true,   null,                           1),
-    DAMAGE(     150,    0.5f,   2,      "Damage",       "Damage.png",       0.1f,       0.5f,   1,      60, false,  true,   false,  true,   null,                           1),
-    SUPER(      480,    0.5f,   1,      "Super",        "Super.png",        0.5f,       0.5f,   1,      70, false,  true,   false,  true,   null,                           1),
-    TROLL(      600,    0.75f,  0.5f,   "Troll",        "Troll.png",        1,          0.75f,  1,      75, false,  true,   false,  true,   null,                           1),
+    CHEAP(      30,     0.375f, 2,      "Cheap",        "Cheap.png",        1,          0.375f, 1,      5,  false,  true,   false,  true,   null,                           1),
+    TANK(       480,    0.625f, 1.5f,   "Tank",         "Tank.png",         3,          0.625f, 1,      5,  false,  true,   false,  true,   null,                           1),
+    SPEED(      75,     0.25f,  3,      "Speed",        "Speed.png",        0.5f,       0.25f,  1,      15, false,  true,   false,  true,   null,                           1),
+    DAMAGE(     150,    0.5f,   2,      "Damage",       "Damage.png",       0.3125f,    0.5f,   1,      60, false,  true,   false,  true,   null,                           1),
+    SUPER(      480,    0.5f,   1,      "Super",        "Super.png",        1.5f,       0.5f,   1,      70, false,  true,   false,  true,   null,                           1),
+    TROLL(      600,    0.75f,  0.5f,   "Troll",        "Troll.png",        3,          0.75f,  1,      75, false,  true,   false,  true,   null,                           1),
+    RANGED(     100,    0.325f, 0.5f,   "Mobile MG",    "Troll.png",        0.5f,       4,      0.5f,   1,  false,  true,   false,  true,   ProjectileType.BULLET,          1),
+    RANGED2(    100,    0.325f, 0.5f,   "Mobile Tesla", "Tank.png",         0.0625f,    4,      0.5f,   1,  false,  true,   false,  true,   ProjectileType.LIGHTNING,       1),
+    SUICIDE(    300,    0.25f,  2,      "Suicide",      "Super.png",        0.03125f,   0.5f,   0,      1,  false,  true,   true,   true,   ProjectileType.EXPLOSION,       1),
+    INFESTED(   100,    0.5f,   0.5f,   "Infested",     "Giftgas.png",      1,          20,     7,      1,  false,  true,   false,  true,   ProjectileType.POISONTRAIL,     1),
     ;
     public final static int firstEnemyIndex = 10;
     public final static int mainTowerIndex = 9;

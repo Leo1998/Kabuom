@@ -8,17 +8,19 @@ import utility.Vector2;
 
 import java.util.ArrayList;
 
-public class Projectile extends GameObject {
+public class Projectile extends GameObject implements Partisan {
     public final ProjectileType projectileType;
     private float distance;
     private Vector2 dir;
     private ArrayList<Entity> hitEntities; // Zur Lösung von Kollisionsproblemen beim durchdringen von Gegnern.
+    private boolean isEnemy;
 
-    public Projectile(ProjectileType projectileType, int level, float x, float y, Vector2 dir) {
+    public Projectile(ProjectileType projectileType, int level, float x, float y, Vector2 dir, boolean isEnemy) {
         super(projectileType, level, x, y);
         this.projectileType = projectileType;
         this.dir = dir;
         this.hitEntities = new ArrayList<>();
+        this.isEnemy = isEnemy;
     }
 
     public Vector2 getDir() {
@@ -59,10 +61,15 @@ public class Projectile extends GameObject {
     }
 
     public boolean hits(Partisan partisan){
-        if(partisan.isEnemy()){
-            return projectileType.hitEnemy;
+        if(allyOf(partisan)){
+            return projectileType.hitAllies;
         } else {
-            return projectileType.hitPlayer;
+            return projectileType.hitHostiles;
         }
+    }
+
+    @Override
+    public boolean isEnemy() {
+        return isEnemy;
     }
 }

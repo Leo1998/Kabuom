@@ -64,10 +64,10 @@ public class ProjectileHandler {
     private void spawnEffects(Projectile projectile){
         switch (projectile.projectileType) {
             case POISON:
-                spawnPoisonCloud(projectile.getX(), projectile.getY(), projectile.getLevel(), Constants.poisonCloudAmount, projectile.getDir());
+                spawnPoisonCloud(projectile.getX(), projectile.getY(), projectile.getLevel(), Constants.poisonCloudAmount, projectile.getDir(), projectile.isEnemy());
                 break;
             case FRAGGRENADE:
-                world.spawnProjectile(new Projectile(ProjectileType.EXPLOSION, projectile.getLevel(), projectile.getX(), projectile.getY(), projectile.getDir()));
+                world.spawnProjectile(new Projectile(ProjectileType.EXPLOSION, projectile.getLevel(), projectile.getX(), projectile.getY(), projectile.getDir(), projectile.isEnemy()));
                 break;
         }
     }
@@ -91,14 +91,14 @@ public class ProjectileHandler {
         return entities;
     }
 
-    private void spawnPoisonCloud(float xPos, float yPos, int level, int amount, Vector2 direction) {
+    private void spawnPoisonCloud(float xPos, float yPos, int level, int amount, Vector2 direction, boolean isEnemy) {
         Random random = new Random();
         for (int i = 0; i < amount; i++) {
             float alpha = random.nextFloat() * (float) (Math.PI * 2);
             float distance = random.nextFloat() * 1.5f;
             float x = xPos + (float) (Math.cos(alpha) * distance);
             float y = yPos + (float) (Math.sin(alpha) * distance);
-            world.spawnProjectile(new Projectile(ProjectileType.POISONTRAIL, level, x, y, direction));
+            world.spawnProjectile(new Projectile(ProjectileType.POISONTRAIL, level, x, y, direction, isEnemy));
         }
     }
 
