@@ -6,9 +6,9 @@ import projectile.ProjectileType;
 
 public enum EntityType implements ObjectType {
     //Player    maxHp   radius  speed   name            textureId           frequency   range   accur   att aAlly   aHost   hAlly   hHost   projectile                      cost
-    MGTURRET(   100,    0.5f,   0,      "MG Turret",    "MgTurret.png",     1,          8,      1.5f,   16, false,  true,   false,  true,   ProjectileType.BULLET,          100),
+    MGTURRET(   100,    0.5f,   0,      "MG Turret",    "MgTurret.png",     0.125f,     8,      0.25f,  1,  false,  true,   false,  true,   ProjectileType.BULLET,          100),
     MISSILE(    75,     0.5f,   0,      "Missilelauncher","MissileLauncher.png",2,      14,     0,      1,  false,  true,   false,  true,   ProjectileType.MISSILE,         300),
-    FLAME(      60,     0.5f,   0,      "Flamethrower", "Flamethrower.png",  0.125f,     7,      0.5f,   1,  false,  true,   false,  true,   ProjectileType.FLAME,           150),
+    FLAME(      60,     0.5f,   0,      "Flamethrower", "Flamethrower.png", 0.125f,     7,      0.5f,   1,  false,  true,   false,  true,   ProjectileType.FLAME,           150),
     POISON(     75,     0.5f,   0,      "Poisontower",  "MgTurretGruen.png",3,          10,     0.1f,   1,  false,  true,   false,  true,   ProjectileType.POISON,          160),
     CYROGUN(    90,     0.5f,   0,      "Cyrogun",      "MgTurret.png",     2,          10,     2,      3,  false,  true,   false,  true,   ProjectileType.ICE,             260),
     TESLACOIL(  50,     0.325f, 0,      "Teslacoil",    "LaserLamp.png",    0.03125f,   7,      0.5f,   1,  false,  true,   false,  true,   ProjectileType.LIGHTNING,       400),

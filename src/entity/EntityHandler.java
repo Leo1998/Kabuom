@@ -347,14 +347,16 @@ public class EntityHandler {
                         goTo(entity,entity.getTarget(),dt);
                     } else {
                         Vector2 vec = entity.getMovement();
-                        vec.rotate(random.nextFloat()-0.5f);
+                        vec.rotate(random.nextFloat()*0.125f - 0.0625f);
                         vec.multiply(8);
 
                         goTo(entity,vec,dt);
+
+                        entity.getGroup().multiplySpeed(2);
                     }
                 }
             } else {
-                entity.getGroup().setSpeed(entity.entityType.speed);
+                entity.getGroup().multiplySpeed(0.5f);
                 goTo(entity,group,dt);
             }
         }else{
