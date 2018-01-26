@@ -7,5 +7,7 @@ import model.Position;
 public interface Partisan extends Position {
     boolean isEnemy();
 
-    boolean allyOf(Partisan partisan);
+    default boolean allyOf(Partisan partisan){
+        return partisan == null || partisan.isEnemy() == isEnemy();
+    }
 }

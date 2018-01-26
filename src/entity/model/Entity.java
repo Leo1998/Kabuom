@@ -6,6 +6,8 @@ import model.ObjectType;
 import utility.Constants;
 import world.Block;
 
+import static utility.Utility.random;
+
 public class Entity extends GameObject implements Partisan {
 
     private Entity target;
@@ -94,7 +96,7 @@ public class Entity extends GameObject implements Partisan {
         if(entityType.frequency > 0) {
             attackCooldown += dt;
             if (attackCooldown > entityType.frequency) {
-                attackCooldown = 0;
+                attackCooldown = random.nextFloat()*entityType.frequency/2 - entityType.frequency/4;
                 return true;
             } else {
                 return false;
@@ -107,15 +109,6 @@ public class Entity extends GameObject implements Partisan {
     @Override
     public boolean isEnemy() {
         return wave >= 0;
-    }
-
-    @Override
-    public boolean allyOf(Partisan partisan) {
-        if(partisan == null){
-            return true;
-        } else {
-            return partisan.isEnemy() == isEnemy();
-        }
     }
 
     @Override

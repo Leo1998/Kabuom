@@ -57,11 +57,6 @@ public class MoveGroup implements Partisan {
     }
 
     @Override
-    public boolean allyOf(Partisan partisan) {
-        return isEnemy == partisan.isEnemy();
-    }
-
-    @Override
     public float getX() {
         return x;
     }
