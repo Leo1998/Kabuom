@@ -205,7 +205,7 @@ public class World {
     }
 
     public void removeEntity(Entity entity){
-        entity.setHp(0);
+        entity.setHp(-1);
         if(entity.isEnemy()){
             coins += (25 - (25 - 1 - (5) * Math.pow(Math.E, ((-1f / 6f) * (entity.wave - 15f)))));
         } else if(entity.entityType == EntityType.MAINTOWER){

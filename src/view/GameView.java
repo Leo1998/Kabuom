@@ -289,7 +289,7 @@ public class GameView extends View {
             }
         } else {
             if(button == 1){
-                Vector2 block = getBlockIDOfMouse(Mouse.getX(), Mouse.getY());
+                Vector2 block = getBlockIDOfMouse(mouseX, mouseY);
                 if(block != null) {
                     world.sellTower((int) block.getCoords()[0], (int) block.getCoords()[1]);
                 }

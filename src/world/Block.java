@@ -22,28 +22,6 @@ public class Block implements Iterable<Entity> {
         entities = new LinkedList<>();
     }
 
-    /*
-    public Tower getTower() {
-        return tower;
-    }
-
-    public void setTower(Tower tower) {
-        this.tower = tower;
-    }
-
-    public void addEnemy(Enemy enemy){
-        enemies.add(enemy);
-    }
-
-    public boolean removeEnemy(Enemy enemy){
-        return enemies.remove(enemy);
-    }
-
-    public ArrayList<Enemy> getEnemies() {
-        return enemies;
-    }
-    */
-
     public Entity getTower(){
         return tower;
     }

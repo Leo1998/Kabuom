@@ -161,7 +161,7 @@ public class EntityHandler {
                 if(entity instanceof MoveEntity){
                     MoveEntity mEntity = (MoveEntity) entity;
 
-                    if(mEntity.getSteps().peek().stepType != Step.StepType.StayInRange){
+                    if(mEntity.getSteps() != null && (mEntity.getSteps().isEmpty() || mEntity.getSteps().peek().stepType != Step.StepType.StayInRange)){
                         mEntity.getSteps().push(new Step(Step.StepType.StayInRange, 0, 0));
                     }
                 }
