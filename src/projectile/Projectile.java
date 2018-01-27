@@ -1,6 +1,7 @@
 package projectile;
 
 import entity.model.Entity;
+import entity.model.EntityType;
 import entity.model.Partisan;
 import model.GameObject;
 import model.ObjectType;
@@ -14,13 +15,15 @@ public class Projectile extends GameObject implements Partisan {
     private Vector2 dir;
     private ArrayList<Entity> hitEntities; // Zur Lösung von Kollisionsproblemen beim durchdringen von Gegnern.
     private boolean isEnemy;
+    public final EntityType source;
 
-    public Projectile(ProjectileType projectileType, int level, float x, float y, Vector2 dir, boolean isEnemy) {
+    public Projectile(ProjectileType projectileType, int level, float x, float y, Vector2 dir, boolean isEnemy, EntityType source) {
         super(projectileType, level, x, y);
         this.projectileType = projectileType;
         this.dir = dir;
         this.hitEntities = new ArrayList<>();
         this.isEnemy = isEnemy;
+        this.source = source;
     }
 
     public Vector2 getDir() {

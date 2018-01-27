@@ -64,19 +64,22 @@ public class Entity extends GameObject implements Partisan {
                     case BURNING:
                     case POISON:
                         float damage = entityType.getMaxHP()*EffectType.values()[i].strength*duration;
-                        addHp(-damage);
+                        addHp(-damage, "Effect");
                         break;
                 }
             }
         }
     }
 
-    @Override
-    public void addHp(float hp) {
+    public void addHp(float hp, String source) {
         float temp = hp * getStrength(EffectType.BLEEDING);
         super.addHp(temp);
         if(isEnemy()) {
             entityHandler.addDamage(-temp, this);
+        }
+
+        if(getHp() <= 0 && getHp() - temp > 0){
+            System.out.println(entityType.name + " killed by " + source);
         }
     }
 

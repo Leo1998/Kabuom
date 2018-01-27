@@ -1,4 +1,4 @@
 package entity.movement;
 
-public enum StepType {
+public class MoveStep {
 }

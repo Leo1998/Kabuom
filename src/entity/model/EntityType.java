@@ -24,10 +24,9 @@ public enum EntityType implements ObjectType {
     DAMAGE(     150,    0.5f,   2,      "Damage",       "Damage.png",       0.3125f,    0.5f,   1,      60, false,  true,   false,  true,   null,                           1),
     SUPER(      480,    0.5f,   1,      "Super",        "Super.png",        1.5f,       0.5f,   1,      70, false,  true,   false,  true,   null,                           1),
     TROLL(      600,    0.75f,  0.5f,   "Troll",        "Troll.png",        3,          0.75f,  1,      75, false,  true,   false,  true,   null,                           1),
-    RANGED(     100,    0.325f, 0.5f,   "Mobile MG",    "Troll.png",        0.5f,       4,      0.5f,   1,  false,  true,   false,  true,   ProjectileType.BULLET,          1),
+    RANGED(     100,    0.325f, 2,      "Mobile MG",    "Troll.png",        0.5f,       4,      0.5f,   1,  false,  true,   false,  true,   ProjectileType.BULLET,          1),
     RANGED2(    100,    0.325f, 0.5f,   "Mobile Tesla", "Tank.png",         0.0625f,    4,      0.5f,   1,  false,  true,   false,  true,   ProjectileType.LIGHTNING,       1),
     SUICIDE(    300,    0.25f,  2,      "Suicide",      "Super.png",        0.03125f,   0.5f,   0,      1,  false,  true,   true,   true,   ProjectileType.EXPLOSION,       1),
-    INFESTED(   100,    0.5f,   0.5f,   "Infested",     "Giftgas.png",      1,          20,     7,      1,  false,  true,   false,  true,   ProjectileType.POISONTRAIL,     1),
     ;
     public final static int firstEnemyIndex = 10;
     public final static int mainTowerIndex = 9;

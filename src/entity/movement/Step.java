@@ -4,8 +4,10 @@ import model.Position;
 
 public class Step implements Position{
     private float x,y;
+    public final StepType stepType;
 
-    public Step(float x, float y) {
+    public Step(StepType stepType, float x, float y) {
+        this.stepType = stepType;
         this.x = x;
         this.y = y;
     }
@@ -28,5 +30,11 @@ public class Step implements Position{
     @Override
     public void setY(float y) {
         this.y = y;
+    }
+
+    public enum StepType{
+        GoTo,
+        StayInRange,
+        Kite,
     }
 }

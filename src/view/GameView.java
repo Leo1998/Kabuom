@@ -3,7 +3,6 @@ package view;
 import entity.model.Entity;
 import entity.model.EntityType;
 import entity.model.MoveEntity;
-import entity.movement.MoveGroup;
 import model.GameObject;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -113,10 +112,6 @@ public class GameView extends View {
         batch.draw(ViewManager.getTexture(gameObject.getObjectType().getTextureId()), blockCoordToViewCoordX(gameObject.getX(),diameter), blockCoordToViewCoordY(gameObject.getY(),diameter), width, height, rotation, 1, 1, 1, 1);
     }
 
-    private void drawGroup(MoveGroup group, Batch batch){
-        batch.draw(null, blockCoordToViewCoordX(group.getX(),0.25f), blockCoordToViewCoordY(group.getY(),0.25f), scale * 0.25f, scale * 0.25f, 1f, 0f, 0f, 0.5f);
-    }
-
     @Override
     public void render(float deltaTime, Batch batch) {
         if (originHeight < originWidth * 7 / 8) {
@@ -145,10 +140,6 @@ public class GameView extends View {
 
         for(Projectile projectile: world.getProjectileList()){
             drawProjectile(projectile,batch);
-        }
-
-        for(MoveGroup group: world.getGroups()){
-            drawGroup(group,batch);
         }
 
         super.render(deltaTime, batch);

@@ -5,19 +5,11 @@ import entity.EntityHandler;
 import entity.model.Entity;
 import entity.model.EntityType;
 import entity.model.MoveEntity;
-import entity.movement.MoveGroup;
 import model.GameObject;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import projectile.Projectile;
 import projectile.ProjectileHandler;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
-import java.util.ArrayList;
 import java.util.LinkedList;
 
 import static utility.Utility.random;
@@ -179,10 +171,6 @@ public class World {
         newTower = false;
     }
 
-    public LinkedList<MoveGroup> getGroups(){
-        return entityHandler.getGroups();
-    }
-
     public void spawnProjectile(Projectile projectile) {
         newProjectiles.add(projectile);
     }
@@ -239,21 +227,7 @@ public class World {
         if(!ended) {
 
             if (spawnWave) {
-                entityHandler.startWave();
-                for (int i = 0; i < Math.pow(1 + wave, 3) / 100 + 5;) {
-                    int x = random.nextInt(width);
-                    int y = 0;
-                    int entityIndex = random.nextInt(EntityType.values().length - EntityType.firstEnemyIndex) + EntityType.firstEnemyIndex;
-                    i+= EntityType.values()[entityIndex].cost;
-                    Entity entity;
-                    if (EntityType.values()[entityIndex].speed > 0) {
-                        entity = new MoveEntity(EntityType.values()[entityIndex], 1, x, y, wave, blocks[x][y]);
-                    } else {
-                        entity = new Entity(EntityType.values()[entityIndex], 1, x, y, wave, blocks[x][y]);
-                    }
-                    spawnEntity(entity, x, y);
-                }
-                spawnWave = false;
+                spawnWave();
             }
 
             int minWave = entityHandler.handleEntities(entityList, dt);
@@ -278,6 +252,25 @@ public class World {
                 newEntities.clear();
             }
         }
+    }
+
+    private void spawnWave(){
+        entityHandler.startWave();
+        for (int i = 0; i < Math.pow(1 + wave, 3) / 100 + 5;) {
+            int x = random.nextInt(width);
+            int y = 0;
+            int entityIndex = random.nextInt(EntityType.values().length - EntityType.firstEnemyIndex) + EntityType.firstEnemyIndex;
+            //int entityIndex = EntityType.firstEnemyIndex+6;
+            i+= EntityType.values()[entityIndex].cost;
+            Entity entity;
+            if (EntityType.values()[entityIndex].speed > 0) {
+                entity = new MoveEntity(EntityType.values()[entityIndex], 1, x, y, wave, blocks[x][y]);
+            } else {
+                entity = new Entity(EntityType.values()[entityIndex], 1, x, y, wave, blocks[x][y]);
+            }
+            spawnEntity(entity, x, y);
+        }
+        spawnWave = false;
     }
 
     public int getCoins() {

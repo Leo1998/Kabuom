@@ -1,13 +1,15 @@
 package entity.model;
 
-import entity.movement.MoveGroup;
+import entity.movement.Step;
 import utility.Vector2;
 import world.Block;
+
+import java.util.Stack;
 
 public class MoveEntity extends Entity {
 
     private Vector2 movement;
-    private MoveGroup group;
+    private Stack<Step> steps;
 
     public MoveEntity(EntityType entityType, int level, float x, float y, int wave, Block block) {
         super(entityType, level, x, y, wave, block);
@@ -18,16 +20,16 @@ public class MoveEntity extends Entity {
         return movement;
     }
 
-    public MoveGroup getGroup() {
-        return group;
+    public Stack<Step> getSteps() {
+        return steps;
     }
 
     public void setMovement(Vector2 movement) {
         this.movement = movement;
     }
 
-    public void setGroup(MoveGroup group) {
-        this.group = group;
+    public void setSteps(Stack<Step> steps) {
+        this.steps = steps;
     }
 
     @Override
@@ -39,7 +41,6 @@ public class MoveEntity extends Entity {
                 ", wave=" + wave +
                 ", block=" + block +
                 ", movement=" + movement +
-                ", group=" + group +
                 '}';
     }
 }
