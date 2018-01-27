@@ -11,14 +11,11 @@ import java.util.NoSuchElementException;
  */
 public class Block implements Iterable<Entity> {
 
-    //private Tower tower;
-    //private ArrayList<Enemy> enemies;
     private Entity tower;
     private LinkedList<Entity> entities;
 
     public Block() {
         this.tower = null;
-        //enemies = new ArrayList<>();
         entities = new LinkedList<>();
     }
 
