@@ -24,7 +24,7 @@ import static utility.Utility.*;
 public class EntityHandler {
 
     private Node[][] nodeMap;
-    private int index, pathUpdate;
+    private int index;
     private Entity mainTower;
     private World world;
 
@@ -39,7 +39,6 @@ public class EntityHandler {
         this.index = Integer.MIN_VALUE;
         Entity.setEntityHandler(this);
         createNodeMap(world.getBlocks());
-        pathUpdate = 0;
     }
 
     /*
@@ -106,39 +105,22 @@ public class EntityHandler {
         for(int i = 0; i < findPath.length; i++){
             for(int j = 0; j < findPath.length; j++){
                 if(findPath[i][j]){
-                    HashMap<EntityType,Stack<Step>[]> paths = new HashMap<>();
+                    HashMap<Integer, Stack<Step>> paths = new HashMap<>();
 
-                    for(Entity entity : nodeMap[i][j].block.getEntities()){
-                        if(entity instanceof MoveEntity) {
+                    for(Entity entity : nodeMap[i][j].block){
+                        if(entity instanceof MoveEntity){
+                            int key = getKey((MoveEntity)entity);
 
-                            if(!paths.containsKey(entity.entityType)){
-                                paths.put(entity.entityType, new Stack[2]);
-                            }
-
-                            Stack<Step>[] path = paths.get(entity.entityType);
-                            if (entity.isEnemy()) {
-                                if (path[0] == null) {
-                                    if(entity.getTarget() == null) {
-                                        path[0] = findPath(entity, mainTower);
-                                    } else {
-                                        path[0] = findPath(entity, entity.getTarget());
-                                    }
-                                }
-
-                                if(path[0] != null) {
-                                    ((MoveEntity) entity).setSteps((Stack<Step>) path[0].clone());
-                                }
-                            } else {
-                                if (path[1] == null) {
-                                    if(entity.getTarget() != null) {
-                                        path[1] = findPath(entity, entity.getTarget());
-                                    }
-                                }
-
-                                if(path[1] != null) {
-                                    ((MoveEntity) entity).setSteps((Stack<Step>) path[1].clone());
+                            if(!paths.containsKey(key)){
+                                if(entity.getTarget() != null){
+                                    paths.put(key,findPath(entity,entity.getTarget()));
+                                } else if(entity.isEnemy()){
+                                    paths.put(key,findPath(entity,mainTower));
                                 }
                             }
+
+                            if(paths.get(key) != null)
+                                ((MoveEntity) entity).setSteps((Stack<Step>) paths.get(key).clone());
                         }
                     }
                 }
@@ -595,6 +577,27 @@ public class EntityHandler {
         }else{
             return old+add;
         }
+    }
+
+    /**
+     * Generates a Key for a MoveEntity to be used in pathfinding
+     * First two bits of key are reserved for:
+     * 1) isEnemy
+     * 2) isRanged
+     * Following bits are rounded speed of entity
+     */
+    private int getKey(MoveEntity entity){
+        int key = Math.round(entity.getSpeed());
+        //Shift 2 bits to the right
+        key *= 4;
+        //First Bit: isEnemy
+        if(entity.isEnemy())
+            key++;
+        //Second Bit: isRanged
+        if(entity.entityType.isRanged())
+            key += 2;
+
+        return key;
     }
 
     /*

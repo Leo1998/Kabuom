@@ -1,10 +1,7 @@
 package utility;
 
-import entity.model.Entity;
 import model.GameObject;
-import model.Position;
 import view.components.ViewComponent;
-import world.Block;
 
 import java.util.Random;
 
