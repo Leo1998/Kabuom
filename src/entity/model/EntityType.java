@@ -9,7 +9,7 @@ public enum EntityType implements ObjectType {
     MISSILE(    75,     0.5f,   0,      "Missilelauncher","MissileLauncher.png",2,      14,     0,      1,  false,  true,   false,  true,   ProjectileType.MISSILE,         300),
     FLAME(      60,     0.5f,   0,      "Flamethrower", "Flamethrower.png", 0.125f,     7,      0.5f,   1,  false,  true,   false,  true,   ProjectileType.FLAME,           150),
     POISON(     75,     0.5f,   0,      "Poisontower",  "MgTurretGruen.png",3,          10,     0.1f,   1,  false,  true,   false,  true,   ProjectileType.POISON,          160),
-    CYROGUN(    90,     0.5f,   0,      "Cyrogun",      "MgTurret.png",     2,          10,     2,      3,  false,  true,   false,  true,   ProjectileType.ICE,             260),
+    CYROGUN(    90,     0.5f,   0,      "Cyrogun",      "MgTurret.png",     2,          10,     1,      3,  false,  true,   false,  true,   ProjectileType.ICE,             260),
     TESLACOIL(  50,     0.325f, 0,      "Teslacoil",    "LaserLamp.png",    0.03125f,   7,      0.5f,   1,  false,  true,   false,  true,   ProjectileType.LIGHTNING,       400),
     SNIPER(     20,     0.325f, 0,      "Sniper",       "LaserLampRot.png", 3,          16,     0,      1,  false,  true,   false,  true,   ProjectileType.PIERCINGBULLET,  500),
     MORTAR(     40,     0.625f, 0,      "Mortar",       "MissileLauncherGruen.png",4,   20,     0.01f,  1,  false,  true,   false,  true,   ProjectileType.FRAGGRENADE,     750),

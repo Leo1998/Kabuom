@@ -161,7 +161,7 @@ public class World {
             }
         }
 
-        Entity mainTower = new Entity(EntityType.MAINTOWER, 1, mainTowerCoordX, mainTowerCoordY, -1, blocks[mainTowerCoordX][mainTowerCoordY]);
+        Entity mainTower = new Entity(EntityType.MAINTOWER, 1, mainTowerCoordX, mainTowerCoordY, -1, blocks[mainTowerCoordX][mainTowerCoordY], false);
 
         projectileHandler = new ProjectileHandler(this);
         entityHandler = new EntityHandler(this,mainTower);
@@ -186,6 +186,11 @@ public class World {
         if (xPos >= 0 && xPos < blocks.length && yPos >= 0 && yPos < blocks[xPos].length && blocks[xPos][yPos].getTower() == null) {
             tower.setX(xPos);
             tower.setY(yPos);
+            if(inWave){
+                tower.setWave(wave-1);
+            } else {
+                tower.setWave(wave);
+            }
             newTower = true;
             blocks[xPos][yPos].setTower(tower);
             tower.setBlock(blocks[xPos][yPos]);
@@ -199,7 +204,11 @@ public class World {
     public void sellTower(int x, int y){
         Entity entity = blocks[x][y].getTower();
         if (entity != null && entity.entityType != EntityType.MAINTOWER) {
-            coins += entity.entityType.cost / 2;
+            if(!inWave && entity.getWave() == wave){
+                coins += entity.entityType.cost;
+            } else {
+                coins += entity.entityType.cost / 2;
+            }
             removeEntity(entity);
         }
     }
@@ -207,7 +216,7 @@ public class World {
     public void removeEntity(Entity entity){
         entity.setHp(-1);
         if(entity.isEnemy()){
-            coins += (25 - (25 - 1 - (5) * Math.pow(Math.E, ((-1f / 6f) * (entity.wave - 15f)))));
+            coins += (25 - (25 - 1 - (5) * Math.pow(Math.E, ((-1f / 6f) * (entity.getWave() - 15f)))));
         } else if(entity.entityType == EntityType.MAINTOWER){
             Controller.instance.endGame(true);
         }
@@ -230,13 +239,15 @@ public class World {
                 spawnWave();
             }
 
-            int minWave = entityHandler.handleEntities(entityList, dt);
+            int minWave = entityHandler.handleEntities(entityList, dt, isDrunk);
 
             if (minWave == -1) {
                 inWave = false;
-            } else if (minWave > Controller.instance.getConfig().getMaxWave()) {
+            } else {
                 inWave = true;
-                Controller.instance.getConfig().setMaxWave(minWave - 1);
+                if (minWave > Controller.instance.getConfig().getMaxWave()) {
+                    Controller.instance.getConfig().setMaxWave(minWave - 1);
+                }
             }
             projectileHandler.handleProjectiles(dt, projectileList);
 
@@ -264,9 +275,9 @@ public class World {
             i+= EntityType.values()[entityIndex].cost;
             Entity entity;
             if (EntityType.values()[entityIndex].speed > 0) {
-                entity = new MoveEntity(EntityType.values()[entityIndex], 1, x, y, wave, blocks[x][y]);
+                entity = new MoveEntity(EntityType.values()[entityIndex], 1, x, y, wave, blocks[x][y], true);
             } else {
-                entity = new Entity(EntityType.values()[entityIndex], 1, x, y, wave, blocks[x][y]);
+                entity = new Entity(EntityType.values()[entityIndex], 1, x, y, wave, blocks[x][y], true);
             }
             spawnEntity(entity, x, y);
         }

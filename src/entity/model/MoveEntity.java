@@ -11,8 +11,8 @@ public class MoveEntity extends Entity {
     private Vector2 movement;
     private Stack<Step> steps;
 
-    public MoveEntity(EntityType entityType, int level, float x, float y, int wave, Block block) {
-        super(entityType, level, x, y, wave, block);
+    public MoveEntity(EntityType entityType, int level, float x, float y, int wave, Block block, boolean isEnemy) {
+        super(entityType, level, x, y, wave, block, isEnemy);
         movement = new Vector2(0,0);
     }
 
@@ -38,7 +38,7 @@ public class MoveEntity extends Entity {
                 "x=" + getX() +
                 ", y=" + getY() +
                 ", entityType=" + entityType +
-                ", wave=" + wave +
+                ", wave=" + getWave() +
                 ", block=" + block +
                 ", movement=" + movement +
                 '}';

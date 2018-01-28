@@ -13,6 +13,7 @@ import utility.Vector2;
 import world.Block;
 import world.World;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Stack;
@@ -53,11 +54,17 @@ public class EntityHandler {
      * @param dt time since last frame
      * @return smallest, positive wave of all entities
      */
-    public int handleEntities(LinkedList<Entity> entities, float dt){
+    public int handleEntities(LinkedList<Entity> entities, float dt, boolean drunk){
         int minWave = Integer.MAX_VALUE;
 
+        int randomIndex = 0;
+        if(entities.size() > 0){
+            randomIndex = random.nextInt(entities.size());
+        }
+        boolean[][] findPath = new boolean[nodeMap.length][nodeMap[0].length];
+
         Iterator<Entity> iterator = entities.iterator();
-        while (iterator.hasNext()){
+        for (int i = 0; iterator.hasNext(); i++){
             Entity entity = iterator.next();
 
             entity.updateEffects(dt);
@@ -68,16 +75,14 @@ public class EntityHandler {
 
             if(entity instanceof MoveEntity){
                 MoveEntity mEntity = (MoveEntity) entity;
-                if(mEntity.getSteps() == null || mEntity.getSteps().isEmpty()){
-                    if(mEntity.getTarget() == null){
-                        if(mEntity.wave > -1){
-                            mEntity.setSteps(findPath(mEntity,mainTower));
-                        }
-                    } else {
-                        mEntity.setSteps(findPath(mEntity,mEntity.getTarget()));
-                    }
+                if(i == randomIndex){
+                    findPath[Math.round(mEntity.getX())][Math.round(mEntity.getY())] = true;
                 }
-                move((MoveEntity) entity, dt);
+                if( mEntity.getSteps() == null || mEntity.getSteps().isEmpty()){
+                    findPath[Math.round(mEntity.getX())][Math.round(mEntity.getY())] = true;
+                } else {
+                    move((MoveEntity) entity, dt);
+                }
             }
 
             //Remove if dead
@@ -89,14 +94,56 @@ public class EntityHandler {
                 }
                 world.removeEntity(entity);
             } else {
-                if(entity.wave >= 0 && entity.wave < minWave){
-                    minWave = entity.wave;
+                if(entity.isEnemy() && entity.getWave() < minWave){
+                    minWave = entity.getWave();
                 }
             }
         }
 
         if(minWave == Integer.MAX_VALUE)
             minWave = -1;
+
+        for(int i = 0; i < findPath.length; i++){
+            for(int j = 0; j < findPath.length; j++){
+                if(findPath[i][j]){
+                    HashMap<EntityType,Stack<Step>[]> paths = new HashMap<>();
+
+                    for(Entity entity : nodeMap[i][j].block.getEntities()){
+                        if(entity instanceof MoveEntity) {
+
+                            if(!paths.containsKey(entity.entityType)){
+                                paths.put(entity.entityType, new Stack[2]);
+                            }
+
+                            Stack<Step>[] path = paths.get(entity.entityType);
+                            if (entity.isEnemy()) {
+                                if (path[0] == null) {
+                                    if(entity.getTarget() == null) {
+                                        path[0] = findPath(entity, mainTower);
+                                    } else {
+                                        path[0] = findPath(entity, entity.getTarget());
+                                    }
+                                }
+
+                                if(path[0] != null) {
+                                    ((MoveEntity) entity).setSteps((Stack<Step>) path[0].clone());
+                                }
+                            } else {
+                                if (path[1] == null) {
+                                    if(entity.getTarget() != null) {
+                                        path[1] = findPath(entity, entity.getTarget());
+                                    }
+                                }
+
+                                if(path[1] != null) {
+                                    ((MoveEntity) entity).setSteps((Stack<Step>) path[1].clone());
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         return minWave;
     }
@@ -264,7 +311,7 @@ public class EntityHandler {
             vec.rotate((float) ((random.nextDouble() - 0.5) * source.entityType.accuracy));
         }
 
-        Projectile p = new Projectile((ProjectileType)source.entityType.projectile, source.getLevel(), source.getX(), source.getY(), vec, source.wave >= 0, source.entityType);
+        Projectile p = new Projectile((ProjectileType)source.entityType.projectile, source.getLevel(), source.getX(), source.getY(), vec, source.isEnemy(), source.entityType);
 
         p.setX(p.getX() + p.getDir().getCoords()[0] * source.getObjectType().getRadius());
         p.setY(p.getY() + p.getDir().getCoords()[1] * source.getObjectType().getRadius());
@@ -273,9 +320,9 @@ public class EntityHandler {
     }
 
     private Entity createEntity(Entity source){
-        int wave = (random.nextFloat() > source.entityType.accuracy) ? source.wave : (source.wave > 0) ? 0 : 1;
+        boolean isEnemy = (random.nextFloat() > source.entityType.accuracy) == source.isEnemy();
 
-        return new Entity((EntityType)source.entityType.projectile,source.getLevel(),source.getX(),source.getY(),wave,source.getBlock());
+        return new Entity((EntityType)source.entityType.projectile,source.getLevel(),source.getX(),source.getY(),source.getWave(),source.getBlock(),isEnemy);
     }
 
     /*

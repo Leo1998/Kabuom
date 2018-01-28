@@ -59,7 +59,7 @@ public class GameView extends View {
                         if (world.getCoins() >= cost) {
                             viewManager.getPostProcessingManager().enableEffect(PostProcessingManager.Effect.RadialBlur);
 
-                            setTower = new Entity(towerButton.getEntityType(), 0, 0, 0, -1, null);
+                            setTower = new Entity(towerButton.getEntityType(), 0, 0, 0, -1, null, false);
                         }
                     }
                 }
@@ -279,7 +279,7 @@ public class GameView extends View {
                         world.setCoins(world.getCoins() - setTower.entityType.cost);
 
                         if (shiftdown && world.getCoins() - setTower.entityType.cost >= 0) {
-                            setTower = new Entity(setTower.entityType, 0, 0, 0, -1, null);
+                            setTower = new Entity(setTower.entityType, 0, 0, 0, -1, null, false);
                         } else {
                             setTower = null;
                             viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);

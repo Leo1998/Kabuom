@@ -13,19 +13,21 @@ public class Entity extends GameObject implements Partisan {
     private Entity target;
     public final EntityType entityType;
     private final float[] effects;
-    public final int wave;
+    private int wave;
     protected Block block;
+    private boolean isEnemy;
     private float attackCooldown;
 
     private static EntityHandler entityHandler;
 
-    public Entity(EntityType entityType, int level, float x, float y, int wave, Block block) {
+    public Entity(EntityType entityType, int level, float x, float y, int wave, Block block, boolean isEnemy) {
         super(entityType, level, x, y);
         this.entityType = entityType;
         this.effects = new float[EffectType.values().length];
         this.wave = wave;
         this.block = block;
         attackCooldown = 0;
+        this.isEnemy = isEnemy;
     }
 
     public static void setEntityHandler(EntityHandler entityHandler){
@@ -109,9 +111,17 @@ public class Entity extends GameObject implements Partisan {
         }
     }
 
+    public int getWave() {
+        return wave;
+    }
+
+    public void setWave(int wave) {
+        this.wave = wave;
+    }
+
     @Override
     public boolean isEnemy() {
-        return wave >= 0;
+        return isEnemy;
     }
 
     @Override
