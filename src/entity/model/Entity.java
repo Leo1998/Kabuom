@@ -99,7 +99,7 @@ public class Entity extends GameObject implements Partisan {
 
     public boolean addAttackCooldown(float dt){
         if(entityType.frequency > 0) {
-            attackCooldown += dt;
+            attackCooldown += dt / getStrength(EffectType.SLOW);
             if (attackCooldown > entityType.frequency) {
                 attackCooldown = random.nextFloat()*entityType.frequency/2 - entityType.frequency/4;
                 return true;
@@ -117,6 +117,10 @@ public class Entity extends GameObject implements Partisan {
 
     public void setWave(int wave) {
         this.wave = wave;
+    }
+
+    public float getSpeed(){
+        return entityType.speed / getStrength(EffectType.SLOW);
     }
 
     @Override

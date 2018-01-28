@@ -186,11 +186,7 @@ public class World {
         if (xPos >= 0 && xPos < blocks.length && yPos >= 0 && yPos < blocks[xPos].length && blocks[xPos][yPos].getTower() == null) {
             tower.setX(xPos);
             tower.setY(yPos);
-            if(inWave){
-                tower.setWave(wave-1);
-            } else {
-                tower.setWave(wave);
-            }
+            tower.setWave(wave);
             newTower = true;
             blocks[xPos][yPos].setTower(tower);
             tower.setBlock(blocks[xPos][yPos]);
@@ -204,11 +200,7 @@ public class World {
     public void sellTower(int x, int y){
         Entity entity = blocks[x][y].getTower();
         if (entity != null && entity.entityType != EntityType.MAINTOWER) {
-            if(!inWave && entity.getWave() == wave){
-                coins += entity.entityType.cost;
-            } else {
-                coins += entity.entityType.cost / 2;
-            }
+            coins += entity.entityType.cost * (entity.getHp() / entity.entityType.getMaxHP());
             removeEntity(entity);
         }
     }

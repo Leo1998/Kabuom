@@ -4,7 +4,7 @@ package entity.model;
  * Created by Daniel on 30-Dec-17.
  */
 public enum EffectType {
-    SLOW(4, 4),
+    SLOW(4, 2),
     BLEEDING(0.5f, 2),
     BURNING(2, 0.25f),
     POISON(5, 0.125f);

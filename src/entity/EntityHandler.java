@@ -353,7 +353,7 @@ public class EntityHandler {
     private void goTo(MoveEntity entity, float dt){
         float totalDist, movableDist;
         Stack<Step> steps = entity.getSteps();
-        movableDist = entity.entityType.speed * dt;
+        movableDist = entity.getSpeed() * dt;
         Step step = steps.peek();
         totalDist = getDist(step, entity);
 
@@ -379,7 +379,7 @@ public class EntityHandler {
 
             float dist = getDist(entity,target);
 
-            float q = (entity.entityType.speed*dt) / dist;
+            float q = (entity.getSpeed()*dt) / dist;
             Vector2 vec;
 
             if(dist > entity.entityType.range + target.entityType.getRadius()){
