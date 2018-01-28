@@ -143,18 +143,15 @@ public class EntityHandler {
      */
     private void attack(Entity entity){
 
-        if (entity.getTarget() == null || getDist(entity, entity.getTarget()) > entity.entityType.range || entity.getTarget().getHp() <= 0) {
-            if(entity instanceof MoveEntity){
-                if(entity.entityType.isRanged()){
-                    entity.setTarget(findTarget(entity, entity.entityType.range*2 + 1));
-                } else {
-                    entity.setTarget(findTarget(entity, entity.entityType.speed*2 + 1));
-                }
-            }else {
-                entity.setTarget(findTarget(entity, entity.entityType.range + 3));
+        if(entity instanceof MoveEntity){
+            if(entity.entityType.isRanged()){
+                entity.setTarget(findTarget(entity, entity.entityType.range*2 + 1));
+            } else {
+                entity.setTarget(findTarget(entity, entity.entityType.speed*2 + 1));
             }
+        }else {
+            entity.setTarget(findTarget(entity, entity.entityType.range + 3));
         }
-
         //Attack target if target exists and is in range
         if (entity.getTarget() != null && getDist(entity,entity.getTarget()) <= entity.entityType.range + entity.getTarget().entityType.getRadius()) {
             if (entity.entityType.isRanged()) {
@@ -331,14 +328,16 @@ public class EntityHandler {
         if(entity.getTarget() == null){
             entity.getSteps().pop();
         } else {
-            float dist = getDist(entity,entity.getTarget());
+            Entity target = entity.getTarget();
+
+            float dist = getDist(entity,target);
 
             float q = (entity.entityType.speed*dt) / dist;
             Vector2 vec;
 
-            if(dist > entity.entityType.range + entity.getTarget().entityType.getRadius()){
+            if(dist > entity.entityType.range + target.entityType.getRadius()){
                 vec = new Vector2((entity.getTarget().getX() - entity.getX()) * q,(entity.getTarget().getY() - entity.getY()) * q);
-            } else if(dist < entity.entityType.range/2){
+            } else if((target.entityType.range < entity.entityType.range && dist < target.entityType.range + entity.entityType.getRadius()) || dist < entity.entityType.range/2){
                 vec = new Vector2((entity.getTarget().getX() - entity.getX()) * q * -1,(entity.getTarget().getY() - entity.getY()) * q * -1);
             } else {
                 float xCoord = (entity.getTarget().getX() - entity.getX()) * q;
@@ -361,28 +360,22 @@ public class EntityHandler {
     private void moveByVector(MoveEntity entity, Vector2 vector, float dt){
         float targetX = entity.getX() + vector.getCoords()[0], targetY = entity.getY() + vector.getCoords()[1];
 
-        if(targetX < -0.4f){
-            targetX = -0.4f;
-        } else if(targetX > nodeMap.length - 0.6f) {
-            targetX = nodeMap.length - 0.6f;
-        }
+        if(targetX < -0.4f || targetX > nodeMap.length - 0.6f || targetY < -0.4f || targetY > nodeMap[Math.round(targetX)].length - 0.6f){
+            vector.multiply(-1);
+            moveByVector(entity,vector,dt);
+        } else {
 
-        if(targetY < -0.4f){
-            targetY = -0.4f;
-        } else if(targetY > nodeMap[Math.round(targetY)].length - 0.6f) {
-            targetY = nodeMap[Math.round(targetY)].length - 0.6f;
-        }
+            if (Math.round(entity.getX()) != Math.round(targetX) || Math.round(entity.getY()) != Math.round(targetY)) {
+                entity.setBlock(nodeMap[Math.round(targetX)][Math.round(targetY)].block);
+                nodeMap[Math.round(targetX)][Math.round(targetY)].block.addEntity(entity);
+            }
 
-        if (Math.round(entity.getX()) != Math.round(targetX) || Math.round(entity.getY()) != Math.round(targetY)) {
-            entity.setBlock(nodeMap[Math.round(targetX)][Math.round(targetY)].block);
-            nodeMap[Math.round(targetX)][Math.round(targetY)].block.addEntity(entity);
+            Vector2 movement = new Vector2((targetX - entity.getX()) / dt, (targetY - entity.getY()) / dt);
+            movement.multiply(0.09f);
+            entity.setMovement(movement);
+            entity.setX(targetX);
+            entity.setY(targetY);
         }
-
-        Vector2 movement = new Vector2((targetX - entity.getX()) / dt, (targetY - entity.getY()) / dt);
-        movement.multiply(0.09f);
-        entity.setMovement(movement);
-        entity.setX(targetX);
-        entity.setY(targetY);
     }
 
     private Entity findCollidingEntity(Entity source){
