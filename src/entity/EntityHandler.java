@@ -142,6 +142,10 @@ public class EntityHandler {
         updateNode(x,y, nodeMap[x][y].block);
     }
 
+    public int getIndex(){
+        return index;
+    }
+
     /*
      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
      *                      Attacking
@@ -462,10 +466,10 @@ public class EntityHandler {
 
         if (startX >= nodeMap.length || startY >= nodeMap[0].length || targetX >= nodeMap.length || targetY >= nodeMap[0].length) return false;
 
+        index++;
+
         if(index == Integer.MAX_VALUE){
             resetIndex();
-        }else {
-            index++;
         }
 
         Node sNode = nodeMap[startX][startY];
@@ -560,7 +564,7 @@ public class EntityHandler {
         index = Integer.MIN_VALUE;
         for(Node[] nodes : nodeMap) {
             for (Node node : nodes) {
-                node.index = Integer.MIN_VALUE;
+                node.index = Integer.MAX_VALUE;
             }
         }
     }
@@ -632,12 +636,10 @@ public class EntityHandler {
         }
     }
 
-    private void updateAllNodes(boolean resetDps) {
-        if(resetDps){
-            for(Node[] nodes:nodeMap){
-                for(Node node:nodes){
-                    node.dpsInRange = 0;
-                }
+    private void updateAllNodes() {
+        for(Node[] nodes:nodeMap){
+            for(Node node:nodes){
+                node.dpsInRange = 0;
             }
         }
 
@@ -657,7 +659,7 @@ public class EntityHandler {
             }
         }
 
-        updateAllNodes(false);
+        updateAllNodes();
     }
 
     private void updateNode(int x, int y, Block block){
@@ -687,7 +689,7 @@ public class EntityHandler {
             getFromEntity(block.getTower());
             dpsInRange = 0;
             visited = false;
-            index = Integer.MIN_VALUE;
+            index = Integer.MAX_VALUE;
         }
 
         /**

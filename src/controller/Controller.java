@@ -53,6 +53,7 @@ public class Controller {
             frames++;
             if (currentTime - totalTime > 1000000000) {
                 System.out.println("fps: " + frames);
+
                 frames = 0;
 
                 totalTime = currentTime;
