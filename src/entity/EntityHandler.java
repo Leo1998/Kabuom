@@ -77,7 +77,7 @@ public class EntityHandler {
                 if(i == randomIndex){
                     findPath[Math.round(mEntity.getX())][Math.round(mEntity.getY())] = true;
                 }
-                if( mEntity.getSteps() == null || mEntity.getSteps().isEmpty()){
+                if(mEntity.getSteps().isEmpty()){
                     findPath[Math.round(mEntity.getX())][Math.round(mEntity.getY())] = true;
                 } else {
                     move((MoveEntity) entity, dt);
@@ -102,30 +102,7 @@ public class EntityHandler {
         if(minWave == Integer.MAX_VALUE)
             minWave = -1;
 
-        for(int i = 0; i < findPath.length; i++){
-            for(int j = 0; j < findPath.length; j++){
-                if(findPath[i][j]){
-                    HashMap<Integer, Stack<Step>> paths = new HashMap<>();
-
-                    for(Entity entity : nodeMap[i][j].block){
-                        if(entity instanceof MoveEntity){
-                            int key = getKey((MoveEntity)entity);
-
-                            if(!paths.containsKey(key)){
-                                if(entity.getTarget() != null){
-                                    paths.put(key,findPath(entity,entity.getTarget()));
-                                } else if(entity.isEnemy()){
-                                    paths.put(key,findPath(entity,mainTower));
-                                }
-                            }
-
-                            if(paths.get(key) != null)
-                                ((MoveEntity) entity).setSteps((Stack<Step>) paths.get(key).clone());
-                        }
-                    }
-                }
-            }
-        }
+        providePaths(findPath);
 
         return minWave;
     }
@@ -187,7 +164,7 @@ public class EntityHandler {
                 if(entity instanceof MoveEntity){
                     MoveEntity mEntity = (MoveEntity) entity;
 
-                    if(mEntity.getSteps() != null && (mEntity.getSteps().isEmpty() || mEntity.getSteps().peek().stepType != Step.StepType.StayInRange)){
+                    if(mEntity.getSteps().isEmpty() || mEntity.getSteps().peek().stepType != Step.StepType.StayInRange){
                         mEntity.getSteps().push(new Step(Step.StepType.StayInRange, 0, 0));
                     }
                 }
@@ -434,6 +411,39 @@ public class EntityHandler {
      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
      */
 
+    private void providePaths(boolean[][] findPath){
+        for(int i = 0; i < findPath.length; i++){
+            for(int j = 0; j < findPath.length; j++){
+                if(findPath[i][j]){
+                    HashMap<Integer, Stack<Step>> paths = new HashMap<>();
+
+                    for(Entity entity : nodeMap[i][j].block){
+                        if(entity instanceof MoveEntity){
+                            int key = getKey((MoveEntity)entity);
+
+                            if(!paths.containsKey(key)){
+                                if(entity.getTarget() != null){
+                                    paths.put(key,findPath(entity,entity.getTarget()));
+                                } else if(entity.isEnemy()){
+                                    paths.put(key,findPath(entity,mainTower));
+                                }
+                            }
+
+                            if(paths.get(key) != null) {
+                                MoveEntity mEntity = (MoveEntity) entity;
+                                Stack<Step> steps = (Stack<Step>) paths.get(key).clone();
+                                if(!mEntity.getSteps().isEmpty() && mEntity.getSteps().peek().stepType != Step.StepType.GoTo){
+                                    steps.push(mEntity.getSteps().peek());
+                                }
+                                mEntity.setSteps(steps);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private Stack<Step> findPath(Partisan source, Position target){
         boolean evade = source.isEnemy();
         boolean collision = !evade;
@@ -441,7 +451,7 @@ public class EntityHandler {
         if(aStar(source,target,evade,collision) || (collision && aStar(source,target,evade,false))){
             return backtracking(target,source);
         } else {
-            return null;
+            return new Stack<>();
         }
     }
 

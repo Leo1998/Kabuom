@@ -14,6 +14,7 @@ public class MoveEntity extends Entity {
     public MoveEntity(EntityType entityType, int level, float x, float y, int wave, Block block, boolean isEnemy) {
         super(entityType, level, x, y, wave, block, isEnemy);
         movement = new Vector2(0,0);
+        steps = new Stack<>();
     }
 
     public Vector2 getMovement() {
