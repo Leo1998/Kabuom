@@ -13,10 +13,7 @@ import utility.Vector2;
 import world.Block;
 import world.World;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Stack;
+import java.util.*;
 
 import static utility.Constants.dpsMultiplier;
 import static utility.Utility.*;
@@ -140,10 +137,6 @@ public class EntityHandler {
 
     public void newTower(int x, int y){
         updateNode(x,y, nodeMap[x][y].block);
-    }
-
-    public int getIndex(){
-        return index;
     }
 
     /*
@@ -320,7 +313,7 @@ public class EntityHandler {
         Step step = steps.peek();
         totalDist = getDist(step, entity);
 
-        while (totalDist < movableDist + 2 && !steps.isEmpty() && steps.peek().stepType == Step.StepType.GoTo) {
+        while (totalDist < movableDist + 3 && !steps.isEmpty() && steps.peek().stepType == Step.StepType.GoTo) {
             steps.pop();
             if (!steps.isEmpty() && steps.peek().stepType == Step.StepType.GoTo) {
                 step = steps.peek();
@@ -467,7 +460,6 @@ public class EntityHandler {
         if (startX >= nodeMap.length || startY >= nodeMap[0].length || targetX >= nodeMap.length || targetY >= nodeMap[0].length) return false;
 
         index++;
-
         if(index == Integer.MAX_VALUE){
             resetIndex();
         }
@@ -477,24 +469,17 @@ public class EntityHandler {
         sNode.fromStart = 0;
         sNode.preX = -1;
         sNode.preY = -1;
-        sNode.visited = true;
 
-        int currX = startX, currY = startY;
-        boolean unreachable = false;
+        PriorityQueue<Node> queue = new PriorityQueue<>();
 
-        while (!unreachable && !(currX == targetX && currY == targetY)) {
-            nodeMap[currX][currY].visited = true;
-            updateNeighbours(currX, currY, evade, collision);
-            int[] newCurr = getMinNode();
-            if (newCurr == null) {
-                unreachable = true;
-            } else {
-                currX = newCurr[0];
-                currY = newCurr[1];
-            }
+        Node curr = nodeMap[startX][startY];
+
+        while (curr != null && !(curr.x == targetX && curr.y == targetY)) {
+            updateNeighbours(curr, evade, collision, queue);
+            curr = queue.remove();
         }
 
-        return !unreachable;
+        return curr != null;
     }
 
     private Stack<Step> backtracking(Position start, Position end){
@@ -511,52 +496,31 @@ public class EntityHandler {
         return result;
     }
 
-    private void updateNeighbours(int x, int y, boolean evade, boolean collision) {
-        if (x >= 0 && y >= 0 && x < nodeMap.length && y < nodeMap[x].length) {
-            for (int i = Math.max(0, x - 1); i < Math.min(x + 2, nodeMap.length); i++) {
-                for (int j = Math.max(0, y - 1); j < Math.min(y + 2, nodeMap[i].length); j++) {
-                    updateNeighbour(x, y, i, j, evade, collision);
+    private void updateNeighbours(Node source, boolean evade, boolean collision, PriorityQueue<Node> queue) {
+        int x = source.x, y = source.y;
+        for (int i = Math.max(0, x - 1); i < Math.min(x + 2, nodeMap.length); i++) {
+            for (int j = Math.max(0, y - 1); j < Math.min(y + 2, nodeMap[i].length); j++) {
+                Node current = nodeMap[i][j];
+
+                if(!collision || current.block.getTower() != null) {
+                    float addDist = (x == i || y == j) ? 1 : (float) Math.sqrt(2);
+                    if(evade) {
+                        addDist = addo(addDist, ((current.dpsInRange + source.dpsInRange) / 2) * Constants.dpsMultiplier);
+                        addDist = addo(addDist, (current.damage + source.damage) / 2);
+                    }
+                    addDist = addo(addDist, source.fromStart);
+
+                    if (index != current.index || current.fromStart > addDist) {
+                        if(current.index != index){
+                            current.index = index;
+                            queue.add(current);
+                        }
+                        current.fromStart = addDist;
+                        current.preX = x;
+                        current.preY = y;
+                    }
                 }
             }
-        }
-    }
-
-    private void updateNeighbour(int srcX, int srcY, int xPos, int yPos, boolean evade, boolean collision) {
-        Node source = nodeMap[srcX][srcY], current = nodeMap[xPos][yPos];
-
-        if(!collision || current.block.getTower() != null) {
-            float addDist = (srcX == xPos || srcY == yPos) ? 1 : (float) Math.sqrt(2);
-            if(evade) {
-                addDist = addo(addDist, ((current.dpsInRange + source.dpsInRange) / 2) * Constants.dpsMultiplier);
-                addDist = addo(addDist, (current.damage + source.damage) / 2);
-            }
-            addDist = addo(addDist, source.fromStart);
-
-            if (index != current.index || current.fromStart > addDist) {
-                current.visited = false;
-                current.index = index;
-                current.fromStart = addDist;
-                current.preX = srcX;
-                current.preY = srcY;
-            }
-        }
-
-    }
-
-    private int[] getMinNode() {
-        int minX = -1, minY = -1;
-        for (int i = 0; i < nodeMap.length; i++) {
-            for (int j = 0; j < nodeMap[i].length; j++) {
-                if (nodeMap[i][j].index == index && !nodeMap[i][j].visited && (minX == -1 || nodeMap[i][j].getDistance() < nodeMap[minX][minY].getDistance())) {
-                    minX = i;
-                    minY = j;
-                }
-            }
-        }
-        if (minX == -1 || nodeMap[minX][minY].fromStart == Float.MAX_VALUE || nodeMap[minX][minY].index != index) {
-            return null;
-        } else {
-            return new int[]{minX, minY};
         }
     }
 
@@ -655,7 +619,7 @@ public class EntityHandler {
 
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks.length; j++) {
-                nodeMap[i][j] = new Node(blocks[i][j], i, j, mainTower.getX(), mainTower.getY());
+                nodeMap[i][j] = new Node(i,j,blocks[i][j], i, j, mainTower.getX(), mainTower.getY());
             }
         }
 
@@ -672,14 +636,16 @@ public class EntityHandler {
         }
     }
 
-    private class Node {
+    private class Node implements Comparable<Node> {
         private float dps, attackRange, dpsInRange, fromStart, damage;
         private final float toEnd;
         private int preX, preY, index;
-        private boolean visited;
+        private final int x,y;
         private Block block;
 
-        private Node(Block block, int xPos, int yPos, float endX, float endY) {
+        private Node(int x, int y, Block block, int xPos, int yPos, float endX, float endY) {
+            this.x = x;
+            this.y = y;
             this.preX = -1;
             this.preY = -1;
             damage = 0;
@@ -688,7 +654,6 @@ public class EntityHandler {
             this.fromStart = Float.MAX_VALUE;
             getFromEntity(block.getTower());
             dpsInRange = 0;
-            visited = false;
             index = Integer.MAX_VALUE;
         }
 
@@ -717,6 +682,11 @@ public class EntityHandler {
 
         private float getDistance() {
             return addo(fromStart,toEnd);
+        }
+
+        @Override
+        public int compareTo(Node o) {
+            return Math.round(this.getDistance() - o.getDistance());
         }
     }
 }
