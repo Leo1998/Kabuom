@@ -45,7 +45,7 @@ public class ProjectileHandler {
                         entity.addEffect(projectile.projectileType.effectType);
                     } else if (projectile.projectileType == ProjectileType.LIGHTNING) {
                         projectile.setDistance(projectile.getDistance()/2);
-                        projectile.getDir().rotate((float)(random.nextDouble()*Math.PI*2));
+                        projectile.getDir().rotate((float)(random.nextGaussian()*Math.PI));
                     }
 
                     projectile.addHp(-1);
