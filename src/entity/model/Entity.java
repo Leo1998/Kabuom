@@ -133,9 +133,10 @@ public class Entity extends GameObject implements Partisan {
         return "Entity{" +
                 "x=" + getX() +
                 ", y=" + getY() +
+                ", hp=" + getHp() +
                 ", entityType=" + entityType +
                 ", wave=" + wave +
-                ", block=" + block +
+                ", block=(" + block.x + "|" + block.y + ")" +
                 '}';
     }
 }

@@ -38,9 +38,10 @@ public class MoveEntity extends Entity {
         return "MoveEntity{" +
                 "x=" + getX() +
                 ", y=" + getY() +
+                ", hp=" + getHp() +
                 ", entityType=" + entityType +
                 ", wave=" + getWave() +
-                ", block=" + block +
+                ", block=(" + block.x + "|" + block.y + ")" +
                 ", movement=" + movement +
                 '}';
     }

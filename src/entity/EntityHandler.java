@@ -21,7 +21,7 @@ import static utility.Utility.*;
 public class EntityHandler {
 
     private Node[][] nodeMap;
-    private int index;
+    private int index, updateIndex;
     private Entity mainTower;
     private World world;
 
@@ -34,6 +34,7 @@ public class EntityHandler {
         this.world = world;
         this.mainTower = mainTower;
         this.index = Integer.MIN_VALUE;
+        updateIndex = 0;
         Entity.setEntityHandler(this);
         createNodeMap(world.getBlocks());
     }
@@ -53,9 +54,8 @@ public class EntityHandler {
     public int handleEntities(LinkedList<Entity> entities, float dt, boolean drunk){
         int minWave = Integer.MAX_VALUE;
 
-        int randomIndex = 0;
-        if(entities.size() > 0){
-            randomIndex = random.nextInt(entities.size());
+        if(entities.size() > 0) {
+            updateIndex = (updateIndex + 1) % entities.size();
         }
         boolean[][] findPath = new boolean[nodeMap.length][nodeMap[0].length];
 
@@ -69,11 +69,19 @@ public class EntityHandler {
                 attack(entity);
             }
 
+            if(i == updateIndex){
+                findPath[Math.round(entity.getX())][Math.round(entity.getY())] = true;
+                if(entity.getHp() > 0) {
+                    entity.setBlock(nodeMap[Math.round(entity.getX())][Math.round(entity.getY())].block);
+                    if (!entity.getBlock().contains(entity)) {
+                        System.out.println(entity);
+                        entity.getBlock().addEntity(entity);
+                    }
+                }
+            }
+
             if(entity instanceof MoveEntity){
                 MoveEntity mEntity = (MoveEntity) entity;
-                if(i == randomIndex){
-                    findPath[Math.round(mEntity.getX())][Math.round(mEntity.getY())] = true;
-                }
                 if(mEntity.getSteps().isEmpty()){
                     findPath[Math.round(mEntity.getX())][Math.round(mEntity.getY())] = true;
                 } else {
@@ -147,13 +155,18 @@ public class EntityHandler {
     private void attack(Entity entity){
 
         if(entity instanceof MoveEntity){
-            if(entity.entityType.isRanged()){
-                entity.setTarget(findTarget(entity, entity.entityType.range*2 + 1));
-            } else {
-                entity.setTarget(findTarget(entity, entity.entityType.speed*2 + 1));
+            entity.setTarget(findTarget(entity, world.getHeight()*1.5f));
+
+            if(entity.getTarget() == null || entity.getTarget().getHp() <= 0){
+                entity.setTarget(mainTower);
             }
+
         }else {
             entity.setTarget(findTarget(entity, entity.entityType.range + 3));
+
+            if(entity.getTarget() != null && entity.getTarget().getHp() <= 0){
+                entity.setTarget(null);
+            }
         }
         //Attack target if target exists and is in range
         if (entity.getTarget() != null && getDist(entity,entity.getTarget()) <= entity.entityType.range + entity.getTarget().entityType.getRadius()) {
@@ -197,12 +210,16 @@ public class EntityHandler {
 
         Entity closest = null;
 
-        for(int i = Math.max(0, x - (int) Math.ceil(range)); i < Math.min(nodeMap.length, x + Math.floor(range)); i++){
-            for(int j = Math.max(0, y - (int) Math.ceil(range)); j < Math.min(nodeMap[x].length, y + Math.floor(range)); j++){
-                for(Entity entity:nodeMap[i][j].block){
-                    if(!source.allyOf(entity)){
-                        if (closest == null || getDist(source, entity) - entity.entityType.getRadius() < getDist(source, closest) - closest.entityType.getRadius()) {
-                            closest = entity;
+        int maxDist = Math.min(Math.round(range),Math.max(Math.max(x, world.getBlocks().length-x),Math.max(y, world.getBlocks()[x].length-y)));
+        for(int dist = 0; closest == null && dist <= maxDist; dist++) {
+            for (int i = Math.max(0, x - dist); i < Math.min(world.getBlocks().length, x + dist + 1); i++) {
+                boolean full = (i == x - dist || i == x + dist);
+                for (int j = full ? Math.max(0, y - dist) : (y - dist < 0) ? y + dist : y - dist; j < Math.min(world.getBlocks()[i].length, y + dist + 1); j += full ? 1 : 2 * dist) {
+                    for(Entity entity:nodeMap[i][j].block){
+                        if(!source.allyOf(entity)){
+                            if (closest == null || getDist(source, entity) - entity.entityType.getRadius() < getDist(source, closest) - closest.entityType.getRadius()) {
+                                closest = entity;
+                            }
                         }
                     }
                 }
@@ -276,9 +293,7 @@ public class EntityHandler {
     }
 
     private Entity createEntity(Entity source){
-        boolean isEnemy = (random.nextFloat() > source.entityType.accuracy) == source.isEnemy();
-
-        return new Entity((EntityType)source.entityType.projectile,source.getLevel(),source.getX(),source.getY(),source.getWave(),source.getBlock(),isEnemy);
+        return new MoveEntity((EntityType)source.entityType.projectile,source.getLevel(),source.getX(),source.getY(),source.getWave(),source.getBlock(),source.isEnemy());
     }
 
     /*
@@ -289,7 +304,7 @@ public class EntityHandler {
 
     private void move(MoveEntity entity, float dt){
         Entity collidingEntity = findCollidingEntity(entity);
-        if(collidingEntity == null) {
+        if(collidingEntity == null || collidingEntity.getHp() <= 0) {
             switch (entity.getSteps().peek().stepType) {
                 case GoTo:
                     goTo(entity,dt);
@@ -313,7 +328,7 @@ public class EntityHandler {
         Step step = steps.peek();
         totalDist = getDist(step, entity);
 
-        while (totalDist < movableDist + 3 && !steps.isEmpty() && steps.peek().stepType == Step.StepType.GoTo) {
+        while (totalDist < movableDist + Math.min(steps.size()-1,3) && !steps.isEmpty() && steps.peek().stepType == Step.StepType.GoTo) {
             steps.pop();
             if (!steps.isEmpty() && steps.peek().stepType == Step.StepType.GoTo) {
                 step = steps.peek();
@@ -365,20 +380,20 @@ public class EntityHandler {
 
         if(targetX < -0.4f || targetX > nodeMap.length - 0.6f || targetY < -0.4f || targetY > nodeMap[Math.round(targetX)].length - 0.6f){
             vector.multiply(-1);
-            moveByVector(entity,vector,dt);
-        } else {
-
-            if (Math.round(entity.getX()) != Math.round(targetX) || Math.round(entity.getY()) != Math.round(targetY)) {
-                entity.setBlock(nodeMap[Math.round(targetX)][Math.round(targetY)].block);
-                nodeMap[Math.round(targetX)][Math.round(targetY)].block.addEntity(entity);
-            }
-
-            Vector2 movement = new Vector2((targetX - entity.getX()) / dt, (targetY - entity.getY()) / dt);
-            movement.multiply(0.09f);
-            entity.setMovement(movement);
-            entity.setX(targetX);
-            entity.setY(targetY);
+            targetX = entity.getX() + vector.getCoords()[0];
+            targetY = entity.getY() + vector.getCoords()[1];
         }
+
+        if (Math.round(entity.getX()) != Math.round(targetX) || Math.round(entity.getY()) != Math.round(targetY)) {
+            entity.setBlock(nodeMap[Math.round(targetX)][Math.round(targetY)].block);
+            nodeMap[Math.round(targetX)][Math.round(targetY)].block.addEntity(entity);
+        }
+
+        Vector2 movement = new Vector2((targetX - entity.getX()) / dt, (targetY - entity.getY()) / dt);
+        movement.multiply(0.09f);
+        entity.setMovement(movement);
+        entity.setX(targetX);
+        entity.setY(targetY);
     }
 
     private Entity findCollidingEntity(Entity source){
@@ -474,9 +489,13 @@ public class EntityHandler {
 
         Node curr = nodeMap[startX][startY];
 
-        while (curr != null && !(curr.x == targetX && curr.y == targetY)) {
+        while (curr != null && !(curr.block.x == targetX && curr.block.y == targetY)) {
             updateNeighbours(curr, evade, collision, queue);
-            curr = queue.remove();
+            if(!queue.isEmpty()){
+                curr = queue.remove();
+            } else {
+                curr = null;
+            }
         }
 
         return curr != null;
@@ -497,7 +516,7 @@ public class EntityHandler {
     }
 
     private void updateNeighbours(Node source, boolean evade, boolean collision, PriorityQueue<Node> queue) {
-        int x = source.x, y = source.y;
+        int x = source.block.x, y = source.block.y;
         for (int i = Math.max(0, x - 1); i < Math.min(x + 2, nodeMap.length); i++) {
             for (int j = Math.max(0, y - 1); j < Math.min(y + 2, nodeMap[i].length); j++) {
                 Node current = nodeMap[i][j];
@@ -619,7 +638,7 @@ public class EntityHandler {
 
         for (int i = 0; i < blocks.length; i++) {
             for (int j = 0; j < blocks.length; j++) {
-                nodeMap[i][j] = new Node(i,j,blocks[i][j], i, j, mainTower.getX(), mainTower.getY());
+                nodeMap[i][j] = new Node(blocks[i][j], i, j, mainTower.getX(), mainTower.getY());
             }
         }
 
@@ -640,12 +659,9 @@ public class EntityHandler {
         private float dps, attackRange, dpsInRange, fromStart, damage;
         private final float toEnd;
         private int preX, preY, index;
-        private final int x,y;
         private Block block;
 
-        private Node(int x, int y, Block block, int xPos, int yPos, float endX, float endY) {
-            this.x = x;
-            this.y = y;
+        private Node(Block block, int xPos, int yPos, float endX, float endY) {
             this.preX = -1;
             this.preY = -1;
             damage = 0;

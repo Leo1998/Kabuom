@@ -172,13 +172,15 @@ public class GameView extends View {
 
                 String l1 = t.entityType.getName();
                 String l2 = "Health: " + niceNumber(Math.round(t.getHp()));
+                String l3 = "X:"+Math.round(t.getX())+" Y:"+Math.round(t.getY());
 
-                int w = Math.max(ViewManager.font.getWidth(l1), ViewManager.font.getWidth(l2));
-                int h = ViewManager.font.getLineHeight() * 2;
+                int w = Math.max(Math.max(ViewManager.font.getWidth(l1), ViewManager.font.getWidth(l2)), ViewManager.font.getWidth(l3));
+                int h = ViewManager.font.getLineHeight() * 3;
 
                 batch.draw(ViewManager.getTexture("viewTextures/mainButton.png"), x0, y0, w, h);
                 ViewManager.font.drawText(batch, l1, x0, y0);
-                ViewManager.font.drawText(batch, l2, x0, y0 + (h / 2));
+                ViewManager.font.drawText(batch, l2, x0, y0 + (h / 3));
+                ViewManager.font.drawText(batch, l3, x0, y0 + (h * 2 / 3));
             }
         }
 
@@ -291,7 +293,7 @@ public class GameView extends View {
             if(button == 1){
                 Vector2 block = getBlockIDOfMouse(mouseX, mouseY);
                 if(block != null) {
-                    world.sellTower((int) block.getCoords()[0], (int) block.getCoords()[1]);
+                    world.sellTower((int) block.getCoords()[0], (int) (world.getBlocks()[0].length - block.getCoords()[1]));
                 }
             }
         }
@@ -318,6 +320,12 @@ public class GameView extends View {
 
         if (key == Keyboard.KEY_ESCAPE && !world.isInWave()) {
             getViewManager().getCtrl().endGame(false);
+        }
+        if(key == Keyboard.KEY_TAB) {
+            Vector2 block = getBlockIDOfMouse(Mouse.getX(), Mouse.getY());
+            if (block != null) {
+                world.printEntities((int)block.getCoords()[0],(int) (world.getBlocks()[0].length - block.getCoords()[1]));
+            }
         }
     }
 

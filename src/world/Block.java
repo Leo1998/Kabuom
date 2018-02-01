@@ -13,8 +13,11 @@ public class Block implements Iterable<Entity> {
 
     private Entity tower;
     private LinkedList<Entity> entities;
+    public final int x,y;
 
-    public Block() {
+    public Block(int x, int y) {
+        this.x = x;
+        this.y = y;
         this.tower = null;
         entities = new LinkedList<>();
     }
@@ -34,22 +37,34 @@ public class Block implements Iterable<Entity> {
         entities.add(entity);
     }
 
-    public LinkedList<Entity> getEntities() {
-        return entities;
+    public boolean contains(Entity entity){
+        return entities.contains(entity);
+    }
+
+    public int countEntites(){
+        return entities.size();
+    }
+
+    @Override
+    public String toString() {
+        return "Block{" +
+                "tower=" + (tower == null ? "null":tower) +
+                ", entities=" + entities +
+                ", x=" + x +
+                ", y=" + y +
+                '}';
     }
 
     public BlockIterator iterator(){
-        return new BlockIterator(this);
+        return new BlockIterator();
     }
 
     private class BlockIterator implements Iterator<Entity> {
         private Iterator<Entity> iterator;
-        private Block block;
         private Entity next;
 
-        private BlockIterator(Block block) {
+        private BlockIterator() {
             this.iterator = entities.iterator();
-            this.block = block;
             cleanUp();
         }
 
@@ -69,16 +84,10 @@ public class Block implements Iterable<Entity> {
             }
         }
 
-        @Override
-        public void remove() {
-            iterator.remove();
-            cleanUp();
-        }
-
         private void cleanUp(){
             if(iterator.hasNext()) {
                 next = iterator.next();
-                while (next != null && (next.getBlock() != block || next.getHp() <= 0)){
+                while (next != null && (Math.round(next.getX()) != x || Math.round(next.getY()) != y || next.getHp() <= 0)){
                     iterator.remove();
                     if(iterator.hasNext()) {
                         next = iterator.next();

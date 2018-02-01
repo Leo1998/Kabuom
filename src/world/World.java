@@ -126,7 +126,7 @@ public class World {
     private float timePassed;
 
     private int wave = 0;
-    private boolean spawnWave = false, inWave = false, ended = false;
+    private boolean spawnWave = false, inWave = false, ended = false, print = false;
     private float gameTime;
 
     private int coins = 1000;
@@ -157,7 +157,7 @@ public class World {
 
         for(int i = 0; i < blocks.length; i++){
             for(int j = 0; j < blocks.length; j++){
-                blocks[i][j] = new Block();
+                blocks[i][j] = new Block(i,j);
             }
         }
 
@@ -169,6 +169,10 @@ public class World {
         this.setTower(mainTower);
 
         newTower = false;
+    }
+
+    public void printEntities(int x, int y){
+        System.out.println(blocks[x][y]);
     }
 
     public void spawnProjectile(Projectile projectile) {
