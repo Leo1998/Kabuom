@@ -17,8 +17,7 @@ public abstract class ViewComponent {
         this.height = height;
     }
 
-    public void draw(Batch batch) {
-    }
+    public abstract void draw(Batch batch, float originWidth, float originHeight);
 
     public View getView() {
         return view;
@@ -62,9 +61,9 @@ public abstract class ViewComponent {
     public void onKeyUp(int key, char c) {
     }
 
-    public void onMouseDown(int button, int mouseX, int mouseY) {
+    public void onMouseDown(int button, float mouseX, float mouseY) {
     }
 
-    public void onMouseUp(int button, int mouseX, int mouseY) {
+    public void onMouseUp(int button, float mouseX, float mouseY) {
     }
 }

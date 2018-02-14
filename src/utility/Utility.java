@@ -65,7 +65,7 @@ public class Utility {
         return (float) theta;
     }
 
-    public static boolean viewComponentIsCollidingWithMouse(ViewComponent o1, int mouseX, int mouseY) {
+    public static boolean viewComponentIsCollidingWithMouse(ViewComponent o1, float mouseX, float mouseY) {
         if (o1 != null) {
             return mouseX >= (o1.getX()) &&
                     mouseX <= (o1.getX()) + (o1.getWidth()) &&

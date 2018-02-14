@@ -15,8 +15,13 @@ public class Label extends ViewComponent {
     }
 
     @Override
-    public void draw(Batch batch) {
-        ViewManager.font.drawText(batch, text, (int) ((getX()) + (getWidth()) / 2 - ViewManager.font.getWidth(text) / 2), (int) ((getY()) + (getHeight()) / 2 - ViewManager.font.getLineHeight() / 2));
+    public void draw(Batch batch, float originWidth, float originHeight) {
+        float x = getX()*originWidth;
+        float width = getWidth()*originWidth;
+        float y = getY()*originHeight;
+        float height = getHeight()*originHeight;
+
+        ViewManager.font.drawText(batch, text, (int) (x + width / 2 - ViewManager.font.getWidth(text) / 2), (int) (y + height / 2 - ViewManager.font.getLineHeight() / 2));
     }
 
     public String getText() {

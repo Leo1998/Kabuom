@@ -24,9 +24,8 @@ public abstract class View {
      * zeichnet alle ViewComponents
      */
     public void render(float deltaTime, Batch batch) {
-        for (int i = 0; i < components.size(); i++) {
-            ViewComponent temp = components.get(i);
-            components.get(i).draw(batch);
+        for(ViewComponent v : components){
+            v.draw(batch, originWidth, originHeight);
         }
     }
 
@@ -59,23 +58,21 @@ public abstract class View {
 
     public void onMouseDown(int button, int mouseX, int mouseY) {
         for (ViewComponent v : components) {
-            v.onMouseDown(button, mouseX, mouseY);
+            v.onMouseDown(button, getMouseX(), getMouseY());
         }
     }
 
     public void onMouseUp(int button, int mouseX, int mouseY) {
         for (ViewComponent v : components) {
-            v.onMouseUp(button, mouseX, mouseY);
+            v.onMouseUp(button, getMouseX(), getMouseY());
         }
     }
 
-    public int getMouseX(){
-        return Mouse.getX();
+    public float getMouseX(){
+        return Mouse.getX()/originWidth;
     }
 
-    public int getMouseY(){
-        return Math.round(originHeight) - Mouse.getY();
+    public float getMouseY(){
+        return 1 - Mouse.getY()/originHeight;
     }
-
-
 }

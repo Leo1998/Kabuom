@@ -14,7 +14,7 @@ public class OptionsView extends BaseMenuView {
 
     public OptionsView(float width, float height, final ViewManager viewManager) {
         super(width, height, viewManager);
-        backButton = new Button(25, 25, width / 8, height / 10, this, "Back");
+        backButton = new Button(0.05f, 0.05f, 0.15f, 0.1f, this, "Back");
         this.components.add(backButton);
 
         backButton.setListener(new ButtonListener() {
@@ -25,7 +25,7 @@ public class OptionsView extends BaseMenuView {
         });
 
         String mode = Controller.instance.getConfig().getGraphicMode().name();
-        graphicsButton = new Button((width / 2) - (width / 6 / 2), (height / 2) - (height / 8 / 2) - (height / 6), width / 4, height / 8, this, "Graphics: " + mode);
+        graphicsButton = new Button(0.25f, 0.3f, 0.5f, 0.2f, this, "Graphics: " + mode);
         this.components.add(graphicsButton);
 
         graphicsButton.setListener(new ButtonListener() {
@@ -47,7 +47,7 @@ public class OptionsView extends BaseMenuView {
         });
 
         String difficulty = Integer.toString(Controller.instance.getConfig().getDifficulty());
-        difficultyButton = new Button(width / 2 - (width / 6 / 2), height / 2 + (height / 8 / 2), width / 4, height / 8, this, "Difficulty " + difficulty);
+        difficultyButton = new Button(0.25f, 0.55f, 0.5f, 0.2f, this, "Difficulty " + difficulty);
 
         this.components.add(difficultyButton);
 
@@ -61,8 +61,6 @@ public class OptionsView extends BaseMenuView {
                 } else {
                     config.setDifficulty(++difficultyInt);
                 }
-                System.out.println(difficultyInt);
-                System.out.println(config.getDifficulty());
                 difficultyButton.setButtontext("Difficulty: " + config.getDifficulty());
             }
         });
@@ -72,16 +70,6 @@ public class OptionsView extends BaseMenuView {
     @Override
     public void layout(float width, float height) {
         super.layout(width, height);
-
-        backButton.setX(25);
-        backButton.setY(25);
-        backButton.setWidth(width / 8);
-        backButton.setHeight(height / 10);
-
-        graphicsButton.setX((width / 2) - (width / 6 / 2));
-        graphicsButton.setY((height / 2) - (height / 8 / 2) - (height / 6));
-        graphicsButton.setWidth(width / 4);
-        graphicsButton.setHeight(height / 8);
     }
 
 }

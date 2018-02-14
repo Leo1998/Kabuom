@@ -29,12 +29,16 @@ public class MenuView extends BaseMenuView {
 
         labels = new Label[2];
 
-        labels[0] = createLabel("KABUOM! Tower Defense");
-        labels[1] = createLabel("Max Wave: "+Controller.instance.getConfig().getMaxWave());
+        labels[0] = createLabel(0.25f,0.01f,0.5f,0.2f,"KABUOM! Tower Defense");
+        labels[1] = createLabel(0.25f,0.15f,0.5f,0.15f,"Max Wave: "+Controller.instance.getConfig().getMaxWave());
 
         buttons = new Button[ButtonType.values().length];
+        float buttonWidth = 0.2f;
+        float buttonHeight = 0.5f/buttons.length;
+        float buttonStartX = 0.4f;
+        float buttonStartY = 0.3f;
         for(int i = 0; i < buttons.length; i++){
-            buttons[i] = createButton(ButtonType.values()[i]);
+            buttons[i] = createButton(buttonStartX,buttonStartY+buttonHeight*i, buttonWidth,buttonHeight*0.75f, ButtonType.values()[i]);
         }
 
         for(Label label:labels){
@@ -46,52 +50,19 @@ public class MenuView extends BaseMenuView {
         }
     }
 
-    private void resizeButtons(){
-        float buttonWidth = 0.2f;
-        float buttonHeight = 0.5f/buttons.length;
-        float buttonStartX = 0.4f;
-        float buttonStartY = 0.3f;
-
-        for(int i = 0; i < buttons.length; i++){
-            float x = buttonStartX;
-            float width = buttonWidth;
-            float y = buttonStartY + buttonHeight*i;
-            float height = buttonHeight*0.75f;
-
-            resizeComponent(buttons[i],x,y,width,height);
-        }
+    private Label createLabel(float x, float y, float width, float height, String text){
+        return new Label(x,y,width,height, this, text);
     }
 
-    private void resizeLabels(){
-        resizeComponent(labels[0],0.25f,0.01f,0.5f,0.2f);
-        resizeComponent(labels[1],0.25f,0.15f,0.5f,0.15f);
-    }
-
-    private void resizeComponent(ViewComponent component, float x, float y, float width, float height){
-        x *= originWidth;
-        y *= originHeight;
-        width *= originWidth;
-        height *= originHeight;
-
-        component.setX(x);
-        component.setY(y);
-        component.setWidth(width);
-        component.setHeight(height);
-    }
-
-    private Label createLabel(String text){
-        return new Label(0,0,0,0, this, text);
-    }
-
-    private Button createButton(ButtonType buttonType){
-        Button button = new Button(0,0,0,0, this, buttonType.label);
+    private Button createButton(float x ,float y, float width, float height, ButtonType buttonType){
+        Button button = new Button(x,y,width,height, this, buttonType.label);
 
         switch (buttonType){
             case CONTINUE:
                 button.setListener(new ButtonListener() {
                     @Override
                     public void onClick() {
-                        viewManager.getCtrl().startGame();
+                        viewManager.getCtrl().continueGame();
 
                         viewManager.setCurrentView(new GameView(originWidth, originHeight, viewManager, viewManager.getCtrl().getWorld()));
                     }
@@ -131,9 +102,6 @@ public class MenuView extends BaseMenuView {
     @Override
     public void layout(float width, float height) {
         super.layout(width, height);
-
-        resizeButtons();
-        resizeLabels();
     }
 
 }

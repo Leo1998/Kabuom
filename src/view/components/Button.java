@@ -28,7 +28,7 @@ public class Button extends ViewComponent {
     }
 
     @Override
-    public void onMouseDown(int button, int mouseX, int mouseY) {
+    public void onMouseDown(int button, float mouseX, float mouseY) {
         super.onMouseDown(button, mouseX, mouseY);
         if (button == 0 && Utility.viewComponentIsCollidingWithMouse(this, mouseX, mouseY)) {
             down = true;
@@ -40,7 +40,7 @@ public class Button extends ViewComponent {
     }
 
     @Override
-    public void onMouseUp(int button, int mouseX, int mouseY) {
+    public void onMouseUp(int button, float mouseX, float mouseY) {
         super.onMouseUp(button, mouseX, mouseY);
 
         if (button == 0 && down) {
@@ -55,10 +55,15 @@ public class Button extends ViewComponent {
     }
 
     @Override
-    public void draw(Batch batch) {
-        batch.draw(getTexture(), (getX()), (getY()), (getWidth()), (getHeight()), (float) Math.toRadians(0), 1f, 1f, 1f, 1f);
+    public void draw(Batch batch, float originWidth, float originHeight) {
+        float x = getX()*originWidth;
+        float width = getWidth()*originWidth;
+        float y = getY()*originHeight;
+        float height = getHeight()*originHeight;
+
+        batch.draw(getTexture(), x, y, width, height, 0, 1f, 1f, 1f, 1f);
         if (buttontext != null)
-            ViewManager.font.drawText(batch, buttontext, (int) ((getX()) + (getWidth()) / 2 - ViewManager.font.getWidth(buttontext) / 2), (int) ((getY()) + (getHeight()) / 2 - ViewManager.font.getLineHeight() / 2));
+            ViewManager.font.drawText(batch, buttontext, (int) (x + width / 2 - ViewManager.font.getWidth(buttontext) / 2), (int) (y + height / 2 - ViewManager.font.getLineHeight() / 2));
     }
 
     public ButtonListener getListener() {

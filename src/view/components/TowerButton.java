@@ -20,13 +20,20 @@ public class TowerButton extends Button {
     }
 
     @Override
-    public void draw(Batch batch) {
-        super.draw(batch);
-        float iconSize = (getHeight()) - ViewManager.font.getLineHeight();
+    public void draw(Batch batch, float originWidth, float originHeight) {
 
-        batch.draw(icon, (getX() + (getWidth() / 2) - (iconSize / 2)), (getY()), iconSize, iconSize, (float) Math.toRadians(0), 1f, 1f, 1f, 1f);
+        float x = getX()*originWidth;
+        float width = getWidth()*originWidth;
+        float y = getY()*originHeight;
+        float height = getHeight()*originHeight;
 
-        ViewManager.font.drawText(batch, description, (int) ((getX()) + (getWidth()) / 2 - ViewManager.font.getWidth(description) / 2), (int) ((getY()) + iconSize));
+        batch.draw(getTexture(), x, y, width, height, 0, 1f, 1f, 1f, 1f);
+
+        float iconSize = height - ViewManager.font.getLineHeight();
+
+        batch.draw(icon, (x + (width / 2) - (iconSize / 2)), y, iconSize, iconSize, 0, 1f, 1f, 1f, 1f);
+
+        ViewManager.font.drawText(batch, description, (int) (x + width / 2 - ViewManager.font.getWidth(description) / 2), (int) (y + iconSize));
     }
 
     public EntityType getEntityType() {
