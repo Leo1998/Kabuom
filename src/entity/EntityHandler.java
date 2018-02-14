@@ -384,7 +384,7 @@ public class EntityHandler {
             targetY = entity.getY() + vector.getCoords()[1];
         }
 
-        if (Math.round(entity.getX()) != Math.round(targetX) || Math.round(entity.getY()) != Math.round(targetY)) {
+        if (Math.round(entity.getX()) != Math.round(targetX) || Math.round(entity.getY()) != Math.round(targetY) || entity.getBlock() != nodeMap[Math.round(targetX)][Math.round(targetY)].block) {
             entity.setBlock(nodeMap[Math.round(targetX)][Math.round(targetY)].block);
             nodeMap[Math.round(targetX)][Math.round(targetY)].block.addEntity(entity);
         }
