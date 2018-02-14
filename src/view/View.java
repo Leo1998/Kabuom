@@ -1,5 +1,6 @@
 package view;
 
+import org.lwjgl.input.Mouse;
 import view.components.ViewComponent;
 import view.rendering.Batch;
 
@@ -66,6 +67,14 @@ public abstract class View {
         for (ViewComponent v : components) {
             v.onMouseUp(button, mouseX, mouseY);
         }
+    }
+
+    public int getMouseX(){
+        return Mouse.getX();
+    }
+
+    public int getMouseY(){
+        return Math.round(originHeight) - Mouse.getY();
     }
 
 

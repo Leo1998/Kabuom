@@ -26,7 +26,7 @@ public abstract class BaseMenuView extends View {
 
             ParticleManager manager = this.getViewManager().getParticleManager();
 
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i <= 10; i++) {
                 Particle.ParticleRandomizer randomizer = new Particle.ParticleRandomizer() {
                     Random random = new Random();
 

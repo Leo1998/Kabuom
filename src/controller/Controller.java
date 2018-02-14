@@ -70,6 +70,10 @@ public class Controller {
     }
 
     public void startGame() {
+        this.world = new World(19,19,config.getDifficulty(),new File("save/world1.json"));
+    }
+
+    public void continueGame(){
         //this.world = World.createWorld(new File("save/world1.json"), config.getDifficulty());
         this.world = new World(19,19,config.getDifficulty(),new File("save/world1.json"));
     }

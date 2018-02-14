@@ -19,13 +19,17 @@ import view.rendering.PostProcessingManager;
 import world.World;
 
 import java.util.List;
+import java.util.Scanner;
 
 public class GameView extends View {
+
+    private final float tBWidth = 0.125f;
 
     private World world;
     private TowerButton[] towerButtons;
     private Entity setTower;
-    private float w2, h2, scale;
+    private float scale;
+    private int offsetX, offsetY;
     private ITexture blockTexture, towerButtonBackgroundTexture;
     private Button startButton;
     private boolean shiftdown;
@@ -37,9 +41,9 @@ public class GameView extends View {
         blockTexture = ViewManager.getTexture("block1.png");
         towerButtonBackgroundTexture = ViewManager.getTexture("viewTextures/mainButton.png");
 
-        float towerButtonX = width * 7 / 8;
         float towerButtonHeight = (height - ViewManager.font.getLineHeight() - (originHeight / 10)) / EntityType.firstEnemyIndex;
-        float towerButtonWidth = width * 1 / 8;
+        float towerButtonWidth = width * tBWidth;
+        float towerButtonX = width - towerButtonWidth;
 
 
         this.world = world;
@@ -65,14 +69,24 @@ public class GameView extends View {
                 }
             });
         }
-        startButton = new Button(width * 7 / 8, height - height / 10, width * 1 / 8, height / 10, this, "Start");
-        startButton.setListener(new ButtonListener() {
-            @Override
-            public void onClick() {
-                world.startWave();
-            }
-        });
+        startButton = new Button(towerButtonX, height - height / 10, towerButtonWidth, height / 10, this, "Start");
+        startButton.setListener(() -> world.startWave());
         components.add(startButton);
+    }
+
+    private void calcultateOffset(float width, float height, int sizeX, int sizeY){
+        float scaleX = width * (1 - tBWidth) / sizeX;
+        float scaleY = height / sizeY;
+
+        if (scaleX < scaleY){
+            offsetX = 0;
+            offsetY = Math.round((height - sizeY * scaleX) / 2);
+            scale = scaleX;
+        } else {
+            offsetX = Math.round((width * (1 - tBWidth) - sizeX * scaleY) / 2);
+            offsetY = 0;
+            scale = scaleY;
+        }
     }
 
     private void drawEntity(Entity entity, Batch batch){
@@ -87,8 +101,8 @@ public class GameView extends View {
             float height = scale * diameter;
             float percentage = Math.max(0,entity.getHp() / entity.entityType.getMaxHP());
 
-            batch.draw(null, blockCoordToViewCoordX(entity.getX(),diameter), blockCoordToViewCoordY(entity.getY(),diameter) + height * 1.1f, width, height * 0.1f, 0.6f, 0.6f, 0.6f, 1.0f);
-            batch.draw(null, blockCoordToViewCoordX(entity.getX(),diameter), blockCoordToViewCoordY(entity.getY(),diameter) + height * 1.1f, width * percentage, height * 0.1f, 0.0f, 1.0f, 0.0f, 1.0f);
+            batch.draw(null, blockToViewX(entity.getX(),diameter), blockToViewY(entity.getY(),diameter) + height * 1.1f, width, height * 0.1f, 0.6f, 0.6f, 0.6f, 1.0f);
+            batch.draw(null, blockToViewX(entity.getX(),diameter), blockToViewY(entity.getY(),diameter) + height * 1.1f, width * percentage, height * 0.1f, 0.0f, 1.0f, 0.0f, 1.0f);
         } else {
             if (entity.getTarget() != null && entity.entityType.isRanged()) {
                 angle = Utility.calculateAngleBetweenTwoPoints(entity.getTarget().getX(), entity.getTarget().getY(), entity.getX(), entity.getY());
@@ -109,30 +123,21 @@ public class GameView extends View {
         float width = scale * diameter;
         float height = scale * diameter;
 
-        batch.draw(ViewManager.getTexture(gameObject.getObjectType().getTextureId()), blockCoordToViewCoordX(gameObject.getX(),diameter), blockCoordToViewCoordY(gameObject.getY(),diameter), width, height, rotation, 1, 1, 1, 1);
+        batch.draw(ViewManager.getTexture(gameObject.getObjectType().getTextureId()), blockToViewX(gameObject.getX(),diameter), blockToViewY(gameObject.getY(),diameter), width, height, rotation, 1, 1, 1, 1);
     }
 
     @Override
     public void render(float deltaTime, Batch batch) {
-        if (originHeight < originWidth * 7 / 8) {
-            h2 = originHeight;
-            w2 = h2;
-        } else {
-            w2 = originWidth * 7 / 8;
-            h2 = w2;
-        }
-
-        scale = h2/world.getBlocks().length;
+        calcultateOffset(originWidth, originHeight, world.getWidth(), world.getHeight());
 
         /**
          * Zeichnet die Welt (Die einzelnen Blöcke)
          */
         for (int i = 0; i < world.getBlocks().length; i++) {
             for (int j = 0; j < world.getBlocks()[i].length; j++) {
-                batch.draw(blockTexture, blockCoordToViewCoordX(i), blockCoordToViewCoordY(j), w2 / world.getBlocks().length, h2 / world.getBlocks()[i].length);
+                batch.draw(blockTexture, blockToViewX(i), blockToViewY(j), scale, scale);
             }
         }
-
 
         for(Entity entity: world.getEntityList()){
             drawEntity(entity,batch);
@@ -158,17 +163,17 @@ public class GameView extends View {
         /**
          * Zeichnet die Info über den überfahrenden Tower an den Cursor
          */
-        Vector2 block = getBlockIDOfMouse(Mouse.getX(), Mouse.getY());
+        Vector2 block = getBlockIDOfMouse(getMouseX(), getMouseY());
         if (block != null) {
-            batch.draw(null, blockCoordToViewCoordX((int) block.getCoords()[0]), blockCoordToViewCoordY((int) (world.getBlocks()[0].length - block.getCoords()[1])), w2 / world.getBlocks().length, h2 / world.getBlocks()[0].length, 0, 1f, 1f, 1f, 0.45f);
+            batch.draw(null, blockToViewX((int)block.getCoords()[0]), blockToViewY((int)block.getCoords()[1]), scale, scale, 0, 1f, 1f, 1f, 0.45f);
 
-            Entity t = world.getBlocks()[(int) block.getCoords()[0]][(int) (world.getBlocks()[0].length - block.getCoords()[1])].getTower();
+            Entity t = world.getBlocks()[(int) block.getCoords()[0]][(int) block.getCoords()[1]].getTower();
 
             //world.getBlocks()[(int) block.getCoords()[0]][(int) (world.getBlocks()[0].length - block.getCoords()[1])].test();
 
             if (t != null) {
-                int x0 = (int) blockCoordToViewCoordX(block.getCoords()[0]);
-                int y0 = (int) blockCoordToViewCoordY((world.getBlocks()[0].length - block.getCoords()[1]));
+                int x0 = getMouseX();
+                int y0 = getMouseY();
 
                 String l1 = t.entityType.getName();
                 String l2 = "Health: " + niceNumber(Math.round(t.getHp()));
@@ -188,8 +193,8 @@ public class GameView extends View {
          * Alles Was mit dem Towersetzen zu tun hat
          */
         if (setTower != null) {
-            setTower.setX(Mouse.getX() - scale / 2);
-            setTower.setY(originHeight - Mouse.getY() - scale / 2);
+            setTower.setX(getMouseX() - scale / 2);
+            setTower.setY(getMouseY() - scale / 2);
             float diameter = setTower.entityType.getRadius()*2;
             float width = scale * diameter;
             float height = scale * diameter;
@@ -218,34 +223,41 @@ public class GameView extends View {
      * Rechnet aus den MouseKoordinaten die ID des Blockes aus
      */
     public Vector2 getBlockIDOfMouse(float mouseX, float mouseY) {
-        float x = ((originWidth * 7 / 8) / 2 - w2 / 2);
-        float y = 0;
-        float w = x + w2;
-        float h = y + h2;
+        float x = viewToBlockX(mouseX);
+        float y = viewToBlockY(mouseY);
 
-        if (mouseX > x && mouseY > y && mouseX < w && mouseY < h) {
-            return new Vector2((mouseX - x) * world.getBlocks().length / w2, (mouseY - (originHeight - h2) / 2) * world.getBlocks().length / h2);
+        if(x >= 0 && y >= 0 && x < world.getWidth() && y < world.getHeight()){
+            return new Vector2(x,y);
+        } else {
+            return null;
         }
-        return null;
+    }
+
+    private float viewToBlockX(float x){
+        return (x - offsetX) / scale;
+    }
+
+    private float viewToBlockY(float y){
+        return (y - offsetY) / scale;
     }
 
     /**
      * Rechnet die Block Koordinate in eine View Koordinate um
      */
-    private float blockCoordToViewCoordX(float coord, float width){
-        return blockCoordToViewCoordX(coord + 0.5f - width/2);
+    private float blockToViewX(float x, float width){
+        return blockToViewX(x + 0.5f - width/2);
     }
 
-    private float blockCoordToViewCoordY(float coord, float height){
-        return blockCoordToViewCoordY(coord + 0.5f - height/2);
+    private float blockToViewY(float y, float height){
+        return blockToViewY(y + 0.5f - height/2);
     }
 
-    private float blockCoordToViewCoordX(float coord) {
-        return w2 / world.getBlocks().length * coord + ((originWidth * 7f / 8f) - w2) / 2f;
+    private float blockToViewX(float x) {
+        return (x*scale) + offsetX;
     }
 
-    private float blockCoordToViewCoordY(float coord) {
-        return h2 / world.getBlocks()[0].length * coord + (originHeight - h2) / 2f;
+    private float blockToViewY(float y) {
+        return (y*scale) + offsetY;
     }
 
     private String niceNumber(int number){
@@ -275,8 +287,8 @@ public class GameView extends View {
             if (mouse != null) {
                 if (button == 0) {
                     Vector2 blockId = getBlockIDOfMouse(mouseX,mouseY);
-                    setTower.setX(blockId.getCoords()[0]);
-                    setTower.setY(blockId.getCoords()[1]);
+                    setTower.setX((int)blockId.getCoords()[0]);
+                    setTower.setY((int)blockId.getCoords()[1]);
                     if (world.setTower(setTower)) {
                         world.setCoins(world.getCoins() - setTower.entityType.cost);
 
@@ -293,7 +305,7 @@ public class GameView extends View {
             if(button == 1){
                 Vector2 block = getBlockIDOfMouse(mouseX, mouseY);
                 if(block != null) {
-                    world.sellTower((int) block.getCoords()[0], (int) (world.getBlocks()[0].length - block.getCoords()[1]));
+                    world.sellTower((int) block.getCoords()[0], (int) block.getCoords()[1]);
                 }
             }
         }
@@ -322,7 +334,7 @@ public class GameView extends View {
             getViewManager().getCtrl().endGame(false);
         }
         if(key == Keyboard.KEY_TAB) {
-            Vector2 block = getBlockIDOfMouse(Mouse.getX(), Mouse.getY());
+            Vector2 block = getBlockIDOfMouse(getMouseX(), getMouseY());
             if (block != null) {
                 world.printEntities((int)block.getCoords()[0],(int) (world.getBlocks()[0].length - block.getCoords()[1]));
             }

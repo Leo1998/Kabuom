@@ -4,80 +4,136 @@ import controller.Controller;
 import view.components.Button;
 import view.components.ButtonListener;
 import view.components.Label;
+import view.components.ViewComponent;
 
 public class MenuView extends BaseMenuView {
 
-    private Label label;
-    private Label maxWaveLabel;
-    private Button startButton;
-    private Button optionsButton;
-    private Button exitButton;
+    private enum ButtonType{
+        CONTINUE("Continue"),
+        NEWGAME("New Game"),
+        OPTIONS("Options"),
+        EXIT("Exit");
+
+        final String label;
+
+        ButtonType(String label){
+            this.label = label;
+        }
+    }
+
+    private Label[] labels;
+    private Button[] buttons;
 
     public MenuView(float width, float height, final ViewManager viewManager) {
         super(width, height, viewManager);
-        label = new Label((width / 2) - (width / 6), (height / 10), width / 3, height / 4, this, "KABUOM! Tower Defense");
-        maxWaveLabel = new Label((width / 2) - (width / 6), (height / 2) - (height / 10 / 2) + (height / 4), width / 3, height / 4, this, "Max Wave: " + Controller.instance.getConfig().getMaxWave());
-        startButton = new Button((width / 2) - (width / 6 / 2), (height / 2) - (height / 8 / 2) - (height / 6), width / 6, height / 8, this, "Start");
-        optionsButton = new Button((width / 2) - (width / 6 / 2), (height / 2) - (height / 8 / 2), width / 6, height / 8, this, "Options");
-        exitButton = new Button((width / 2) - (width / 6 / 2), (height / 2) - (height / 8 / 2) + (height / 6), width / 6, height / 8, this, "Exit");
-        this.components.add(label);
-        this.components.add(maxWaveLabel);
-        this.components.add(startButton);
-        this.components.add(optionsButton);
-        this.components.add(exitButton);
 
-        startButton.setListener(new ButtonListener() {
-            @Override
-            public void onClick() {
-                viewManager.getCtrl().startGame();
+        labels = new Label[2];
 
-                viewManager.setCurrentView(new GameView(originWidth, originHeight, viewManager, viewManager.getCtrl().getWorld()));
-            }
-        });
+        labels[0] = createLabel("KABUOM! Tower Defense");
+        labels[1] = createLabel("Max Wave: "+Controller.instance.getConfig().getMaxWave());
 
-        optionsButton.setListener(new ButtonListener() {
-            @Override
-            public void onClick() {
-                viewManager.setCurrentView(new OptionsView(originWidth, originHeight, viewManager));
-            }
-        });
+        buttons = new Button[ButtonType.values().length];
+        for(int i = 0; i < buttons.length; i++){
+            buttons[i] = createButton(ButtonType.values()[i]);
+        }
 
-        exitButton.setListener(new ButtonListener() {
-            @Override
-            public void onClick() {
-                System.exit(0);
-            }
-        });
+        for(Label label:labels){
+            components.add(label);
+        }
+
+        for(Button button:buttons){
+            components.add(button);
+        }
+    }
+
+    private void resizeButtons(){
+        float buttonWidth = 0.2f;
+        float buttonHeight = 0.5f/buttons.length;
+        float buttonStartX = 0.4f;
+        float buttonStartY = 0.3f;
+
+        for(int i = 0; i < buttons.length; i++){
+            float x = buttonStartX;
+            float width = buttonWidth;
+            float y = buttonStartY + buttonHeight*i;
+            float height = buttonHeight*0.75f;
+
+            resizeComponent(buttons[i],x,y,width,height);
+        }
+    }
+
+    private void resizeLabels(){
+        resizeComponent(labels[0],0.25f,0.01f,0.5f,0.2f);
+        resizeComponent(labels[1],0.25f,0.15f,0.5f,0.15f);
+    }
+
+    private void resizeComponent(ViewComponent component, float x, float y, float width, float height){
+        x *= originWidth;
+        y *= originHeight;
+        width *= originWidth;
+        height *= originHeight;
+
+        component.setX(x);
+        component.setY(y);
+        component.setWidth(width);
+        component.setHeight(height);
+    }
+
+    private Label createLabel(String text){
+        return new Label(0,0,0,0, this, text);
+    }
+
+    private Button createButton(ButtonType buttonType){
+        Button button = new Button(0,0,0,0, this, buttonType.label);
+
+        switch (buttonType){
+            case CONTINUE:
+                button.setListener(new ButtonListener() {
+                    @Override
+                    public void onClick() {
+                        viewManager.getCtrl().startGame();
+
+                        viewManager.setCurrentView(new GameView(originWidth, originHeight, viewManager, viewManager.getCtrl().getWorld()));
+                    }
+                });
+                break;
+            case NEWGAME:
+                button.setListener(new ButtonListener() {
+                    @Override
+                    public void onClick() {
+                        viewManager.getCtrl().startGame();
+
+                        viewManager.setCurrentView(new GameView(originWidth, originHeight, viewManager, viewManager.getCtrl().getWorld()));
+                    }
+                });
+                break;
+            case OPTIONS:
+                button.setListener(new ButtonListener() {
+                    @Override
+                    public void onClick() {
+                        viewManager.setCurrentView(new OptionsView(originWidth, originHeight, viewManager));
+                    }
+                });
+                break;
+            case EXIT:
+                button.setListener(new ButtonListener() {
+                    @Override
+                    public void onClick() {
+                        System.exit(0);
+                    }
+                });
+                break;
+        }
+
+        return button;
     }
 
     @Override
     public void layout(float width, float height) {
         super.layout(width, height);
 
-        label.setX((width / 2) - (width / 6));
-        label.setY((height / 10));
-        label.setWidth(width / 3);
-        label.setHeight(height / 4);
-
-        maxWaveLabel.setX((width / 2) - (width / 6 / 2));
-        maxWaveLabel.setY((height / 2) - (height / 10 / 2) + (height / 4));
-        maxWaveLabel.setWidth(width / 6);
-        maxWaveLabel.setHeight(height / 8);
-
-        startButton.setX((width / 2) - (width / 6 / 2));
-        startButton.setY((height / 2) - (height / 8 / 2) - (height / 6));
-        startButton.setWidth(width / 6);
-        startButton.setHeight(height / 8);
-
-        optionsButton.setX((width / 2) - (width / 6 / 2));
-        optionsButton.setY((height / 2) - (height / 8 / 2));
-        optionsButton.setWidth(width / 6);
-        optionsButton.setHeight(height / 8);
-
-        exitButton.setX((width / 2) - (width / 6 / 2));
-        exitButton.setY((height / 2) - (height / 8 / 2) + (height / 6));
-        exitButton.setWidth(width / 6);
-        exitButton.setHeight(height / 8);
+        resizeButtons();
+        resizeLabels();
     }
 
 }

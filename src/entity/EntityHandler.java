@@ -637,7 +637,7 @@ public class EntityHandler {
         nodeMap = new Node[blocks.length][blocks[0].length];
 
         for (int i = 0; i < blocks.length; i++) {
-            for (int j = 0; j < blocks.length; j++) {
+            for (int j = 0; j < blocks[i].length; j++) {
                 nodeMap[i][j] = new Node(blocks[i][j], i, j, mainTower.getX(), mainTower.getY());
             }
         }
