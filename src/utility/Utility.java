@@ -1,6 +1,7 @@
 package utility;
 
 import model.GameObject;
+import view.components.Button;
 import view.components.ViewComponent;
 
 import java.util.Random;

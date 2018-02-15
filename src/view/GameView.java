@@ -52,8 +52,6 @@ public class GameView extends View {
         for(int i = 0; i < towerButtons.length; i++){
             final TowerButton towerButton = new TowerButton(buttonStartX, buttonStartY + buttonHeight*i , buttonWidth, buttonHeight, this, null, EntityType.values()[i]);
 
-            System.out.println(towerButton.getX() + " " + towerButton.getY() + " " + towerButton.getWidth() + " " + towerButton.getHeight());
-
             towerButtons[i] = towerButton;
             this.components.add(towerButton);
 

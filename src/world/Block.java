@@ -1,6 +1,7 @@
 package world;
 
 import entity.model.Entity;
+import entity.model.MoveEntity;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -86,16 +87,20 @@ public class Block implements Iterable<Entity> {
 
         private void cleanUp(){
             if(iterator.hasNext()) {
-                next = iterator.next();
-                while (next != null && (Math.round(next.getX()) != x || Math.round(next.getY()) != y || next.getHp() <= 0)){
-                    iterator.remove();
-                    if(iterator.hasNext()) {
-                        next = iterator.next();
+                boolean finished = false;
+                do {
+                    next = iterator.next();
+                    if(next == null || next.getHp() <= 0 || next.getBlock() != Block.this){
+                        iterator.remove();
                     } else {
-                        next = null;
+                        finished = true;
                     }
+                } while (iterator.hasNext() && !finished);
+
+                if(!finished){
+                    next = null;
                 }
-            } else {
+            }else{
                 next = null;
             }
         }
