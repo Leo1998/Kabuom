@@ -83,11 +83,14 @@ public class ViewManager {
     }
 
     public static ITexture getTexture(String textureID) {
-        if (!textureMap.containsKey(textureID)) {
-            loadTexture(textureID);
-        }
+        if(textureID != null) {
+            if (!textureMap.containsKey(textureID)) {
+                loadTexture(textureID);
+            }
 
-        return textureMap.get(textureID);
+            return textureMap.get(textureID);
+        }
+        return null;
     }
 
     private Controller ctrl = new Controller();

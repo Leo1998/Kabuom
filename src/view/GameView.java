@@ -91,40 +91,47 @@ public class GameView extends View {
     }
 
     private void drawEntity(Entity entity, Batch batch){
-        float angle = 0;
-        if(entity instanceof MoveEntity){
-            MoveEntity mEntity = (MoveEntity) entity;
-            if(!mEntity.getMovement().nullVector()) {
-                angle = Utility.calculateAngleBetweenTwoPoints(0, 0, mEntity.getMovement().getCoords()[0], mEntity.getMovement().getCoords()[1]);
-            }
-            float diameter = entity.entityType.radius*2;
-            float width = scale * diameter;
-            float height = scale * diameter;
-            float percentage = Math.max(0,entity.getHp() / entity.entityType.getMaxHP());
+        if(entity.entityType.baseTexture != null) {
+            float angle = 0;
+            if (entity instanceof MoveEntity) {
+                MoveEntity mEntity = (MoveEntity) entity;
+                if (!mEntity.getMovement().nullVector()) {
+                    angle = Utility.calculateAngleBetweenTwoPoints(0, 0, mEntity.getMovement().getCoords()[0], mEntity.getMovement().getCoords()[1]);
+                }
+                float diameter = entity.entityType.radius * 2;
+                float width = scale * diameter;
+                float height = scale * diameter;
+                float percentage = Math.max(0, entity.getHp() / entity.entityType.getMaxHP());
 
-            batch.draw(null, blockToViewX(entity.getX(),diameter), blockToViewY(entity.getY(),diameter) + height * 1.1f, width, height * 0.1f, 0.6f, 0.6f, 0.6f, 1.0f);
-            batch.draw(null, blockToViewX(entity.getX(),diameter), blockToViewY(entity.getY(),diameter) + height * 1.1f, width * percentage, height * 0.1f, 0.0f, 1.0f, 0.0f, 1.0f);
-        } else {
-            if (entity.getTarget() != null && entity.entityType.isRanged()) {
-                angle = Utility.calculateAngleBetweenTwoPoints(entity.getTarget().getX(), entity.getTarget().getY(), entity.getX(), entity.getY());
+                batch.draw(null, blockToViewX(entity.getX(), diameter), blockToViewY(entity.getY(), diameter) + height * 1.1f, width, height * 0.1f, 0.6f, 0.6f, 0.6f, 1.0f);
+                batch.draw(null, blockToViewX(entity.getX(), diameter), blockToViewY(entity.getY(), diameter) + height * 1.1f, width * percentage, height * 0.1f, 0.0f, 1.0f, 0.0f, 1.0f);
             }
+
+            drawGameObject(entity, entity.entityType.baseTexture, angle, batch, 1);
         }
 
-        drawGameObject(entity,angle,batch);
+        if (entity.entityType.turretTexture != null) {
+            float angle = 0;
+            if (entity.getTarget() != null) {
+                angle = Utility.calculateAngleBetweenTwoPoints(entity.getTarget().getX(), entity.getTarget().getY(), entity.getX(), entity.getY());
+            }
+
+            drawGameObject(entity, entity.entityType.turretTexture, angle, batch, 0.9f);
+        }
     }
 
     private void drawProjectile(Projectile projectile, Batch batch){
         float angle = Utility.calculateAngleBetweenTwoPoints(projectile.getDir().getCoords()[0], projectile.getDir().getCoords()[1], 0, 0);
 
-        drawGameObject(projectile,angle,batch);
+        drawGameObject(projectile, projectile.projectileType.textureID, angle, batch, 1);
     }
 
-    private void drawGameObject(GameObject gameObject, float rotation, Batch batch){
-        float diameter = gameObject.getObjectType().getRadius()*2;
+    private void drawGameObject(GameObject gameObject, String textureId, float rotation, Batch batch, float size){
+        float diameter = gameObject.getObjectType().getRadius()*2*size;
         float width = scale * diameter;
         float height = scale * diameter;
 
-        batch.draw(ViewManager.getTexture(gameObject.getObjectType().getTextureId()), blockToViewX(gameObject.getX(),diameter), blockToViewY(gameObject.getY(),diameter), width, height, rotation, 1, 1, 1, 1);
+        batch.draw(ViewManager.getTexture(textureId), blockToViewX(gameObject.getX(),diameter), blockToViewY(gameObject.getY(),diameter), width, height, rotation, 1, 1, 1, 1);
     }
 
     @Override
@@ -199,7 +206,12 @@ public class GameView extends View {
             float diameter = setTower.entityType.getRadius()*2;
             float width = scale * diameter;
             float height = scale * diameter;
-            batch.draw(ViewManager.getTexture(setTower.entityType.getTextureId()), setTower.getX(), setTower.getY(), width, height);
+            if(setTower.entityType.baseTexture != null){
+                batch.draw(ViewManager.getTexture(setTower.entityType.baseTexture), setTower.getX(), setTower.getY(), width, height);
+            }
+            if(setTower.entityType.turretTexture != null){
+                batch.draw(ViewManager.getTexture(setTower.entityType.turretTexture), setTower.getX(), setTower.getY(), width, height);
+            }
         }
     }
 

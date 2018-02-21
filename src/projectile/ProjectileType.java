@@ -52,9 +52,4 @@ public enum ProjectileType implements ObjectType {
     public String getName() {
         return name;
     }
-
-    @Override
-    public String getTextureId() {
-        return textureID;
-    }
 }

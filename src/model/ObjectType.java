@@ -7,5 +7,4 @@ public interface ObjectType {;
     float getMaxHP();
     float getRadius();
     String getName();
-    String getTextureId();
 }

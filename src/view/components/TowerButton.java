@@ -9,13 +9,14 @@ import view.rendering.ITexture;
 public class TowerButton extends Button {
 
     private EntityType entityType;
-    private ITexture icon;
+    private ITexture icon1, icon2;
     private String description;
 
     public TowerButton(float x, float y, float width, float height, View v, String buttontext, EntityType entityType) {
         super(x, y, width, height, v, buttontext);
         this.entityType = entityType;
-        this.icon = ViewManager.getTexture(entityType.getTextureId());
+        this.icon1 = ViewManager.getTexture(entityType.baseTexture);
+        this.icon2 = ViewManager.getTexture(entityType.turretTexture);
         this.description = entityType.getName() + " (" + entityType.cost + ")";
     }
 
@@ -31,7 +32,12 @@ public class TowerButton extends Button {
 
         float iconSize = height - ViewManager.font.getLineHeight();
 
-        batch.draw(icon, (x + (width / 2) - (iconSize / 2)), y, iconSize, iconSize, 0, 1f, 1f, 1f, 1f);
+        if(icon1 != null) {
+            batch.draw(icon1, (x + (width / 2) - (iconSize / 2)), y, iconSize, iconSize, 0, 1f, 1f, 1f, 1f);
+        }
+        if(icon2 != null) {
+            batch.draw(icon2, (x + (width / 2) - (iconSize / 2)), y, iconSize, iconSize, 0, 1f, 1f, 1f, 1f);
+        }
 
         ViewManager.font.drawText(batch, description, (int) (x + width / 2 - ViewManager.font.getWidth(description) / 2), (int) (y + iconSize));
     }
