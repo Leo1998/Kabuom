@@ -33,7 +33,7 @@ public class GameView extends View {
     private int offsetX, offsetY;
     private ITexture blockTexture, towerButtonBackgroundTexture;
     private Button startButton;
-    private boolean shiftdown;
+    private boolean shiftdown, mousedown0, mousedown1;
 
 
     public GameView(float width, float height, final ViewManager viewManager, final World world) {
@@ -140,9 +140,8 @@ public class GameView extends View {
 
         calcultateOffset(originWidth, originHeight, world.getWidth(), world.getHeight());
 
-        /**
-         * Zeichnet die Welt (Die einzelnen Blöcke)
-         */
+
+        //Zeichnet die Welt (Die einzelnen Blöcke)
         for (int i = 0; i < world.getBlocks().length; i++) {
             for (int j = 0; j < world.getBlocks()[i].length; j++) {
                 batch.draw(blockTexture, blockToViewX(i), blockToViewY(j), scale, scale);
@@ -158,9 +157,8 @@ public class GameView extends View {
         }
 
 
-        /**
-         * Zeichnet die Coin & Wave Zähler an den unteren rand
-         */
+
+        //Zeichnet die Coin & Wave Zähler an den unteren rand
         String coinsMessage = "Coins: " + niceNumber(world.getCoins());
         ViewManager.font.drawText(batch, coinsMessage, (int) (originWidth - ViewManager.font.getWidth(coinsMessage)), (int) (originHeight - ViewManager.font.getLineHeight() * 2 - (originHeight / 10)));
 
@@ -168,9 +166,8 @@ public class GameView extends View {
         ViewManager.font.drawText(batch, waveMessage, (int) (originWidth - ViewManager.font.getWidth(waveMessage)), (int) (originHeight - ViewManager.font.getLineHeight() - (originHeight / 10)));
 
 
-        /**
-         * Zeichnet die Info über den überfahrenden Tower an den Cursor
-         */
+
+        //Zeichnet die Info über den überfahrenden Tower an den Cursor
         Vector2 block = getBlockIDOfMouse();
         if (block != null) {
             batch.draw(null, blockToViewX((int)block.getCoords()[0]), blockToViewY((int)block.getCoords()[1]), scale, scale, 0, 1f, 1f, 1f, 0.45f);
@@ -197,9 +194,7 @@ public class GameView extends View {
             }
         }
 
-        /**
-         * Alles Was mit dem Towersetzen zu tun hat
-         */
+        //Alles Was mit dem Towersetzen zu tun hat
         if (setTower != null) {
             setTower.setX(Mouse.getX() - scale / 2);
             setTower.setY(originHeight - Mouse.getY() - scale / 2);
@@ -212,6 +207,15 @@ public class GameView extends View {
             if(setTower.entityType.turretTexture != null){
                 batch.draw(ViewManager.getTexture(setTower.entityType.turretTexture), setTower.getX(), setTower.getY(), width, height);
             }
+        }
+
+        // Maus
+
+        if(mousedown0){
+            rightClick();
+        }
+        if(mousedown1){
+            leftClick();
         }
     }
 
@@ -279,36 +283,55 @@ public class GameView extends View {
     public void onMouseDown(int button, int mouseX, int mouseY) {
         super.onMouseDown(button, mouseX, mouseY);
 
+        if(button == 0){
+            mousedown0 = true;
+            rightClick();
+        } else if(button == 1){
+            mousedown1 = true;
+            leftClick();
+        }
+    }
 
-        if (setTower != null) {
-            if (button == 1) {
-                viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);
-                setTower = null;
-            }
+    @Override
+    public void onMouseUp(int button, int mouseX, int mouseY){
+        super.onMouseUp(button,mouseX,mouseY);
+
+        if(button == 0){
+            mousedown0 = false;
+        } else if(button == 1){
+            mousedown1 = false;
+        }
+    }
+
+    private void rightClick(){
+        if(setTower != null) {
             Vector2 mouse = getBlockIDOfMouse();
             if (mouse != null) {
-                if (button == 0) {
-                    setTower.setX((int)mouse.getCoords()[0]);
-                    setTower.setY((int)mouse.getCoords()[1]);
-                    if (world.setTower(setTower)) {
-                        world.setCoins(world.getCoins() - setTower.entityType.cost);
+                setTower.setX((int) mouse.getCoords()[0]);
+                setTower.setY((int) mouse.getCoords()[1]);
+                if (world.setTower(setTower)) {
+                    world.setCoins(world.getCoins() - setTower.entityType.cost);
 
-                        if (shiftdown && world.getCoins() - setTower.entityType.cost >= 0) {
-                            setTower = new Entity(setTower.entityType, 0, 0, 0, -1, null, false);
-                        } else {
-                            setTower = null;
-                            viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);
-                        }
+                    if (shiftdown && world.getCoins() - setTower.entityType.cost >= 0) {
+                        setTower = new Entity(setTower.entityType, 0, Mouse.getX(), originHeight - Mouse.getY(), -1, null, false);
+                    } else {
+                        setTower = null;
+                        viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);
                     }
                 }
             }
-        } else {
-            if(button == 1){
-                Vector2 block = getBlockIDOfMouse();
-                if(block != null) {
-                    world.sellTower((int) block.getCoords()[0], (int) block.getCoords()[1]);
-                }
+        }
+    }
+
+    private void leftClick(){
+        if(setTower == null){
+            Vector2 block = getBlockIDOfMouse();
+            if (block != null) {
+                world.sellTower((int) block.getCoords()[0], (int) block.getCoords()[1]);
             }
+        } else {
+            viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);
+            setTower = null;
         }
     }
 
