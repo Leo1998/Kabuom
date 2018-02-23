@@ -3,6 +3,7 @@ package entity.model;
 import entity.EntityHandler;
 import model.GameObject;
 import model.ObjectType;
+import projectile.ProjectileType;
 import utility.Constants;
 import world.Block;
 
@@ -11,7 +12,7 @@ import static utility.Utility.random;
 public class Entity extends GameObject implements Partisan {
 
     private Entity target;
-    public final EntityType entityType;
+    private final EntityType entityType;
     private final float[] effects;
     private int wave;
     protected Block block;
@@ -35,7 +36,7 @@ public class Entity extends GameObject implements Partisan {
     }
 
     @Override
-    public ObjectType getObjectType() {
+    protected ObjectType getObjectType() {
         return entityType;
     }
 
@@ -81,12 +82,8 @@ public class Entity extends GameObject implements Partisan {
         }
 
         if(getHp() <= 0 && getHp() - temp > 0){
-            System.out.println(entityType.name + " killed by " + source);
+            //System.out.println(entityType.name + " killed by " + source);
         }
-    }
-
-    private float getStrength(EffectType effectType) {
-        return (effects[effectType.ordinal()] > 0) ? effectType.strength : 1;
     }
 
     public Block getBlock() {
@@ -98,10 +95,10 @@ public class Entity extends GameObject implements Partisan {
     }
 
     public boolean addAttackCooldown(float dt){
-        if(entityType.frequency > 0) {
+        if(getFrequency() > 0) {
             attackCooldown += dt / getStrength(EffectType.SLOW);
-            if (attackCooldown > entityType.frequency) {
-                attackCooldown = random.nextFloat()*entityType.frequency/2 - entityType.frequency/4;
+            if (attackCooldown > getFrequency()) {
+                attackCooldown = random.nextFloat()*getFrequency()/2 - getFrequency()/4;
                 return true;
             } else {
                 return false;
@@ -119,8 +116,76 @@ public class Entity extends GameObject implements Partisan {
         this.wave = wave;
     }
 
+    /**
+     * Getter for Enum
+     */
+
+    public float getMaxHp(){
+        return entityType.maxHP + entityType.maxHP * 0.5f * level;
+    }
+
     public float getSpeed(){
         return entityType.speed / getStrength(EffectType.SLOW);
+    }
+
+    public String getTurretTexture(){
+        return entityType.turretTexture;
+    }
+
+    public String getBaseTexture(){
+        return entityType.baseTexture;
+    }
+
+    public float getFrequency(){
+        return entityType.frequency * (float) (Math.pow(0.75,level)) ;
+    }
+
+    public float getRange(){
+        return entityType.range + entityType.range * 0.5f * level;
+    }
+
+    public float getAccuracy(){
+        return entityType.accuracy * (float) (Math.pow(0.75,level));
+    }
+
+    public int getAttack(){
+        return entityType.attack + Math.round(entityType.attack * 0.5f * level);
+    }
+
+    public boolean attacksAllies(){
+        return entityType.attacksAllies;
+    }
+
+    public boolean attacksHostiles(){
+        return entityType.attacksHostiles;
+    }
+
+    public boolean hitsAllies(){
+        return entityType.hitsAllies;
+    }
+
+    public boolean hitsHostiles(){
+        return entityType.hitsHostiles;
+    }
+
+    public ObjectType getProjectile(){
+        return entityType.projectile;
+    }
+
+    public int getCost(){
+        return entityType.cost;
+    }
+
+    public boolean isRanged(){
+        return entityType.isRanged();
+    }
+
+    public boolean isMaintower(){
+        return entityType == EntityType.MAINTOWER;
+    }
+
+    private float getStrength(EffectType effectType) {
+        return (effects[effectType.ordinal()] > 0) ? effectType.strength : 1;
     }
 
     @Override
@@ -138,5 +203,10 @@ public class Entity extends GameObject implements Partisan {
                 ", wave=" + wave +
                 ", block=(" + block.x + "|" + block.y + ")" +
                 '}';
+    }
+
+    @Override
+    public Entity clone(){
+        return new Entity(entityType,level,getX(),getY(),wave,block,isEnemy);
     }
 }

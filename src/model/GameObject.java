@@ -1,15 +1,16 @@
 package model;
 
+import utility.Utility;
 
 public abstract class GameObject implements Position {
-    private int level;
+    protected int level;
     private float x, y, hp;
 
     public GameObject(ObjectType objectType, int level, float x, float y) {
         this.level = level;
         this.x = x;
         this.y = y;
-        this.hp = objectType.getMaxHP();
+        this.hp = objectType.getMaxHP() + objectType.getMaxHP() * 0.5f * level;
     }
 
     public float getHp() {
@@ -18,6 +19,16 @@ public abstract class GameObject implements Position {
 
     public int getLevel() {
         return level;
+    }
+
+    public void setLevel(int level){
+        this.hp += getObjectType().getMaxHP()*0.5f*(level-this.level);
+        this.level = level;
+    }
+
+    public void upgrade(){
+        level++;
+        this.hp += getObjectType().getMaxHP()*0.5f;
     }
 
     public float getX() {
@@ -39,6 +50,10 @@ public abstract class GameObject implements Position {
         }
     }
 
+    public float getRadius(){
+        return getObjectType().getRadius();
+    }
+
     public void setX(float x) {
         this.x = x;
     }
@@ -47,5 +62,19 @@ public abstract class GameObject implements Position {
         this.y = y;
     }
 
-    public abstract ObjectType getObjectType();
+    protected abstract ObjectType getObjectType();
+
+    public float getMaxHp(){
+        return getObjectType().getMaxHP() + getObjectType().getMaxHP() * 0.5f * level;
+    }
+
+    public String getName(){
+        String name = getObjectType().getName();
+
+        if(level > 0){
+            name += " " + Utility.intToRoman(level);
+        }
+
+        return name;
+    }
 }

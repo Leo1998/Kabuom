@@ -161,7 +161,7 @@ public class World {
             }
         }
 
-        Entity mainTower = new Entity(EntityType.MAINTOWER, 1, mainTowerCoordX, mainTowerCoordY, -1, blocks[mainTowerCoordX][mainTowerCoordY], false);
+        Entity mainTower = new Entity(EntityType.MAINTOWER, 0, mainTowerCoordX, mainTowerCoordY, -1, blocks[mainTowerCoordX][mainTowerCoordY], false);
 
         projectileHandler = new ProjectileHandler(this);
         entityHandler = new EntityHandler(this,mainTower);
@@ -196,6 +196,9 @@ public class World {
             tower.setBlock(blocks[xPos][yPos]);
             newEntities.add(tower);
             entityHandler.newTower(xPos,yPos);
+
+            coins -= tower.getCost();
+
             return true;
         }
         return false;
@@ -203,8 +206,8 @@ public class World {
 
     public void sellTower(int x, int y){
         Entity entity = blocks[x][y].getTower();
-        if (entity != null && entity.entityType != EntityType.MAINTOWER) {
-            coins += entity.entityType.cost * (entity.getHp() / entity.entityType.getMaxHP());
+        if (entity != null && !entity.isMaintower()) {
+            coins += entity.getCost() * (entity.getHp() / entity.getMaxHp());
             removeEntity(entity);
         }
     }
@@ -212,8 +215,8 @@ public class World {
     public void removeEntity(Entity entity){
         entity.setHp(-1);
         if(entity.isEnemy()){
-            coins += entity.entityType.cost*25;
-        } else if(entity.entityType == EntityType.MAINTOWER){
+            coins += entity.getCost()*25;
+        } else if(entity.isMaintower()){
             Controller.instance.endGame(true);
         }
     }
@@ -271,9 +274,9 @@ public class World {
             i+= EntityType.values()[entityIndex].cost;
             Entity entity;
             if (EntityType.values()[entityIndex].speed > 0) {
-                entity = new MoveEntity(EntityType.values()[entityIndex], 1, x, y, wave, blocks[x][y], true);
+                entity = new MoveEntity(EntityType.values()[entityIndex], 0, x, y, wave, blocks[x][y], true);
             } else {
-                entity = new Entity(EntityType.values()[entityIndex], 1, x, y, wave, blocks[x][y], true);
+                entity = new Entity(EntityType.values()[entityIndex], 0, x, y, wave, blocks[x][y], true);
             }
             spawnEntity(entity, x, y);
         }
@@ -328,6 +331,10 @@ public class World {
 
     public File getWorldFile() {
         return worldFile;
+    }
+
+    public int countEntities(){
+        return (entityList == null ? 0 : entityList.size());
     }
 
     public void startWave() {

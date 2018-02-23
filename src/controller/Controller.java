@@ -52,7 +52,11 @@ public class Controller {
             startTime = currentTime;
             frames++;
             if (currentTime - totalTime > 1000000000) {
-                System.out.println("fps: " + frames);
+                if(world != null){
+                    System.out.println("fps: " + frames + " entities: " + world.countEntities());
+                } else {
+                    System.out.println("fps: " + frames);
+                }
 
                 frames = 0;
 

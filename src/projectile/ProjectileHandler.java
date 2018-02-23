@@ -30,20 +30,19 @@ public class ProjectileHandler {
 
             //System.out.println(p.getX() + "  " + p.getY());
             //weite die das Projektil geflogen ist wird aktualisiert
-            projectile.setDistance(projectile.getDistance() + projectile.projectileType.speed * dt);
-            //wenn die distanz größer als die reichweite ist wird das projektil entfernt
+            projectile.setDistance(projectile.getDistance() + projectile.getSpeed() * dt);
             //projektil fliegt in richtung des zieles
-            projectile.setX(projectile.getX() + projectile.getDir().getCoords()[0] * projectile.projectileType.speed * dt);
-            projectile.setY(projectile.getY() + projectile.getDir().getCoords()[1] * projectile.projectileType.speed * dt);
+            projectile.setX(projectile.getX() + projectile.getDir().getCoords()[0] * projectile.getSpeed() * dt);
+            projectile.setY(projectile.getY() + projectile.getDir().getCoords()[1] * projectile.getSpeed() * dt);
 
             for (Entity entity : findCollidingEnemies(projectile)) {
                 if(!projectile.hasHitEntity(entity)) {
-                    entity.addHp(-projectile.projectileType.impactDamage, projectile.source.name);
+                    entity.addHp(-projectile.getDamage(), projectile.source);
                     projectile.addToHitEntities(entity);
 
-                    if (projectile.projectileType.effectType != null) {
-                        entity.addEffect(projectile.projectileType.effectType);
-                    } else if (projectile.projectileType == ProjectileType.LIGHTNING) {
+                    if (projectile.getEffect() != null) {
+                        entity.addEffect(projectile.getEffect());
+                    } else if (projectile.getAbility() == Projectile.Ability.RANDOMROTATION) {
                         projectile.setDistance(projectile.getDistance()/2);
                         projectile.getDir().rotate((float)(random.nextGaussian()*Math.PI));
                     }
@@ -55,7 +54,8 @@ public class ProjectileHandler {
                 }
             }
 
-            if(!world.inWorld(projectile) || projectile.getHp() <= 0 || projectile.getDistance() >= projectile.projectileType.range){
+            //wenn die distanz größer als die reichweite ist wird das projektil entfernt
+            if(!world.inWorld(projectile) || projectile.getHp() <= 0 || projectile.getDistance() >= projectile.getRange()){
                 iterator.remove();
                 spawnEffects(projectile);
             }
@@ -63,11 +63,11 @@ public class ProjectileHandler {
     }
 
     private void spawnEffects(Projectile projectile){
-        switch (projectile.projectileType) {
-            case POISON:
+        switch (projectile.getAbility()) {
+            case POISONCLOUD:
                 spawnPoisonCloud(projectile.getX(), projectile.getY(), projectile.getLevel(), Constants.poisonCloudAmount, projectile.getDir(), projectile.isEnemy(), projectile.source);
                 break;
-            case FRAGGRENADE:
+            case EXPLOSION:
                 world.spawnProjectile(new Projectile(ProjectileType.EXPLOSION, projectile.getLevel(), projectile.getX(), projectile.getY(), projectile.getDir(), projectile.isEnemy(), projectile.source));
                 break;
         }
@@ -75,13 +75,13 @@ public class ProjectileHandler {
 
     private LinkedList<Entity> findCollidingEnemies(Projectile projectile){
         LinkedList<Entity> entities = new LinkedList<>();
-        float radius = projectile.projectileType.radius;
+        float radius = projectile.getRadius();
         for (int i = Math.max(0,(int) Math.floor(projectile.getX() - radius)); i < Math.min(world.getBlocks().length,Math.ceil(projectile.getX()+radius) + 1); i++) {
             for (int j = Math.max(0,(int) Math.floor(projectile.getY()-radius)); j < Math.min(world.getBlocks()[i].length,Math.ceil(projectile.getY()+radius) + 1); j++) {
                 for(Entity entity:world.getBlocks()[i][j]){
                     if(projectile.hits(entity)) {
                         float distance = (float) (Math.sqrt(Math.pow(projectile.getX() - entity.getX(), 2) + Math.pow(projectile.getY() - entity.getY(), 2)));
-                        if (distance <= entity.entityType.getRadius() + radius) {
+                        if (distance <= entity.getRadius() + radius) {
                             entities.add(entity);
                         }
                     }
@@ -92,7 +92,7 @@ public class ProjectileHandler {
         return entities;
     }
 
-    private void spawnPoisonCloud(float xPos, float yPos, int level, int amount, Vector2 direction, boolean isEnemy, EntityType source) {
+    private void spawnPoisonCloud(float xPos, float yPos, int level, int amount, Vector2 direction, boolean isEnemy, String source) {
         Random random = new Random();
         for (int i = 0; i < amount; i++) {
             float alpha = random.nextFloat() * (float) (Math.PI * 2);

@@ -1,5 +1,6 @@
 package projectile;
 
+import entity.model.EffectType;
 import entity.model.Entity;
 import entity.model.EntityType;
 import entity.model.Partisan;
@@ -10,14 +11,14 @@ import utility.Vector2;
 import java.util.ArrayList;
 
 public class Projectile extends GameObject implements Partisan {
-    public final ProjectileType projectileType;
+    private final ProjectileType projectileType;
     private float distance;
     private Vector2 dir;
     private ArrayList<Entity> hitEntities; // Zur Lösung von Kollisionsproblemen beim durchdringen von Gegnern.
     private boolean isEnemy;
-    public final EntityType source;
+    public final String source;
 
-    public Projectile(ProjectileType projectileType, int level, float x, float y, Vector2 dir, boolean isEnemy, EntityType source) {
+    public Projectile(ProjectileType projectileType, int level, float x, float y, Vector2 dir, boolean isEnemy, String source) {
         super(projectileType, level, x, y);
         this.projectileType = projectileType;
         this.dir = dir;
@@ -58,8 +59,44 @@ public class Projectile extends GameObject implements Partisan {
         hitEntities.add(entity);
     }
 
+    /**
+     * Getter for Enum
+     */
+
+    public float getSpeed(){
+        return projectileType.speed + projectileType.speed * 0.5f * level;
+    }
+
+    public int getDamage(){
+        return projectileType.impactDamage + Math.round(projectileType.impactDamage * 0.5f * level);
+    }
+
+    public float getRange(){
+        return projectileType.range + projectileType.range * 0.5f * level;
+    }
+
+    public EffectType getEffect(){
+        return projectileType.effectType;
+    }
+
+    public String getTexture(){
+        return projectileType.textureID;
+    }
+
+    public boolean hitsAllies(){
+        return projectileType.hitAllies;
+    }
+
+    public boolean hitsHostiles(){
+        return projectileType.hitHostiles;
+    }
+
+    public Ability getAbility(){
+        return Ability.NULL;
+    }
+
     @Override
-    public ObjectType getObjectType() {
+    protected ObjectType getObjectType() {
         return projectileType;
     }
 
@@ -74,5 +111,12 @@ public class Projectile extends GameObject implements Partisan {
     @Override
     public boolean isEnemy() {
         return isEnemy;
+    }
+
+    public enum Ability{
+        NULL,
+        RANDOMROTATION,
+        EXPLOSION,
+        POISONCLOUD,
     }
 }

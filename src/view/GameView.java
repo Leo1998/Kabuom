@@ -1,6 +1,5 @@
 package view;
 
-import com.sun.org.apache.bcel.internal.generic.MONITORENTER;
 import entity.model.Entity;
 import entity.model.EntityType;
 import entity.model.MoveEntity;
@@ -20,7 +19,6 @@ import view.rendering.PostProcessingManager;
 import world.World;
 
 import java.util.List;
-import java.util.Scanner;
 
 public class GameView extends View {
 
@@ -91,43 +89,43 @@ public class GameView extends View {
     }
 
     private void drawEntity(Entity entity, Batch batch){
-        if(entity.entityType.baseTexture != null) {
+        if(entity.getBaseTexture() != null) {
             float angle = 0;
             if (entity instanceof MoveEntity) {
                 MoveEntity mEntity = (MoveEntity) entity;
                 if (!mEntity.getMovement().nullVector()) {
                     angle = Utility.calculateAngleBetweenTwoPoints(0, 0, mEntity.getMovement().getCoords()[0], mEntity.getMovement().getCoords()[1]);
                 }
-                float diameter = entity.entityType.radius * 2;
+                float diameter = entity.getRadius() * 2;
                 float width = scale * diameter;
                 float height = scale * diameter;
-                float percentage = Math.max(0, entity.getHp() / entity.entityType.getMaxHP());
+                float percentage = Math.max(0, entity.getHp() / entity.getMaxHp());
 
                 batch.draw(null, blockToViewX(entity.getX(), diameter), blockToViewY(entity.getY(), diameter) + height * 1.1f, width, height * 0.1f, 0.6f, 0.6f, 0.6f, 1.0f);
                 batch.draw(null, blockToViewX(entity.getX(), diameter), blockToViewY(entity.getY(), diameter) + height * 1.1f, width * percentage, height * 0.1f, 0.0f, 1.0f, 0.0f, 1.0f);
             }
 
-            drawGameObject(entity, entity.entityType.baseTexture, angle, batch, 1);
+            drawGameObject(entity, entity.getBaseTexture(), angle, batch, 1);
         }
 
-        if (entity.entityType.turretTexture != null) {
+        if (entity.getTurretTexture() != null) {
             float angle = 0;
             if (entity.getTarget() != null) {
                 angle = Utility.calculateAngleBetweenTwoPoints(entity.getTarget().getX(), entity.getTarget().getY(), entity.getX(), entity.getY());
             }
 
-            drawGameObject(entity, entity.entityType.turretTexture, angle, batch, 0.9f);
+            drawGameObject(entity, entity.getTurretTexture(), angle, batch, 0.9f);
         }
     }
 
     private void drawProjectile(Projectile projectile, Batch batch){
         float angle = Utility.calculateAngleBetweenTwoPoints(projectile.getDir().getCoords()[0], projectile.getDir().getCoords()[1], 0, 0);
 
-        drawGameObject(projectile, projectile.projectileType.textureID, angle, batch, 1);
+        drawGameObject(projectile, projectile.getTexture(), angle, batch, 1);
     }
 
     private void drawGameObject(GameObject gameObject, String textureId, float rotation, Batch batch, float size){
-        float diameter = gameObject.getObjectType().getRadius()*2*size;
+        float diameter = gameObject.getRadius()*2*size;
         float width = scale * diameter;
         float height = scale * diameter;
 
@@ -180,7 +178,7 @@ public class GameView extends View {
                 int x0 = Mouse.getX();
                 int y0 = Math.round(originHeight) - Mouse.getY();
 
-                String l1 = t.entityType.getName();
+                String l1 = t.getName();
                 String l2 = "Health: " + niceNumber(Math.round(t.getHp()));
                 String l3 = "X:"+Math.round(t.getX())+" Y:"+Math.round(t.getY());
 
@@ -198,14 +196,14 @@ public class GameView extends View {
         if (setTower != null) {
             setTower.setX(Mouse.getX() - scale / 2);
             setTower.setY(originHeight - Mouse.getY() - scale / 2);
-            float diameter = setTower.entityType.getRadius()*2;
+            float diameter = setTower.getRadius()*2;
             float width = scale * diameter;
             float height = scale * diameter;
-            if(setTower.entityType.baseTexture != null){
-                batch.draw(ViewManager.getTexture(setTower.entityType.baseTexture), setTower.getX(), setTower.getY(), width, height);
+            if(setTower.getBaseTexture() != null){
+                batch.draw(ViewManager.getTexture(setTower.getBaseTexture()), setTower.getX(), setTower.getY(), width, height);
             }
-            if(setTower.entityType.turretTexture != null){
-                batch.draw(ViewManager.getTexture(setTower.entityType.turretTexture), setTower.getX(), setTower.getY(), width, height);
+            if(setTower.getTurretTexture() != null){
+                batch.draw(ViewManager.getTexture(setTower.getTurretTexture()), setTower.getX(), setTower.getY(), width, height);
             }
         }
 
@@ -310,10 +308,9 @@ public class GameView extends View {
                 setTower.setX((int) mouse.getCoords()[0]);
                 setTower.setY((int) mouse.getCoords()[1]);
                 if (world.setTower(setTower)) {
-                    world.setCoins(world.getCoins() - setTower.entityType.cost);
 
-                    if (shiftdown && world.getCoins() - setTower.entityType.cost >= 0) {
-                        setTower = new Entity(setTower.entityType, 0, Mouse.getX(), originHeight - Mouse.getY(), -1, null, false);
+                    if (shiftdown && world.getCoins() - setTower.getCost() >= 0) {
+                        setTower = setTower.clone();
                     } else {
                         setTower = null;
                         viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);

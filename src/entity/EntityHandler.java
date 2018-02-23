@@ -71,13 +71,6 @@ public class EntityHandler {
 
             if(i == updateIndex){
                 findPath[Math.round(entity.getX())][Math.round(entity.getY())] = true;
-                if(entity.getHp() > 0) {
-                    entity.setBlock(nodeMap[Math.round(entity.getX())][Math.round(entity.getY())].block);
-                    if (!entity.getBlock().contains(entity)) {
-                        System.out.println(entity);
-                        entity.getBlock().addEntity(entity);
-                    }
-                }
             }
 
             if(entity instanceof MoveEntity){
@@ -137,7 +130,7 @@ public class EntityHandler {
                 node.damage /= 2;
 
                 if(node.block.getTower() != null){
-                    node.block.getTower().addHp(node.block.getTower().getObjectType().getMaxHP()/10);
+                    node.block.getTower().addHp(node.block.getTower().getMaxHp()/10);
                 }
             }
         }
@@ -162,15 +155,15 @@ public class EntityHandler {
             }
 
         }else {
-            entity.setTarget(findTarget(entity, entity.entityType.range + 3));
+            entity.setTarget(findTarget(entity, entity.getRange() + 3));
 
             if(entity.getTarget() != null && entity.getTarget().getHp() <= 0){
                 entity.setTarget(null);
             }
         }
         //Attack target if target exists and is in range
-        if (entity.getTarget() != null && getDist(entity,entity.getTarget()) <= entity.entityType.range + entity.getTarget().entityType.getRadius()) {
-            if (entity.entityType.isRanged()) {
+        if (entity.getTarget() != null && getDist(entity,entity.getTarget()) <= entity.getRange() + entity.getTarget().getRadius()) {
+            if (entity.isRanged()) {
                 if(entity instanceof MoveEntity){
                     MoveEntity mEntity = (MoveEntity) entity;
 
@@ -180,10 +173,10 @@ public class EntityHandler {
                 }
 
 
-                if(entity.entityType.projectile instanceof ProjectileType){
+                if(entity.getProjectile() instanceof ProjectileType){
                     Vector2 aiming = aim(entity, entity.getTarget());
 
-                    for (int i = 0; i < entity.entityType.attack; i++) {
+                    for (int i = 0; i < entity.getAttack(); i++) {
                         Vector2 copy = aiming.clone();
 
                         Projectile projectile = createProjectile(entity, copy);
@@ -191,15 +184,15 @@ public class EntityHandler {
                         world.spawnProjectile(projectile);
                     }
                 } else {
-                    for(int i = 0; i < entity.entityType.attack; i++){
+                    for(int i = 0; i < entity.getAttack(); i++){
                         Entity spawn = createEntity(entity);
 
                         world.spawnEntity(spawn, Math.round(entity.getX()), Math.round(entity.getY()));
                     }
                 }
             } else {
-                if(random.nextFloat() < entity.entityType.accuracy) {
-                    entity.getTarget().addHp(-entity.entityType.attack, entity.entityType.name);
+                if(random.nextFloat() < entity.getAccuracy()) {
+                    entity.getTarget().addHp(-entity.getAttack(), entity.getName());
                 }
             }
         }
@@ -217,7 +210,7 @@ public class EntityHandler {
                 for (int j = full ? Math.max(0, y - dist) : (y - dist < 0) ? y + dist : y - dist; j < Math.min(world.getBlocks()[i].length, y + dist + 1); j += full ? 1 : 2 * dist) {
                     for(Entity entity:nodeMap[i][j].block){
                         if(!source.allyOf(entity) && entity.getHp() > 0){
-                            if (closest == null || getDist(source, entity) - entity.entityType.getRadius() < getDist(source, closest) - closest.entityType.getRadius()) {
+                            if (closest == null || getDist(source, entity) - entity.getRadius() < getDist(source, closest) - closest.getRadius()) {
                                 closest = entity;
                             }
                         }
@@ -226,7 +219,7 @@ public class EntityHandler {
             }
         }
 
-        if(closest != null && getDist(source,closest) > closest.entityType.getRadius() + range){
+        if(closest != null && getDist(source,closest) > closest.getRadius() + range){
             closest = null;
         }
 
@@ -247,7 +240,7 @@ public class EntityHandler {
             float tmx = moveTarget.getMovement().getCoords()[0];
             float tmy = moveTarget.getMovement().getCoords()[1];
 
-            float s = ((ProjectileType)source.entityType.projectile).speed;
+            float s = ((ProjectileType)source.getProjectile()).speed;
 
             float a = tmx * tmx + tmy * tmy - s * s;
             float b = 2 * ((tX - sX) * tmx + (tY - sY) * tmy);
@@ -280,20 +273,20 @@ public class EntityHandler {
     }
 
     private Projectile createProjectile(Entity source, Vector2 vec){
-        if (source.entityType.accuracy > 0) {
-            vec.rotate((float) ((random.nextDouble() - 0.5) * source.entityType.accuracy));
+        if (source.getAccuracy() > 0) {
+            vec.rotate((float) ((random.nextDouble() - 0.5) * source.getAccuracy()));
         }
 
-        Projectile p = new Projectile((ProjectileType)source.entityType.projectile, source.getLevel(), source.getX(), source.getY(), vec, source.isEnemy(), source.entityType);
+        Projectile p = new Projectile((ProjectileType)source.getProjectile(), source.getLevel(), source.getX(), source.getY(), vec, source.isEnemy(), source.getName());
 
-        p.setX(p.getX() + p.getDir().getCoords()[0] * source.getObjectType().getRadius());
-        p.setY(p.getY() + p.getDir().getCoords()[1] * source.getObjectType().getRadius());
+        p.setX(p.getX() + p.getDir().getCoords()[0] * source.getRadius());
+        p.setY(p.getY() + p.getDir().getCoords()[1] * source.getRadius());
 
         return p;
     }
 
     private Entity createEntity(Entity source){
-        return new MoveEntity((EntityType)source.entityType.projectile,source.getLevel(),source.getX(),source.getY(),source.getWave(),source.getBlock(),source.isEnemy());
+        return new MoveEntity((EntityType)source.getProjectile(),source.getLevel(),source.getX(),source.getY(),source.getWave(),source.getBlock(),source.isEnemy());
     }
 
     /*
@@ -353,9 +346,9 @@ public class EntityHandler {
             float q = (entity.getSpeed()*dt) / dist;
             Vector2 vec;
 
-            if(dist > entity.entityType.range + target.entityType.getRadius()){
+            if(dist > entity.getRange() + target.getRadius()){
                 vec = new Vector2((entity.getTarget().getX() - entity.getX()) * q,(entity.getTarget().getY() - entity.getY()) * q);
-            } else if((target.entityType.range < entity.entityType.range && dist < target.entityType.range + entity.entityType.getRadius()) || dist < entity.entityType.range/2){
+            } else if((target.getRange() < entity.getRange() && dist < target.getRange() + entity.getRadius()) || dist < entity.getRange()/2){
                 vec = new Vector2((entity.getTarget().getX() - entity.getX()) * q * -1,(entity.getTarget().getY() - entity.getY()) * q * -1);
             } else {
                 float xCoord = (entity.getTarget().getX() - entity.getX()) * q;
@@ -397,13 +390,13 @@ public class EntityHandler {
     }
 
     private Entity findCollidingEntity(Entity source){
-        float x = source.getX(), y = source.getY(), radius = source.entityType.getRadius();
+        float x = source.getX(), y = source.getY(), radius = source.getRadius();
         Entity closest = null;
         for (int i = Math.max(0,(int) (Math.floor(x - 1))); i < Math.min(nodeMap.length,Math.ceil(x + 2)); i++) {
             for (int j = Math.max(0, (int) (Math.floor(y - 1))); j < Math.min(nodeMap[i].length, Math.ceil(y + 2)); j++) {
                 for(Entity entity : nodeMap[i][j].block){
                     if(!source.allyOf(entity)){
-                        if (closest == null || getDist(source, entity) - entity.entityType.getRadius() < getDist(source, closest) - closest.entityType.getRadius()) {
+                        if (closest == null || getDist(source, entity) - entity.getRadius() < getDist(source, closest) - closest.getRadius()) {
                             closest = entity;
                         }
                     }
@@ -411,7 +404,7 @@ public class EntityHandler {
             }
         }
 
-        if(closest != null && getDist(source,closest) > closest.entityType.getRadius() + radius){
+        if(closest != null && getDist(source,closest) > closest.getRadius() + radius){
             closest = null;
         }
         return closest;
@@ -591,7 +584,7 @@ public class EntityHandler {
         if(entity.isEnemy())
             key++;
         //Second Bit: isRanged
-        if(entity.entityType.isRanged())
+        if(entity.isRanged())
             key += 2;
 
         return key;
@@ -679,13 +672,13 @@ public class EntityHandler {
         private void getFromEntity(Entity entity) {
             dps = 0;
             attackRange = 0;
-            if (entity != null && !entity.isEnemy() && entity.entityType.attack > 0) {
-                if(entity.entityType.projectile instanceof ProjectileType) {
-                    dps = ((ProjectileType)entity.entityType.projectile).impactDamage * entity.entityType.attack / entity.entityType.frequency * dpsMultiplier;
-                    attackRange = entity.entityType.range;
-                }else if(!entity.entityType.isRanged()){
-                    dps = entity.entityType.attack / entity.entityType.frequency * dpsMultiplier;
-                    attackRange = entity.entityType.range;
+            if (entity != null && !entity.isEnemy() && entity.getAttack() > 0) {
+                if(entity.getProjectile() instanceof ProjectileType) {
+                    dps = ((ProjectileType)entity.getProjectile()).impactDamage * entity.getAttack() / entity.getFrequency() * dpsMultiplier;
+                    attackRange = entity.getRange();
+                }else if(!entity.isRanged()){
+                    dps = entity.getAttack() / entity.getFrequency() * dpsMultiplier;
+                    attackRange = entity.getRange();
                 }
             }
         }
