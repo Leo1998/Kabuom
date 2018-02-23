@@ -1,6 +1,7 @@
 package utility;
 
 import model.GameObject;
+import model.Position;
 import view.components.Button;
 import view.components.ViewComponent;
 
@@ -54,7 +55,7 @@ public class Utility {
         return (float) (angle);
     }
 
-    public static float getAngle(GameObject o1, GameObject o2) {
+    public static float getAngle(Position o1, Position o2) {
         double theta = Math.atan2(o1.getY() - o2.getY(), o1.getX() - o2.getX());
 
         theta += Math.PI / 2.0;

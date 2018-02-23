@@ -111,7 +111,7 @@ public class GameView extends View {
         if (entity.getTurretTexture() != null) {
             float angle = 0;
             if (entity.getTarget() != null) {
-                angle = Utility.calculateAngleBetweenTwoPoints(entity.getTarget().getX(), entity.getTarget().getY(), entity.getX(), entity.getY());
+                angle = Utility.getAngle(entity.getTarget(), entity);
             }
 
             drawGameObject(entity, entity.getTurretTexture(), angle, batch, 0.9f);
