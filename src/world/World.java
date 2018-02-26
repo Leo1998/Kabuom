@@ -353,6 +353,8 @@ public class World {
     }
 
     private void spawnWave(){
+        Controller.instance.saveGame();
+
         entityHandler.startWave();
 
         int amount = (int)(Math.pow(1+wave,2)/10 + 5);
