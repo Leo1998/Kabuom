@@ -232,7 +232,7 @@ public class World {
     public void removeEntity(Entity entity){
         entity.setHp(-1);
         if(entity.isEnemy()){
-            coins += (int)(Math.pow(1.1,-entity.getWave())*100);
+            coins += (entity.getLevel()+1) * entity.getCost() * 1000/(Math.pow(1+wave,2)/10 + 5);
         } else if(entity.isMaintower()){
             Controller.instance.endGame(true);
         }
