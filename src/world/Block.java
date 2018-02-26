@@ -27,15 +27,12 @@ public class Block implements Iterable<Entity> {
         return tower;
     }
 
-    public void setTower(Entity entity){
-        tower = entity;
-        if(!entities.contains(tower)){
-            entities.add(tower);
-        }
-    }
-
     public void addEntity(Entity entity){
         entities.add(entity);
+
+        if(!(entity instanceof MoveEntity)){
+            tower = entity;
+        }
     }
 
     public boolean contains(Entity entity){
@@ -92,6 +89,9 @@ public class Block implements Iterable<Entity> {
                     next = iterator.next();
                     if(next == null || next.getHp() <= 0 || next.getBlock() != Block.this){
                         iterator.remove();
+                        if(next == tower){
+                            tower = null;
+                        }
                     } else {
                         finished = true;
                     }

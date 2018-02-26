@@ -359,7 +359,7 @@ public class GameView extends View {
             shiftdown = true;
         }
 
-        if (key == Keyboard.KEY_ESCAPE && !world.isInWave()) {
+        if (key == Keyboard.KEY_ESCAPE) {
             getViewManager().getCtrl().endGame(false);
         }
         if(key == Keyboard.KEY_TAB) {

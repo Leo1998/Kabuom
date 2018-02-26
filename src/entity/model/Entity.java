@@ -3,7 +3,7 @@ package entity.model;
 import entity.EntityHandler;
 import model.GameObject;
 import model.ObjectType;
-import projectile.ProjectileType;
+import org.json.JSONObject;
 import utility.Constants;
 import world.Block;
 
@@ -29,6 +29,29 @@ public class Entity extends GameObject implements Partisan {
         this.block = block;
         attackCooldown = 0;
         this.isEnemy = isEnemy;
+    }
+
+    public Entity(JSONObject object, Block[][] blocks){
+        super(object);
+
+        this.entityType = EntityType.values()[object.getInt("type")];
+        this.effects = new float[EffectType.values().length];
+        this.wave = object.getInt("wave");
+        this.block = blocks[Math.round(getX())][Math.round(getY())];
+        this.block.addEntity(this);
+        attackCooldown = 0;
+        this.isEnemy = object.getBoolean("isEnemy");
+    }
+
+    public JSONObject toJSON(){
+        JSONObject object = super.toJSON();
+
+        object.put("type",entityType.ordinal());
+        object.put("wave",wave);
+        object.put("isEnemy",isEnemy);
+        object.put("isMove",this instanceof MoveEntity);
+
+        return object;
     }
 
     public static void setEntityHandler(EntityHandler entityHandler){

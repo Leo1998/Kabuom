@@ -1,5 +1,6 @@
 package model;
 
+import org.json.JSONObject;
 import utility.Utility;
 
 public abstract class GameObject implements Position {
@@ -11,6 +12,24 @@ public abstract class GameObject implements Position {
         this.x = x;
         this.y = y;
         this.hp = objectType.getMaxHP() * objectType.getUpgradeOrder().getStrength(level,0);
+    }
+
+    public GameObject(JSONObject object){
+        this.level = object.getInt("lvl");
+        this.x = object.getInt("x");
+        this.y = object.getInt("y");
+        this.hp = object.getInt("hp");
+    }
+
+    public JSONObject toJSON(){
+        JSONObject object = new JSONObject();
+
+        object.put("lvl",level);
+        object.put("x",Math.round(x));
+        object.put("y",Math.round(y));
+        object.put("hp",Math.round(hp));
+
+        return object;
     }
 
     public float getHp() {

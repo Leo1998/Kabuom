@@ -86,7 +86,6 @@ public class EntityHandler {
             if(entity.getHp() <= 0){
                 iterator.remove();
                 if(entity.getBlock().getTower() == entity){
-                    entity.getBlock().setTower(null);
                     updateNode(Math.round(entity.getX()),Math.round(entity.getY()),entity.getBlock());
                 }
                 world.removeEntity(entity);

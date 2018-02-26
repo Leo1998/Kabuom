@@ -1,6 +1,7 @@
 package entity.model;
 
 import entity.movement.Step;
+import org.json.JSONObject;
 import utility.Vector2;
 import world.Block;
 
@@ -13,6 +14,12 @@ public class MoveEntity extends Entity {
 
     public MoveEntity(EntityType entityType, int level, float x, float y, int wave, Block block, boolean isEnemy) {
         super(entityType, level, x, y, wave, block, isEnemy);
+        movement = new Vector2(0,0);
+        steps = new Stack<>();
+    }
+
+    public MoveEntity(JSONObject object, Block[][] blocks){
+        super(object,blocks);
         movement = new Vector2(0,0);
         steps = new Stack<>();
     }

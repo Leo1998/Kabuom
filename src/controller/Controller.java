@@ -1,12 +1,17 @@
 package controller;
 
+import org.json.JSONObject;
+import org.json.JSONTokener;
 import org.lwjgl.opengl.Display;
 import view.MenuView;
 import view.View;
 import view.ViewManager;
 import world.World;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
 
 public class Controller {
 
@@ -20,6 +25,7 @@ public class Controller {
     private Config config;
     private ViewManager viewManager;
     private World world;
+    private File worldFile = new File("save/world1.json");
 
     public void mainLoop() {
         new File("save").mkdir();
@@ -74,19 +80,40 @@ public class Controller {
     }
 
     public void startGame() {
-        this.world = new World(19,19,config.getDifficulty(),new File("save/world1.json"));
+        this.world = new World(19,19);
     }
 
     public void continueGame(){
-        //this.world = World.createWorld(new File("save/world1.json"), config.getDifficulty());
-        this.world = new World(19,19,config.getDifficulty(),new File("save/world1.json"));
+        if(worldFile.exists()){
+            try{
+                JSONObject object = new JSONObject(new JSONTokener(new FileInputStream(worldFile)));
+                this.world = new World(object);
+            } catch (Exception e){
+                e.printStackTrace();
+                startGame();
+            }
+        } else {
+            startGame();
+        }
+    }
+
+    public void saveGame(){
+        if(world != null) {
+            try {
+                BufferedWriter writer = new BufferedWriter(new FileWriter(worldFile));
+                writer.write(world.toJSON().toString());
+                writer.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void endGame(boolean gameOver) {
         if (gameOver)
-            world.getWorldFile().delete();
+            worldFile.delete();
         else
-            //World.saveWorld(world);
+            saveGame();
         world.end();
 
         world = null;

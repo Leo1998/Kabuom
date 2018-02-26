@@ -9,7 +9,8 @@ import model.GameObject;
 import projectile.Projectile;
 import projectile.ProjectileHandler;
 
-import java.io.File;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import java.util.LinkedList;
 
 import static utility.Utility.random;
@@ -114,8 +115,6 @@ public class World {
     }
     */
 
-    private File worldFile;
-
     private LinkedList<Projectile> projectileList;
     private LinkedList<Entity> entityList;
     private LinkedList<Projectile> newProjectiles;
@@ -123,11 +122,9 @@ public class World {
 
     private Block[][] blocks;
     private int width, height;
-    private float timePassed;
 
     private int wave = 0;
-    private boolean spawnWave = false, inWave = false, ended = false, print = false;
-    private float gameTime;
+    private boolean spawnWave = false, inWave = false, ended = false;
 
     private int coins = 1000;
 
@@ -140,11 +137,9 @@ public class World {
     private boolean newTower;
     private boolean isDrunk;
 
-    public World(int width, int height, int difficulty, File worldFile) {
+    public World(int width, int height) {
         this.width = width;
         this.height = height;
-        timePassed = 0;
-        this.worldFile = worldFile;
 
         int mainTowerCoordX = width / 2;
         int mainTowerCoordY = height - 2;
@@ -161,14 +156,93 @@ public class World {
             }
         }
 
-        Entity mainTower = new Entity(EntityType.MAINTOWER, 0, mainTowerCoordX, mainTowerCoordY, -1, blocks[mainTowerCoordX][mainTowerCoordY], false);
+        Entity mainTower = new Entity(EntityType.MAINTOWER, 0, mainTowerCoordX, mainTowerCoordY, 0, blocks[mainTowerCoordX][mainTowerCoordY], false);
+        blocks[mainTowerCoordX][mainTowerCoordY].addEntity(mainTower);
+        entityList.add(mainTower);
 
         projectileHandler = new ProjectileHandler(this);
         entityHandler = new EntityHandler(this,mainTower);
+    }
 
-        this.setTower(mainTower);
+    public World(JSONObject object){
+        this.width = object.getInt("width");
+        this.height = object.getInt("height");
 
-        newTower = false;
+        blocks = new Block[width][height];
+        for(int i = 0; i < blocks.length; i++){
+            for(int j = 0; j < blocks[i].length; j++){
+                blocks[i][j] = new Block(i,j);
+            }
+        }
+
+        projectileList = new LinkedList<>();
+        entityList = new LinkedList<>();
+        newProjectiles = new LinkedList<>();
+        newEntities = new LinkedList<>();
+
+        Entity mainTower = null;
+
+        JSONArray entities = object.getJSONArray("entities");
+
+        for(int i = 0; i < entities.length(); i++){
+            JSONObject entityObj = entities.getJSONObject(i);
+            Entity entity;
+            if(entityObj.getBoolean("isMove")){
+                entity = new MoveEntity(entityObj,blocks);
+            } else {
+                entity = new Entity(entityObj, blocks);
+            }
+
+            if(entity.isMaintower()){
+                mainTower = entity;
+            }
+
+            entityList.add(entity);
+        }
+
+        if(mainTower == null){
+            throw new IllegalArgumentException();
+        } else {
+            projectileHandler = new ProjectileHandler(this);
+            entityHandler = new EntityHandler(this,mainTower);
+        }
+    }
+
+    public JSONObject toJSON(){
+        JSONObject obj = new JSONObject();
+
+        obj.put("width", width);
+        obj.put("height", height);
+        obj.put("wave", wave);
+        obj.put("coins", coins);
+
+        /*
+        JSONArray blocksX = new JSONArray();
+        for (int x = 0; x < width; x++) {
+            JSONArray blocksY = new JSONArray();
+
+            for (int y = 0; y < height; y++) {
+                Entity tower = blocks[x][y].getTower();
+
+                if(tower != null){
+                    blocksY.put(tower.toJSON());
+                } else {
+                    blocksY.put(new JSONObject());
+                }
+            }
+
+            blocksX.put(blocksY);
+        }
+
+        obj.put("blocks", blocksX);
+        */
+        JSONArray entities = new JSONArray();
+        for(Entity entity : entityList){
+            entities.put(entity.toJSON());
+        }
+        obj.put("entities",entities);
+
+        return obj;
     }
 
     public void printEntities(int x, int y){
@@ -207,8 +281,8 @@ public class World {
             tower.setY(yPos);
             tower.setWave(wave);
             newTower = true;
-            blocks[xPos][yPos].setTower(tower);
             tower.setBlock(blocks[xPos][yPos]);
+            blocks[xPos][yPos].addEntity(tower);
             newEntities.add(tower);
             entityHandler.newTower(xPos,yPos);
 
@@ -245,9 +319,6 @@ public class World {
      * @param dt
      */
     public void update(float dt) {
-        timePassed = timePassed + dt;
-
-        gameTime = gameTime + dt;
 
         if(!ended) {
 
@@ -319,13 +390,6 @@ public class World {
     public boolean isInWave() {
         return inWave;
     }
-
-    /**
-     * Die Anfrage liefert die vergangene Zeit der Welt als float.
-     */
-    public float getTimePassed() {
-        return timePassed;
-    }
     /**
      * Die Anfrage liefert die Blöcke der Welt als Zweidimensionales Array der Klasse Vertex.
      */
@@ -348,10 +412,6 @@ public class World {
 
     public int getHeight() {
         return height;
-    }
-
-    public File getWorldFile() {
-        return worldFile;
     }
 
     public int countEntities(){
