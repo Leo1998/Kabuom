@@ -35,7 +35,7 @@ public class MoveEntity extends Entity {
 
     @Override
     public String toString() {
-        return super.toString() + "MoveEntity{" +
+        return super.toString() + ", MoveEntity{" +
                 ", block=(" + block.x + "|" + block.y + ")" +
                 ", movement=" + movement +
                 '}';

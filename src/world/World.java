@@ -184,6 +184,21 @@ public class World {
         blocks[x][y].addEntity(entity);
     }
 
+    public boolean upgradeTower(int x, int y){
+        if(x >= 0 && x < blocks.length && y >= 0 && y < blocks[x].length){
+            Entity tower = blocks[x][y].getTower();
+            if(tower != null){
+                if(tower.getCost() <= coins){
+                    coins -= tower.getCost();
+                    tower.upgrade();
+
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public boolean setTower(Entity tower){
         int xPos = (int)(tower.getX());
         int yPos = (int)(tower.getY());
@@ -197,7 +212,9 @@ public class World {
             newEntities.add(tower);
             entityHandler.newTower(xPos,yPos);
 
-            coins -= tower.getCost();
+            if(!tower.isMaintower()) {
+                coins -= tower.getCost();
+            }
 
             return true;
         }
@@ -215,7 +232,7 @@ public class World {
     public void removeEntity(Entity entity){
         entity.setHp(-1);
         if(entity.isEnemy()){
-            coins += entity.getCost()*25;
+            coins += (25-(25-1-(5)*Math.pow(Math.E,((-1f/6f)*(entity.getWave()-15f)))))*entity.getCost()*(entity.getLevel()*0.5f + 1);
         } else if(entity.isMaintower()){
             Controller.instance.endGame(true);
         }
@@ -266,20 +283,24 @@ public class World {
 
     private void spawnWave(){
         entityHandler.startWave();
-        for (int i = 0; i < wave*2+4;) {
+
+        int amount = (int)(Math.pow(1+wave,3)/100 + 5);
+
+        while (amount > 0){
             int x = random.nextInt(width);
             int y = 0;
             int entityIndex = random.nextInt(EntityType.values().length - EntityType.firstEnemyIndex) + EntityType.firstEnemyIndex;
-            //int entityIndex = EntityType.firstEnemyIndex+6;
-            i+= EntityType.values()[entityIndex].cost;
+            int level = (int)(random.nextFloat()*0.25f*amount);
+            amount -= EntityType.values()[entityIndex].cost + level;
             Entity entity;
             if (EntityType.values()[entityIndex].speed > 0) {
-                entity = new MoveEntity(EntityType.values()[entityIndex], 0, x, y, wave, blocks[x][y], true);
+                entity = new MoveEntity(EntityType.values()[entityIndex], level, x, y, wave, blocks[x][y], true);
             } else {
-                entity = new Entity(EntityType.values()[entityIndex], 0, x, y, wave, blocks[x][y], true);
+                entity = new Entity(EntityType.values()[entityIndex], level, x, y, wave, blocks[x][y], true);
             }
             spawnEntity(entity, x, y);
         }
+
         spawnWave = false;
     }
 

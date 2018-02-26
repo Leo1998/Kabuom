@@ -64,15 +64,15 @@ public class Projectile extends GameObject implements Partisan {
      */
 
     public float getSpeed(){
-        return projectileType.speed + projectileType.speed * 0.5f * level;
+        return projectileType.speed * getUpgrade(1);
     }
 
     public int getDamage(){
-        return projectileType.impactDamage + Math.round(projectileType.impactDamage * 0.5f * level);
+        return Math.round(projectileType.impactDamage * getUpgrade(2));
     }
 
     public float getRange(){
-        return projectileType.range + projectileType.range * 0.5f * level;
+        return projectileType.range * getUpgrade(3);
     }
 
     public EffectType getEffect(){
@@ -91,8 +91,8 @@ public class Projectile extends GameObject implements Partisan {
         return projectileType.hitHostiles;
     }
 
-    public Ability getAbility(){
-        return Ability.NULL;
+    public ProjectileType.Ability getAbility(){
+        return projectileType.ability;
     }
 
     @Override
@@ -111,12 +111,5 @@ public class Projectile extends GameObject implements Partisan {
     @Override
     public boolean isEnemy() {
         return isEnemy;
-    }
-
-    public enum Ability{
-        NULL,
-        RANDOMROTATION,
-        EXPLOSION,
-        POISONCLOUD,
     }
 }

@@ -42,7 +42,7 @@ public class ProjectileHandler {
 
                     if (projectile.getEffect() != null) {
                         entity.addEffect(projectile.getEffect());
-                    } else if (projectile.getAbility() == Projectile.Ability.RANDOMROTATION) {
+                    } else if (projectile.getAbility() == ProjectileType.Ability.RANDOMROTATION) {
                         projectile.setDistance(projectile.getDistance()/2);
                         projectile.getDir().rotate((float)(random.nextGaussian()*Math.PI));
                     }

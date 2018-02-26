@@ -65,14 +65,18 @@ public abstract class GameObject implements Position {
     protected abstract ObjectType getObjectType();
 
     public float getMaxHp(){
-        return getObjectType().getMaxHP() + getObjectType().getMaxHP() * 0.5f * level;
+        return getObjectType().getMaxHP() * getUpgrade(0);
+    }
+
+    protected float getUpgrade(int index){
+        return getObjectType().getUpgradeOrder().getStrength(level,index);
     }
 
     public String getName(){
         String name = getObjectType().getName();
 
-        if(level > 0){
-            name += " " + Utility.intToRoman(level);
+        if(level >= 0){
+            name += " " + Utility.intToRoman(level + 1);
         }
 
         return name;

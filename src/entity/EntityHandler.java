@@ -191,7 +191,7 @@ public class EntityHandler {
                     }
                 }
             } else {
-                if(random.nextFloat() < entity.getAccuracy()) {
+                if(random.nextFloat() > entity.getAccuracy()) {
                     entity.getTarget().addHp(-entity.getAttack(), entity.getName());
                 }
             }

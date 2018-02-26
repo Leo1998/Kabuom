@@ -82,7 +82,7 @@ public class Entity extends GameObject implements Partisan {
         }
 
         if(getHp() <= 0 && getHp() - temp > 0){
-            //System.out.println(entityType.name + " killed by " + source);
+            System.out.println(getName() + " killed by " + source);
         }
     }
 
@@ -120,12 +120,8 @@ public class Entity extends GameObject implements Partisan {
      * Getter for Enum
      */
 
-    public float getMaxHp(){
-        return entityType.maxHP + entityType.maxHP * 0.5f * level;
-    }
-
     public float getSpeed(){
-        return entityType.speed / getStrength(EffectType.SLOW);
+        return entityType.speed * getUpgrade(1) / getStrength(EffectType.SLOW);
     }
 
     public String getTurretTexture(){
@@ -137,19 +133,19 @@ public class Entity extends GameObject implements Partisan {
     }
 
     public float getFrequency(){
-        return entityType.frequency * (float) (Math.pow(0.75,level)) ;
+        return entityType.frequency * 1/getUpgrade(2);
     }
 
     public float getRange(){
-        return entityType.range + entityType.range * 0.5f * level;
+        return entityType.range * getUpgrade(3);
     }
 
     public float getAccuracy(){
-        return entityType.accuracy * (float) (Math.pow(0.75,level));
+        return entityType.accuracy * 1/getUpgrade(4);
     }
 
     public int getAttack(){
-        return entityType.attack + Math.round(entityType.attack * 0.5f * level);
+        return Math.round(entityType.attack * getUpgrade(5));
     }
 
     public boolean attacksAllies(){
@@ -173,7 +169,7 @@ public class Entity extends GameObject implements Partisan {
     }
 
     public int getCost(){
-        return entityType.cost;
+        return Math.round(entityType.cost * getUpgrade(6));
     }
 
     public boolean isRanged(){
@@ -202,6 +198,7 @@ public class Entity extends GameObject implements Partisan {
                 ", entityType=" + entityType +
                 ", wave=" + wave +
                 ", block=(" + block.x + "|" + block.y + ")" +
+                ", level=" + level +
                 '}';
     }
 
