@@ -209,7 +209,7 @@ public class EntityHandler {
                 boolean full = (i == x - dist || i == x + dist);
                 for (int j = full ? Math.max(0, y - dist) : (y - dist < 0) ? y + dist : y - dist; j < Math.min(world.getBlocks()[i].length, y + dist + 1); j += full ? 1 : 2 * dist) {
                     for(Entity entity:nodeMap[i][j].block){
-                        if(!source.allyOf(entity) && entity.getHp() > 0){
+                        if(((source.allyOf(entity) && entity.attacksAllies()) || (!source.allyOf(entity) && entity.attacksHostiles())) && entity.getHp() > 0){
                             if (closest == null || getDist(source, entity) - entity.getRadius() < getDist(source, closest) - closest.getRadius()) {
                                 closest = entity;
                             }

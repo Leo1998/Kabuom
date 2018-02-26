@@ -156,14 +156,6 @@ public class Entity extends GameObject implements Partisan {
         return entityType.attacksHostiles;
     }
 
-    public boolean hitsAllies(){
-        return entityType.hitsAllies;
-    }
-
-    public boolean hitsHostiles(){
-        return entityType.hitsHostiles;
-    }
-
     public ObjectType getProjectile(){
         return entityType.projectile;
     }

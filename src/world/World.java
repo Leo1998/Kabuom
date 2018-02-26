@@ -232,7 +232,7 @@ public class World {
     public void removeEntity(Entity entity){
         entity.setHp(-1);
         if(entity.isEnemy()){
-            coins += (25-(25-1-(5)*Math.pow(Math.E,((-1f/6f)*(entity.getWave()-15f)))))*entity.getCost()*(entity.getLevel()*0.5f + 1);
+            coins += (int)(Math.pow(1.1,-entity.getWave())*100);
         } else if(entity.isMaintower()){
             Controller.instance.endGame(true);
         }
@@ -284,7 +284,7 @@ public class World {
     private void spawnWave(){
         entityHandler.startWave();
 
-        int amount = (int)(Math.pow(1+wave,3)/100 + 5);
+        int amount = (int)(Math.pow(1+wave,2)/10 + 5);
 
         while (amount > 0){
             int x = random.nextInt(width);
