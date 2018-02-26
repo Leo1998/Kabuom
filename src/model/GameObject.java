@@ -10,7 +10,7 @@ public abstract class GameObject implements Position {
         this.level = level;
         this.x = x;
         this.y = y;
-        this.hp = objectType.getMaxHP() + objectType.getMaxHP() * 0.5f * level;
+        this.hp = objectType.getMaxHP() * objectType.getUpgradeOrder().getStrength(level,0);
     }
 
     public float getHp() {
@@ -45,8 +45,8 @@ public abstract class GameObject implements Position {
 
     public void addHp(float hp) {
         this.hp += hp;
-        if(this.hp > getObjectType().getMaxHP()){
-            this.hp = getObjectType().getMaxHP();
+        if(this.hp > getMaxHp()){
+            this.hp = getMaxHp();
         }
     }
 
