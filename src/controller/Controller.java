@@ -110,9 +110,7 @@ public class Controller {
     }
 
     public void endGame(boolean gameOver) {
-        if (gameOver)
-            worldFile.delete();
-        else
+        if (!gameOver)
             saveGame();
         world.end();
 

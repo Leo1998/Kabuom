@@ -9,7 +9,7 @@ import world.Block;
 
 import static utility.Utility.random;
 
-public class Entity extends GameObject implements Partisan {
+public class Entity extends GameObject implements Partisan, Comparable<Entity> {
 
     private Entity target;
     private final EntityType entityType;
@@ -18,6 +18,9 @@ public class Entity extends GameObject implements Partisan {
     protected Block block;
     private boolean isEnemy;
     private float attackCooldown;
+    private final int i;
+
+    private static int num = Integer.MIN_VALUE;
 
     private static EntityHandler entityHandler;
 
@@ -29,6 +32,8 @@ public class Entity extends GameObject implements Partisan {
         this.block = block;
         attackCooldown = 0;
         this.isEnemy = isEnemy;
+        i = num;
+        num++;
     }
 
     public Entity(JSONObject object, Block[][] blocks){
@@ -41,6 +46,8 @@ public class Entity extends GameObject implements Partisan {
         this.block.addEntity(this);
         attackCooldown = 0;
         this.isEnemy = object.getBoolean("isEnemy");
+        i = num;
+        num++;
     }
 
     public JSONObject toJSON(){
@@ -202,6 +209,11 @@ public class Entity extends GameObject implements Partisan {
     @Override
     public boolean isEnemy() {
         return isEnemy;
+    }
+
+    @Override
+    public int compareTo(Entity o) {
+        return o.i - this.i;
     }
 
     @Override

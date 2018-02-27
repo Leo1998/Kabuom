@@ -4,6 +4,7 @@ import entity.model.EffectType;
 import entity.model.Entity;
 import entity.model.EntityType;
 import entity.model.Partisan;
+import model.BinarySearchTree;
 import model.GameObject;
 import model.ObjectType;
 import utility.Vector2;
@@ -14,7 +15,7 @@ public class Projectile extends GameObject implements Partisan {
     private final ProjectileType projectileType;
     private float distance;
     private Vector2 dir;
-    private ArrayList<Entity> hitEntities; // Zur Lösung von Kollisionsproblemen beim durchdringen von Gegnern.
+    private BinarySearchTree<Entity> hitEntities; // Zur Lösung von Kollisionsproblemen beim durchdringen von Gegnern.
     private boolean isEnemy;
     public final String source;
 
@@ -22,7 +23,6 @@ public class Projectile extends GameObject implements Partisan {
         super(projectileType, level, x, y);
         this.projectileType = projectileType;
         this.dir = dir;
-        this.hitEntities = new ArrayList<>();
         this.isEnemy = isEnemy;
         this.source = source;
     }
@@ -46,17 +46,16 @@ public class Projectile extends GameObject implements Partisan {
     }
 
     /**
-     * Die Anfrage liefert die bereits getroffenen Gegner des Projektils als ArrayList.
+     * Die Methode fügt die bereits getroffenen Gegner des Projektils in einen Binären Suchbaum.
+     * @return Gibt zurück, ob sich der Gegner bereits im Baum befand
      */
-    public boolean hasHitEntity(Entity entity) {
-        return hitEntities.contains(entity);
-    }
-
-    /**
-     * Die Methode fügt die bereits getroffenen Gegner des Projektils in eine ArrayList.
-     */
-    public void addToHitEntities(Entity entity) {
-        hitEntities.add(entity);
+    public boolean addToHitEntities(Entity entity) {
+        if(hitEntities == null){
+            hitEntities = new BinarySearchTree<>(entity);
+            return false;
+        } else {
+            return hitEntities.add(entity);
+        }
     }
 
     /**

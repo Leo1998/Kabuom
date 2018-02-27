@@ -27,34 +27,41 @@ public class ProjectileHandler {
         while (iterator.hasNext()) {
             Projectile projectile = iterator.next();
 
+            float moveBy = Math.min(projectile.getRadius()*2,projectile.getSpeed()*dt);
+            float total = 0;
+            float max = projectile.getSpeed()*dt;
 
-            //System.out.println(p.getX() + "  " + p.getY());
-            //weite die das Projektil geflogen ist wird aktualisiert
-            projectile.setDistance(projectile.getDistance() + projectile.getSpeed() * dt);
-            //projektil fliegt in richtung des zieles
-            projectile.setX(projectile.getX() + projectile.getDir().getCoords()[0] * projectile.getSpeed() * dt);
-            projectile.setY(projectile.getY() + projectile.getDir().getCoords()[1] * projectile.getSpeed() * dt);
+            while (total < max) {
+                if(total + moveBy >= max){
+                    moveBy = max - total;
+                    total = max;
+                } else {
+                    total += moveBy;
+                }
 
-            for (Entity entity : findCollidingEnemies(projectile)) {
-                if(!projectile.hasHitEntity(entity)) {
-                    entity.addHp(-projectile.getDamage(), projectile.source);
-                    projectile.addToHitEntities(entity);
+                projectile.setX(projectile.getX() + projectile.getDir().getCoords()[0] * moveBy);
+                projectile.setY(projectile.getY() + projectile.getDir().getCoords()[1] * moveBy);
 
-                    if (projectile.getEffect() != null) {
-                        entity.addEffect(projectile.getEffect());
-                    } else if (projectile.getAbility() == ProjectileType.Ability.RANDOMROTATION) {
-                        projectile.setDistance(projectile.getDistance()/2);
-                        projectile.getDir().rotate((float)(random.nextGaussian()*Math.PI));
-                    }
+                for (Entity entity : findCollidingEnemies(projectile)) {
+                    if (!projectile.addToHitEntities(entity)) {
+                        entity.addHp(-projectile.getDamage(), projectile.source);
 
-                    projectile.addHp(-1);
-                    if (projectile.getHp() <= 0) {
-                        break;
+                        if (projectile.getEffect() != null) {
+                            entity.addEffect(projectile.getEffect());
+                        } else if (projectile.getAbility() == ProjectileType.Ability.RANDOMROTATION) {
+                            projectile.setDistance(projectile.getDistance() / 2);
+                            projectile.getDir().rotate((float) (random.nextGaussian() * Math.PI));
+                        }
+
+                        projectile.addHp(-1);
+                        if (projectile.getHp() <= 0) {
+                            break;
+                        }
                     }
                 }
             }
 
-            //wenn die distanz größer als die reichweite ist wird das projektil entfernt
+            projectile.setDistance(projectile.getDistance() + projectile.getSpeed() * dt);
             if(!world.inWorld(projectile) || projectile.getHp() <= 0 || projectile.getDistance() >= projectile.getRange()){
                 iterator.remove();
                 spawnEffects(projectile);

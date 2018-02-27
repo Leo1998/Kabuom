@@ -123,10 +123,10 @@ public class World {
     private Block[][] blocks;
     private int width, height;
 
-    private int wave = 0;
+    private int wave;
     private boolean spawnWave = false, inWave = false, ended = false;
 
-    private int coins = 1000;
+    private int coins;
 
     private EntityHandler entityHandler;
     private ProjectileHandler projectileHandler;
@@ -140,6 +140,8 @@ public class World {
     public World(int width, int height) {
         this.width = width;
         this.height = height;
+        this.coins = 1000;
+        this.wave = 0;
 
         int mainTowerCoordX = width / 2;
         int mainTowerCoordY = height - 2;
@@ -167,6 +169,8 @@ public class World {
     public World(JSONObject object){
         this.width = object.getInt("width");
         this.height = object.getInt("height");
+        this.coins = object.getInt("coins");
+        this.wave = object.getInt("wave");
 
         blocks = new Block[width][height];
         for(int i = 0; i < blocks.length; i++){
