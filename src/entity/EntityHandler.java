@@ -4,7 +4,7 @@ import entity.model.Entity;
 import entity.model.EntityType;
 import entity.model.MoveEntity;
 import entity.model.Partisan;
-import entity.movement.Step;
+import entity.model.Step;
 import model.Position;
 import projectile.Projectile;
 import projectile.ProjectileType;
@@ -51,55 +51,55 @@ public class EntityHandler {
      * @param dt time since last frame
      * @return smallest, positive wave of all entities
      */
-    public int handleEntities(LinkedList<Entity> entities, float dt, boolean drunk){
+    public int handleEntities(LinkedList<Entity> entities, float dt){
         int minWave = Integer.MAX_VALUE;
 
         if(entities.size() > 0) {
             updateIndex = (updateIndex + 1) % entities.size();
-        }
-        boolean[][] findPath = new boolean[nodeMap.length][nodeMap[0].length];
+            boolean[][] findPath = new boolean[nodeMap.length][nodeMap[0].length];
 
-        Iterator<Entity> iterator = entities.iterator();
-        for (int i = 0; iterator.hasNext(); i++){
-            Entity entity = iterator.next();
+            Iterator<Entity> iterator = entities.iterator();
+            for (int i = 0; iterator.hasNext(); i++) {
+                Entity entity = iterator.next();
 
-            entity.updateEffects(dt);
+                entity.updateEffects(dt);
 
-            if(entity.addAttackCooldown(dt)){
-                attack(entity);
-            }
+                if (entity.addAttackCooldown(dt)) {
+                    attack(entity);
+                }
 
-            if(i == updateIndex){
-                findPath[Math.round(entity.getX())][Math.round(entity.getY())] = true;
-            }
+                if (i == updateIndex) {
+                    findPath[Math.round(entity.getX())][Math.round(entity.getY())] = true;
+                }
 
-            if(entity instanceof MoveEntity){
-                MoveEntity mEntity = (MoveEntity) entity;
-                if(mEntity.getSteps().isEmpty()){
-                    findPath[Math.round(mEntity.getX())][Math.round(mEntity.getY())] = true;
+                if (entity instanceof MoveEntity) {
+                    MoveEntity mEntity = (MoveEntity) entity;
+                    if (mEntity.getSteps().isEmpty()) {
+                        findPath[Math.round(mEntity.getX())][Math.round(mEntity.getY())] = true;
+                    } else {
+                        move((MoveEntity) entity, dt);
+                    }
+                }
+
+                //Remove if dead
+                if (entity.getHp() <= 0) {
+                    iterator.remove();
+                    if (entity.getBlock().getTower() == entity) {
+                        updateNode(Math.round(entity.getX()), Math.round(entity.getY()), entity.getBlock());
+                    }
+                    world.removeEntity(entity);
                 } else {
-                    move((MoveEntity) entity, dt);
+                    if (entity.isEnemy() && entity.getWave() < minWave) {
+                        minWave = entity.getWave();
+                    }
                 }
             }
 
-            //Remove if dead
-            if(entity.getHp() <= 0){
-                iterator.remove();
-                if(entity.getBlock().getTower() == entity){
-                    updateNode(Math.round(entity.getX()),Math.round(entity.getY()),entity.getBlock());
-                }
-                world.removeEntity(entity);
-            } else {
-                if(entity.isEnemy() && entity.getWave() < minWave){
-                    minWave = entity.getWave();
-                }
-            }
+            providePaths(findPath);
         }
 
-        if(minWave == Integer.MAX_VALUE)
+        if (minWave == Integer.MAX_VALUE)
             minWave = -1;
-
-        providePaths(findPath);
 
         return minWave;
     }

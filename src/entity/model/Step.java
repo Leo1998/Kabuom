@@ -1,4 +1,4 @@
-package entity.movement;
+package entity.model;
 
 import model.Position;
 

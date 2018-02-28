@@ -1,6 +1,5 @@
 package entity.model;
 
-import entity.movement.Step;
 import org.json.JSONObject;
 import utility.Vector2;
 import world.Block;
