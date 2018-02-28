@@ -7,5 +7,5 @@ public interface ObjectType {;
     float getMaxHP();
     float getRadius();
     String getName();
-    UpgradeOrder getUpgradeOrder();
+    Upgrade getUpgrade();
 }

@@ -11,7 +11,8 @@ public abstract class GameObject implements Position {
         this.level = level;
         this.x = x;
         this.y = y;
-        this.hp = objectType.getMaxHP() * objectType.getUpgradeOrder().getStrength(level,0);
+        //Folgende Berechnung kann nicht durch getMaxHp() ersetzt werden, da objectType zuvor von der Unterklasse gesetzt werden muss
+        this.hp = objectType.getMaxHP() * objectType.getUpgrade().getStrength(level,0);
     }
 
     public GameObject(JSONObject object){
@@ -41,13 +42,13 @@ public abstract class GameObject implements Position {
     }
 
     public void setLevel(int level){
-        this.hp += getObjectType().getMaxHP()*0.5f*(level-this.level);
+        this.hp += getObjectType().getMaxHP() * (getObjectType().getUpgrade().getStrength(level, 0) - getObjectType().getUpgrade().getStrength(this.level, 0));
         this.level = level;
     }
 
     public void upgrade(){
         level++;
-        this.hp += getObjectType().getMaxHP()*0.5f;
+        this.hp += getObjectType().getMaxHP() * (getObjectType().getUpgrade().getStrength(level,0) - getObjectType().getUpgrade().getStrength(level-1,0));
     }
 
     public float getX() {
@@ -88,7 +89,7 @@ public abstract class GameObject implements Position {
     }
 
     protected float getUpgrade(int index){
-        return getObjectType().getUpgradeOrder().getStrength(level,index);
+        return getObjectType().getUpgrade().getStrength(level,index);
     }
 
     public String getName(){

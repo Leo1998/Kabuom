@@ -116,26 +116,6 @@ public class World {
         obj.put("wave", wave);
         obj.put("coins", coins);
 
-        /*
-        JSONArray blocksX = new JSONArray();
-        for (int x = 0; x < width; x++) {
-            JSONArray blocksY = new JSONArray();
-
-            for (int y = 0; y < height; y++) {
-                Entity tower = blocks[x][y].getTower();
-
-                if(tower != null){
-                    blocksY.put(tower.toJSON());
-                } else {
-                    blocksY.put(new JSONObject());
-                }
-            }
-
-            blocksX.put(blocksY);
-        }
-
-        obj.put("blocks", blocksX);
-        */
         JSONArray entities = new JSONArray();
         for(Entity entity : entityList){
             entities.put(entity.toJSON());
@@ -205,7 +185,7 @@ public class World {
     public void removeEntity(Entity entity){
         entity.setHp(-1);
         if(entity.isEnemy()){
-            coins += (entity.getLevel()+1) * entity.getCost() * 1000/(Math.pow(1+wave,2)/10 + 5);
+            coins += (entity.getLevel()+1) * 1000/(Math.pow(1+wave,2)/10 + 5);
         } else if(entity.isMaintower()){
             Controller.instance.endGame(true);
         }
