@@ -1,34 +1,36 @@
 package model;
 
+import java.util.function.Function;
+
 public class Upgrade {
-    public final static Upgrade DEFAULTENTITY = new Upgrade(new float[][]{{0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f, 0.2f},{3, 3, 3, 3, 3, 3, 3}});
-    public final static Upgrade DEFAULTPROJECTILE = new Upgrade(new float[][]{{0.2f, 0.2f, 0.2f, 0.2f},{3, 3, 3, 3}});
+    public final static Upgrade DEFAULTENTITY = new Upgrade(new float[]{4,4,4,4,4,4,4}, new float[]{0.1f,0.1f,0.1f,0.1f,0.1f,0.1f,0.1f});
+    public final static Upgrade DEFAULTPROJECTILE = new Upgrade(new float[]{4,4,4,4}, new float[]{0.1f,0.1f,0.1f,0.1f});
 
+    private final Function<Integer, Float>[] functions;
 
-    private float[][] upgrades;
+    public Upgrade(float[] max, float[] growth){
+        if(max.length == growth.length){
+            functions = new Function[max.length];
 
-    public Upgrade(float[]... upgrades){
-        this.upgrades = upgrades;
+            for(int i = 0; i < functions.length; i++){
+                float m = max[i];
+                float g = growth[i];
+                functions[i] = (Integer x) -> (1-m)/((float)Math.sqrt(1 + x*g)) + m;
+            }
+        } else {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public Upgrade(Function<Integer, Float>... functions){
+        this.functions = functions;
     }
 
     public float getStrength(int level, int index){
-        float strength = 1;
-        int length = upgrades.length - 1;
-        int full = level / length;
-        int remainder = level % length;
-
-        for(int i = 0; i < length; i++){
-            strength += upgrades[i][index] * full;
-            if(remainder < i){
-                strength += upgrades[i][index];
-            }
+        if(index < functions.length) {
+            return functions[index].apply(level);
+        } else {
+            throw new IllegalArgumentException();
         }
-
-        float boundry = upgrades[length][index];
-
-        strength = (float) Math.sqrt(strength);
-        strength = -boundry/strength+boundry+1;
-
-        return strength;
     }
 }

@@ -97,6 +97,7 @@ public abstract class GameObject implements Position {
 
         if(level >= 0){
             name += " " + Utility.intToRoman(level + 1);
+            //name += " " + (level + 1);
         }
 
         return name;
