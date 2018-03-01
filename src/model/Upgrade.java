@@ -3,10 +3,25 @@ package model;
 import java.util.function.Function;
 
 public class Upgrade {
+    //Entity: Hp Speed Frequency Range Accuracy Attack Cost
+    //Projectile: Hp Speed Damage Range
+
     public final static Upgrade DEFAULTENTITY = new Upgrade(new float[]{4,4,4,4,4,4,4}, new float[]{0.1f,0.1f,0.1f,0.1f,0.1f,0.1f,0.1f});
     public final static Upgrade DEFAULTPROJECTILE = new Upgrade(new float[]{4,4,4,4}, new float[]{0.1f,0.1f,0.1f,0.1f});
+    public final static Upgrade RANGEDENTITY = new Upgrade( x -> x*0.1f+1,
+                                                            x -> def(x,0.1f, 4f),
+                                                            x -> def(x,0.025f, 2f),
+                                                            x -> def(x,0.025f, 2f),
+                                                            x -> def(x,0.001f, 1.5f),
+                                                            x -> def(x,0.025f, 2f),
+                                                            x -> def(x,0.1f, 4f));
+
 
     private final Function<Integer, Float>[] functions;
+
+    private static float def(float x, float g, float m){
+        return (1-m)/((float)Math.sqrt(1+g*x))+m;
+    }
 
     public Upgrade(float[] max, float[] growth){
         if(max.length == growth.length){
@@ -15,7 +30,7 @@ public class Upgrade {
             for(int i = 0; i < functions.length; i++){
                 float m = max[i];
                 float g = growth[i];
-                functions[i] = (Integer x) -> (1-m)/((float)Math.sqrt(1 + x*g)) + m;
+                functions[i] = (Integer x) -> def(x,g,m);
             }
         } else {
             throw new IllegalArgumentException();
