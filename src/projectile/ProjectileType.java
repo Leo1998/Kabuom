@@ -14,7 +14,7 @@ public enum ProjectileType implements ObjectType {
     LIGHTNING(10, 0.5f, "LIGHTNING", 20,/*Damage*/5, /*Range*/ 16, null, "Laser.png", false, true, Ability.RANDOMROTATION, Upgrade.DEFAULTPROJECTILE),
     PIERCINGBULLET(3, 0.5f, "PIERCINGBULLET", 27,/*Damage*/150, /*Range*/30, EffectType.BLEEDING, "Piercingprojektil.png", false, true, Ability.NULL, Upgrade.DEFAULTPROJECTILE),
     FRAGGRENADE(1, 0.5f, "FRAGGRENADE", 30,/*Damage*/25, /*Range*/ 20, EffectType.BURNING, "missile.png", false, true, Ability.EXPLOSION, Upgrade.DEFAULTPROJECTILE),
-    POISON(1, 0.5f, "POISON", 5,/*Damage*/25,/*Range*/ 10, EffectType.POISON, "toxicBullet.png", false, true, Ability.POISONCLOUD, Upgrade.DEFAULTPROJECTILE),
+    POISON(10, 0.5f, "POISON", 5,/*Damage*/25,/*Range*/ 10, EffectType.POISON, "toxicBullet.png", false, true, Ability.POISONCLOUD, Upgrade.DEFAULTPROJECTILE),
     POISONTRAIL(5, 0.5f, "POISON", 0.002f,/*Damage*/15,/*Range*/ 0.01f, EffectType.POISON, "Giftgas.png", false, true, Ability.NULL, Upgrade.DEFAULTPROJECTILE),
     EXPLOSION(Integer.MAX_VALUE, 2.5f, "EXPLOSION", 0.01f, /*Damage*/ 50, /*Range*/ 0.002f, EffectType.BURNING, "Explosion.png", true, true, Ability.NULL, Upgrade.DEFAULTPROJECTILE);
 

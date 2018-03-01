@@ -48,9 +48,13 @@ public class ProjectileHandler {
 
                         if (projectile.getEffect() != null) {
                             entity.addEffect(projectile.getEffect());
-                        } else if (projectile.getAbility() == ProjectileType.Ability.RANDOMROTATION) {
+                        }
+
+                        if (projectile.getAbility() == ProjectileType.Ability.RANDOMROTATION) {
                             projectile.setDistance(projectile.getDistance() / 2);
                             projectile.getDir().rotate((float) (random.nextGaussian() * Math.PI));
+                        } else if(projectile.getAbility() != ProjectileType.Ability.NULL) {
+                            projectile.setHp(-1);
                         }
 
                         projectile.addHp(-1);
@@ -72,7 +76,7 @@ public class ProjectileHandler {
     private void spawnEffects(Projectile projectile){
         switch (projectile.getAbility()) {
             case POISONCLOUD:
-                spawnPoisonCloud(projectile.getX(), projectile.getY(), projectile.getLevel(), Constants.poisonCloudAmount, projectile.getDir(), projectile.isEnemy(), projectile.source);
+                spawnPoisonCloud(projectile.getX(), projectile.getY(), projectile.getLevel(), Math.round(projectile.getMaxHp()), projectile.getDir(), projectile.isEnemy(), projectile.source);
                 break;
             case EXPLOSION:
                 world.spawnProjectile(new Projectile(ProjectileType.EXPLOSION, projectile.getLevel(), projectile.getX(), projectile.getY(), projectile.getDir(), projectile.isEnemy(), projectile.source));
