@@ -180,7 +180,7 @@ public class GameView extends View {
                 float radius = t.getRange()*scale;
                 float x1 = blockToViewX(t.getX(),t.getRadius());
                 float y1 = blockToViewY(t.getY(),t.getRadius());
-                batch.circle(x1,y1,radius,Math.round(radius*2),1,1,1,0.1f);
+                batch.circle(x1,y1,radius,1,1,1,0.1f);
 
                 int x0 = Mouse.getX();
                 int y0 = Math.round(originHeight) - Mouse.getY();

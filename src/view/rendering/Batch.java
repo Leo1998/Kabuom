@@ -228,15 +228,55 @@ public class Batch {
         vertex(x4, y4, tid, r, g, b, a, u, v2);
     }
 
-    public void circle(float cx, float cy, float rad, int num_segments, float r, float g, float b, float a){
-        float[] x = new float[num_segments];
-        float[] y = new float[num_segments];
+    /**
+     * Draws a Circle
+     * Source: http://slabode.exofire.net/circle_draw.shtml
+     * Edited to use triangles to draw filled circles
+     * @param cx X-Coordinate of center
+     * @param cy Y-Coordinate of center
+     * @param rad Radius of circle
+     * @param r Color Red
+     * @param g Color Green
+     * @param b Color Blue
+     * @param a Color Alpha
+     */
+    public void circle(float cx, float cy, float rad, float r, float g, float b, float a){
+        int num_segments = Math.round(10 * (float)Math.sqrt(rad));//change the 10 to a smaller/bigger number as needed
 
-        for(int i = 0; i < num_segments; i++){
-            float theta = 2.0f * 3.1415926f * (float)(i) / (float)(num_segments);
+        float[] xArr = new float[num_segments];
+        float[] yArr = new float[num_segments];
 
-            x[i] = cx + rad * (float)Math.cos(theta);
-            y[i] = cy + rad * (float)Math.sin(theta);
+        float theta = 2 * 3.1415926f / (float)(num_segments);
+        float tangetial_factor = (float)Math.tan(theta);//calculate the tangential factor
+
+        float radial_factor = (float)Math.cos(theta);//calculate the radial factor
+
+        float x = rad;//we start at angle = 0
+
+        float y = 0;
+
+        for(int i = 0; i < num_segments; i++)
+        {
+            //output vertex
+            xArr[i] = x + cx;
+            yArr[i] = y + cy;
+
+            //calculate the tangential vector
+            //remember, the radial vector is (x, y)
+            //to get the tangential vector we flip those coordinates and negate one of them
+
+            float tx = -y;
+            float ty = x;
+
+            //add the tangential vector
+
+            x += tx * tangetial_factor;
+            y += ty * tangetial_factor;
+
+            //correct using the radial factor
+
+            x *= radial_factor;
+            y *= radial_factor;
         }
 
         float u = 0f;
@@ -246,9 +286,8 @@ public class Batch {
 
         for(int i = 0; i < num_segments; i++){
             vertex(cx, cy, -1, r, g, b, a, u, v);
-            vertex(x[i], y[i], -1, r, g, b, a, u2, v);
-            vertex(x[(i+1)%num_segments], y[(i+1)%num_segments], -1, r, g, b, a, u, v2);
+            vertex(xArr[i], yArr[i], -1, r, g, b, a, u2, v);
+            vertex(xArr[(i+1)%num_segments], yArr[(i+1)%num_segments], -1, r, g, b, a, u, v2);
         }
     }
-
 }
