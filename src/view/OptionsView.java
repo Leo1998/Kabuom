@@ -41,6 +41,8 @@ public class OptionsView extends BaseMenuView {
 
                 String mode = config.getGraphicMode().name();
                 graphicsButton.setButtontext("Graphics: " + mode);
+
+                Controller.instance.getViewManager().getPostProcessingManager().resize(Display.getWidth(), Display.getHeight());
             }
         });
 
