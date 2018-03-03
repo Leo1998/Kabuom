@@ -5,12 +5,13 @@ import controller.Controller;
 import org.lwjgl.opengl.Display;
 import view.components.Button;
 import view.components.ButtonListener;
+import view.components.Slider;
 
 public class OptionsView extends BaseMenuView {
 
     private Button backButton;
     private Button graphicsButton;
-    private Button difficultyButton;
+    private Slider difficultySlider;
 
     public OptionsView(float width, float height, final ViewManager viewManager) {
         super(width, height, viewManager);
@@ -38,38 +39,26 @@ public class OptionsView extends BaseMenuView {
                     config.setGraphicMode(Config.GraphicMode.High);
                 }
 
-                //hotfix
-                Controller.instance.getViewManager().getPostProcessingManager().resize(Display.getWidth(), Display.getHeight());
-
                 String mode = config.getGraphicMode().name();
                 graphicsButton.setButtontext("Graphics: " + mode);
             }
         });
 
-        String difficulty = Integer.toString(Controller.instance.getConfig().getDifficulty());
-        difficultyButton = new Button(0.25f, 0.55f, 0.5f, 0.2f, this, "Difficulty " + difficulty);
+        int difficulty = Controller.instance.getConfig().getDifficulty();
+        difficultySlider = new Slider(0.25f,0.55f,0.5f,0.2f,this, "Difficulty", true, 1, 21, difficulty);
+        this.components.add(difficultySlider);
 
-        this.components.add(difficultyButton);
-
-        difficultyButton.setListener(new ButtonListener() {
-            @Override
-            public void onClick() {
-                Config config = Controller.instance.getConfig();
-                int difficultyInt = Controller.instance.getConfig().getDifficulty();
-                if (difficultyInt == 10) {
-                    config.setDifficulty(1);
-                } else {
-                    config.setDifficulty(++difficultyInt);
-                }
-                difficultyButton.setButtontext("Difficulty: " + config.getDifficulty());
-            }
-        });
+        difficultySlider.setListener(value -> Controller.instance.getConfig().setDifficulty(value));
 
     }
 
     @Override
     public void layout(float width, float height) {
         super.layout(width, height);
+    }
+
+    public int getDifficulty(){
+        return difficultySlider.getValue();
     }
 
 }

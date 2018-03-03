@@ -242,16 +242,22 @@ public class GameView extends View {
 
         //Alles Was mit dem Towersetzen zu tun hat
         if (setTower != null) {
-            setTower.setX(Mouse.getX() - scale / 2);
-            setTower.setY(originHeight - Mouse.getY() - scale / 2);
             float diameter = setTower.getRadius()*2;
             float width = scale * diameter;
             float height = scale * diameter;
+            setTower.setX(Mouse.getX() - width / 2);
+            setTower.setY(originHeight - Mouse.getY() - height / 2);
             if(setTower.getBaseTexture() != null){
                 batch.draw(ViewManager.getTexture(setTower.getBaseTexture()), setTower.getX(), setTower.getY(), width, height);
             }
             if(setTower.getTurretTexture() != null){
                 batch.draw(ViewManager.getTexture(setTower.getTurretTexture()), setTower.getX(), setTower.getY(), width, height);
+            }
+            if(setTower.isRanged()){
+                float x = setTower.getX() + width/2;
+                float y = setTower.getY() + height/2;
+                float r = setTower.getRange()*scale;
+                batch.circle(x,y,r,1,1,1,0.1f);
             }
         }
     }

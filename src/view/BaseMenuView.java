@@ -1,11 +1,10 @@
 package view;
 
+import utility.Utility;
 import view.rendering.Batch;
 import view.rendering.Particle;
 import view.rendering.ParticleEffect;
 import view.rendering.ParticleManager;
-
-import java.util.Random;
 
 public abstract class BaseMenuView extends View {
 
@@ -28,16 +27,14 @@ public abstract class BaseMenuView extends View {
 
             for (int i = 0; i <= 10; i++) {
                 Particle.ParticleRandomizer randomizer = new Particle.ParticleRandomizer() {
-                    Random random = new Random();
-
                     @Override
                     public float randomizeDir(float dir) {
-                        return (float) random.nextInt(90) + 270 - 45;
+                        return (float) Utility.random.nextInt(90) + 270 - 45;
                     }
 
                     @Override
                     public float randomizeSpeed(float speed) {
-                        return speed + random.nextFloat() * 10f - 5f;
+                        return speed + Utility.random.nextFloat() * 10f - 5f;
                     }
 
                     @Override
@@ -47,12 +44,12 @@ public abstract class BaseMenuView extends View {
 
                     @Override
                     public float randomizeLifeTime(float lifeTime) {
-                        return lifeTime + random.nextFloat() * 3f - 1f;
+                        return lifeTime + Utility.random.nextFloat() * 3f - 1f;
                     }
 
                     @Override
                     public float[] randomizeColor(float[] color) {
-                        return new float[]{random.nextFloat(), random.nextFloat(), random.nextFloat(), 0.55f};
+                        return new float[]{Utility.random.nextFloat(), Utility.random.nextFloat(), Utility.random.nextFloat(), 0.55f};
                     }
                 };
 

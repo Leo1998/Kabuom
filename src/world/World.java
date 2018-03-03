@@ -59,7 +59,7 @@ public class World {
         entityList.add(mainTower);
 
         projectileHandler = new ProjectileHandler(this);
-        entityHandler = new EntityHandler(this,mainTower);
+        entityHandler = new EntityHandler(this,mainTower,Controller.instance.getConfig().getDifficulty());
     }
 
     public World(JSONObject object){
@@ -104,7 +104,7 @@ public class World {
             throw new IllegalArgumentException();
         } else {
             projectileHandler = new ProjectileHandler(this);
-            entityHandler = new EntityHandler(this,mainTower);
+            entityHandler = new EntityHandler(this,mainTower,Controller.instance.getConfig().getDifficulty());
         }
     }
 

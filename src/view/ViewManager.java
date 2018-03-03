@@ -93,7 +93,7 @@ public class ViewManager {
         return null;
     }
 
-    private Controller ctrl = new Controller();
+    private Controller ctrl;
     private View currentView;
     private PostProcessingManager ppManager;
     private ParticleManager particleManager;
@@ -145,9 +145,7 @@ public class ViewManager {
                 DisplayMode[] modes = Display.getAvailableDisplayModes();
                 int freq = 0;
 
-                for (int i = 0; i < modes.length; i++) {
-                    DisplayMode current = modes[i];
-
+                for(DisplayMode current : modes){
                     if ((current.getWidth() == width) && (current.getHeight() == height)) {
                         if ((targetDisplayMode == null) || (current.getFrequency() >= freq)) {
                             if ((targetDisplayMode == null) || (current.getBitsPerPixel() > targetDisplayMode.getBitsPerPixel())) {

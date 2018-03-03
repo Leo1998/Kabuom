@@ -21,7 +21,7 @@ import static utility.Utility.*;
 public class EntityHandler {
 
     private Node[][] nodeMap;
-    private int index, updateIndex;
+    private int difficulty, index, updateIndex;
     private Entity mainTower;
     private World world;
 
@@ -30,9 +30,10 @@ public class EntityHandler {
      * @param world current World
      * @param mainTower the Main Tower
      */
-    public EntityHandler(World world, Entity mainTower){
+    public EntityHandler(World world, Entity mainTower, int difficulty){
         this.world = world;
         this.mainTower = mainTower;
+        this.difficulty = difficulty;
         this.index = Integer.MIN_VALUE;
         updateIndex = 0;
         Entity.setEntityHandler(this);
@@ -114,7 +115,7 @@ public class EntityHandler {
             int x = Math.round(position.getX()), y = Math.round(position.getY());
 
             if (x >= 0 && x < nodeMap.length && y >= 0 && y < nodeMap[x].length) {
-                nodeMap[x][y].damage += damage;
+                nodeMap[x][y].damage += damage/difficulty;
             }
         }
     }
@@ -146,16 +147,20 @@ public class EntityHandler {
      */
     private void attack(Entity entity){
 
-        if(entity instanceof MoveEntity){
-            entity.setTarget(findTarget(entity, world.getHeight()*1.5f));
+        if(entity.isRanged()) {
+            if (entity instanceof MoveEntity) {
+                entity.setTarget(findTarget(entity, -1));
+                if (entity.getTarget() == null || entity.getTarget().getHp() <= 0) {
+                    entity.setTarget(mainTower);
+                }
+            } else {
+                entity.setTarget(findTarget(entity, entity.getRange()));
 
-            if(entity.getTarget() == null || entity.getTarget().getHp() <= 0){
-                entity.setTarget(mainTower);
+                if (entity.getTarget() != null && entity.getTarget().getHp() <= 0) {
+                    entity.setTarget(null);
+                }
             }
-
-        }else {
-            entity.setTarget(findTarget(entity, entity.getRange() + 3));
-
+        } else {
             if(entity.getTarget() != null && entity.getTarget().getHp() <= 0){
                 entity.setTarget(null);
             }
@@ -202,7 +207,10 @@ public class EntityHandler {
 
         Entity closest = null;
 
-        int maxDist = Math.min(Math.round(range),Math.max(Math.max(x, world.getBlocks().length-x),Math.max(y, world.getBlocks()[x].length-y)));
+        int maxDist = Math.max(Math.max(x, world.getBlocks().length-x),Math.max(y, world.getBlocks()[x].length-y));
+        if(range > 0){
+            maxDist = Math.min(Math.round(range),maxDist);
+        }
         for(int dist = 0; closest == null && dist <= maxDist; dist++) {
             for (int i = Math.max(0, x - dist); i < Math.min(world.getBlocks().length, x + dist + 1); i++) {
                 boolean full = (i == x - dist || i == x + dist);
@@ -673,10 +681,10 @@ public class EntityHandler {
             attackRange = 0;
             if (entity != null && !entity.isEnemy() && entity.getAttack() > 0) {
                 if(entity.getProjectile() instanceof ProjectileType) {
-                    dps = ((ProjectileType)entity.getProjectile()).impactDamage * entity.getAttack() / entity.getFrequency() * dpsMultiplier;
+                    dps = ((ProjectileType)entity.getProjectile()).impactDamage * entity.getAttack() / entity.getFrequency() * dpsMultiplier * difficulty;
                     attackRange = entity.getRange();
                 }else if(!entity.isRanged()){
-                    dps = entity.getAttack() / entity.getFrequency() * dpsMultiplier;
+                    dps = entity.getAttack() / entity.getFrequency() * dpsMultiplier * difficulty;
                     attackRange = entity.getRange();
                 }
             }
