@@ -63,35 +63,34 @@ public class EntityHandler {
             for (int i = 0; iterator.hasNext(); i++) {
                 Entity entity = iterator.next();
 
-                entity.updateEffects(dt);
-
-                if (entity.addAttackCooldown(dt)) {
-                    attack(entity);
-                }
-
-                if (i == updateIndex) {
-                    findPath[Math.round(entity.getX())][Math.round(entity.getY())] = true;
-                }
-
-                if (entity instanceof MoveEntity) {
-                    MoveEntity mEntity = (MoveEntity) entity;
-                    if (mEntity.getSteps().isEmpty()) {
-                        findPath[Math.round(mEntity.getX())][Math.round(mEntity.getY())] = true;
-                    } else {
-                        move((MoveEntity) entity, dt);
-                    }
-                }
-
-                //Remove if dead
                 if (entity.getHp() <= 0) {
                     iterator.remove();
                     if (entity.getBlock().getTower() == entity) {
+                        entity.getBlock().removeTower();
                         updateNode(Math.round(entity.getX()), Math.round(entity.getY()), entity.getBlock());
                     }
                     world.removeEntity(entity);
                 } else {
                     if (entity.isEnemy() && entity.getWave() < minWave) {
                         minWave = entity.getWave();
+                    }
+                    entity.updateEffects(dt);
+
+                    if (entity.addAttackCooldown(dt)) {
+                        attack(entity);
+                    }
+
+                    if (i == updateIndex) {
+                        findPath[Math.round(entity.getX())][Math.round(entity.getY())] = true;
+                    }
+
+                    if (entity instanceof MoveEntity) {
+                        MoveEntity mEntity = (MoveEntity) entity;
+                        if (mEntity.getSteps().isEmpty()) {
+                            findPath[Math.round(mEntity.getX())][Math.round(mEntity.getY())] = true;
+                        } else {
+                            move((MoveEntity) entity, dt);
+                        }
                     }
                 }
             }
@@ -202,7 +201,7 @@ public class EntityHandler {
         }
     }
 
-    private Entity findTarget(Partisan source, float range){
+    private Entity findTarget(Entity source, float range){
         int x = Math.round(source.getX()), y = Math.round(source.getY());
 
         Entity closest = null;
@@ -216,7 +215,7 @@ public class EntityHandler {
                 boolean full = (i == x - dist || i == x + dist);
                 for (int j = full ? Math.max(0, y - dist) : (y - dist < 0) ? y + dist : y - dist; j < Math.min(world.getBlocks()[i].length, y + dist + 1); j += full ? 1 : 2 * dist) {
                     for(Entity entity:nodeMap[i][j].block){
-                        if(((source.allyOf(entity) && entity.attacksAllies()) || (!source.allyOf(entity) && entity.attacksHostiles())) && entity.getHp() > 0){
+                        if(entity != source && ((source.allyOf(entity) && source.attacksAllies()) || (!source.allyOf(entity) && source.attacksHostiles())) && entity.getHp() > 0){
                             if (closest == null || getDist(source, entity) - entity.getRadius() < getDist(source, closest) - closest.getRadius()) {
                                 closest = entity;
                             }

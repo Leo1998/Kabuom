@@ -130,7 +130,7 @@ public class GameView extends View {
                 }
 
                 float radius = entity.getRange() * scale;
-                batch.circle(x, y, radius, r, g, b, 0.0625f);
+                batch.limitedCircle(x, y, radius, r, g, b, 0.0625f, offsetX, offsetY, offsetX + Math.round(scale*world.getWidth()), offsetY + Math.round(scale*world.getHeight()));
             }
 
             String s = Integer.toString(entity.getLevel()+1);
@@ -203,7 +203,7 @@ public class GameView extends View {
                         float radius = t.getRange() * scale;
                         float x1 = blockToViewX(t.getX() + 0.5f);
                         float y1 = blockToViewY(t.getY() + 0.5f);
-                        batch.circle(x1, y1, radius, 1, 1, 1, 0.0625f);
+                        batch.limitedCircle(x1, y1, radius, 1, 1, 1, 0.0625f,offsetX, offsetY, offsetX + Math.round(scale*world.getWidth()), offsetY + Math.round(scale*world.getHeight()));
                     }
 
                     int x0 = Mouse.getX();
@@ -269,7 +269,7 @@ public class GameView extends View {
                 float x = setTower.getX() + width/2;
                 float y = setTower.getY() + height/2;
                 float r = setTower.getRange()*scale;
-                batch.circle(x,y,r,1,1,1,0.1f);
+                batch.limitedCircle(x,y,r,1,1,1,0.1f, offsetX, offsetY, offsetX + Math.round(scale*world.getWidth()), offsetY + Math.round(scale*world.getHeight()));
             }
         }
     }

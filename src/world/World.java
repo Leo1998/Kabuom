@@ -146,6 +146,8 @@ public class World {
                     coins -= tower.getCost();
                     tower.upgrade();
 
+                    entityHandler.newTower(x,y);
+
                     return true;
                 }
             }

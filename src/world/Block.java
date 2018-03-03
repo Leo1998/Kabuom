@@ -35,6 +35,10 @@ public class Block implements Iterable<Entity> {
         }
     }
 
+    public void removeTower(){
+        tower = null;
+    }
+
     public boolean contains(Entity entity){
         return entities.contains(entity);
     }

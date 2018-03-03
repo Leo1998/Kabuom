@@ -230,8 +230,6 @@ public class Batch {
 
     /**
      * Draws a Circle
-     * Source: http://slabode.exofire.net/circle_draw.shtml
-     * Edited to use triangles to draw filled circles
      * @param cx X-Coordinate of center
      * @param cy Y-Coordinate of center
      * @param rad Radius of circle
@@ -241,10 +239,69 @@ public class Batch {
      * @param a Color Alpha
      */
     public void circle(float cx, float cy, float rad, float r, float g, float b, float a){
+        float[][] points = prepareCircle(cx,cy,rad);
+
+        float u = 0f;
+        float v = 1f;
+        float u2 = 1f;
+        float v2 = 0f;
+
+        for(int i = 0; i < points.length; i++){
+            vertex(cx, cy, -1, r, g, b, a, u, v);
+            vertex(points[i][0], points[i][1], -1, r, g, b, a, u2, v);
+            vertex(points[(i+1)%points.length][0], points[(i+1)%points.length][1], -1, r, g, b, a, u, v2);
+        }
+    }
+    /**
+     * Draws a Circle within a rectangle
+     * @param cx X-Coordinate of center
+     * @param cy Y-Coordinate of center
+     * @param rad Radius of circle
+     * @param r Color Red
+     * @param g Color Green
+     * @param b Color Blue
+     * @param a Color Alpha
+     * @param bx1 X-Coordinate of top-left corner of rectangle
+     * @param by1 Y-Coordinate of top-left corner of rectangle
+     * @param bx2 X-Coordinate of bottom-right corner of rectangle
+     * @param by2 Y-Coordinate of bottom-right corner of rectangle
+     */
+    public void limitedCircle(float cx, float cy, float rad, float r, float g, float b, float a, int bx1, int by1, int bx2, int by2){
+        float[][] points = prepareCircle(cx,cy,rad);
+
+        float u = 0f;
+        float v = 1f;
+        float u2 = 1f;
+        float v2 = 0f;
+
+        cx = Math.max(bx1,Math.min(bx2,cx));
+        cy = Math.max(by1,Math.min(by2,cy));
+
+        points[0][0] = Math.max(bx1,Math.min(bx2,points[0][0]));
+        points[0][1] = Math.max(by1,Math.min(by2,points[0][1]));
+
+        for(int i = 0; i < points.length; i++){
+            points[(i+1)%points.length][0] = Math.max(bx1,Math.min(bx2,points[(i+1)%points.length][0]));
+            points[(i+1)%points.length][1] = Math.max(by1,Math.min(by2,points[(i+1)%points.length][1]));
+
+            vertex(cx, cy, -1, r, g, b, a, u, v);
+            vertex(points[i][0], points[i][1], -1, r, g, b, a, u2, v);
+            vertex(points[(i+1)%points.length][0], points[(i+1)%points.length][1], -1, r, g, b, a, u, v2);
+        }
+    }
+
+    /**
+     * Calculates points along the outline of a circle
+     * Source: http://slabode.exofire.net/circle_draw.shtml
+     * Edited to return points within array
+     * @param cx X-Coordinate of center
+     * @param cy Y-Coordinate of center
+     * @param rad Radius of circle
+     */
+    private float[][] prepareCircle(float cx, float cy, float rad){
         int num_segments = Math.round(10 * (float)Math.sqrt(rad));//change the 10 to a smaller/bigger number as needed
 
-        float[] xArr = new float[num_segments];
-        float[] yArr = new float[num_segments];
+        float[][] result = new float[num_segments][2];
 
         float theta = 2 * 3.1415926f / (float)(num_segments);
         float tangetial_factor = (float)Math.tan(theta);//calculate the tangential factor
@@ -258,8 +315,8 @@ public class Batch {
         for(int i = 0; i < num_segments; i++)
         {
             //output vertex
-            xArr[i] = x + cx;
-            yArr[i] = y + cy;
+            result[i][0] = x + cx;
+            result[i][1] = y + cy;
 
             //calculate the tangential vector
             //remember, the radial vector is (x, y)
@@ -279,15 +336,6 @@ public class Batch {
             y *= radial_factor;
         }
 
-        float u = 0f;
-        float v = 1f;
-        float u2 = 1f;
-        float v2 = 0f;
-
-        for(int i = 0; i < num_segments; i++){
-            vertex(cx, cy, -1, r, g, b, a, u, v);
-            vertex(xArr[i], yArr[i], -1, r, g, b, a, u2, v);
-            vertex(xArr[(i+1)%num_segments], yArr[(i+1)%num_segments], -1, r, g, b, a, u, v2);
-        }
+        return result;
     }
 }
