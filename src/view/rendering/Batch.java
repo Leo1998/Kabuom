@@ -228,4 +228,27 @@ public class Batch {
         vertex(x4, y4, tid, r, g, b, a, u, v2);
     }
 
+    public void circle(float cx, float cy, float rad, int num_segments, float r, float g, float b, float a){
+        float[] x = new float[num_segments];
+        float[] y = new float[num_segments];
+
+        for(int i = 0; i < num_segments; i++){
+            float theta = 2.0f * 3.1415926f * (float)(i) / (float)(num_segments);
+
+            x[i] = cx + rad * (float)Math.cos(theta);
+            y[i] = cy + rad * (float)Math.sin(theta);
+        }
+
+        float u = 0f;
+        float v = 1f;
+        float u2 = 1f;
+        float v2 = 0f;
+
+        for(int i = 0; i < num_segments; i++){
+            vertex(cx, cy, -1, r, g, b, a, u, v);
+            vertex(x[i], y[i], -1, r, g, b, a, u2, v);
+            vertex(x[(i+1)%num_segments], y[(i+1)%num_segments], -1, r, g, b, a, u, v2);
+        }
+    }
+
 }

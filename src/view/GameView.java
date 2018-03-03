@@ -175,9 +175,13 @@ public class GameView extends View {
 
             Entity t = world.getBlocks()[(int) block.getCoords()[0]][(int) block.getCoords()[1]].getTower();
 
-            //world.getBlocks()[(int) block.getCoords()[0]][(int) (world.getBlocks()[0].length - block.getCoords()[1])].test();
-
             if (t != null) {
+
+                float radius = t.getRange()*scale;
+                float x1 = blockToViewX(t.getX(),t.getRadius());
+                float y1 = blockToViewY(t.getY(),t.getRadius());
+                batch.circle(x1,y1,radius,Math.round(radius*2),1,1,1,0.1f);
+
                 int x0 = Mouse.getX();
                 int y0 = Math.round(originHeight) - Mouse.getY();
 
