@@ -198,7 +198,7 @@ public class GameView extends View {
 
             if (t != null) {
 
-                if(t.isRanged()) {
+                if(t.isRanged() && !tabdown) {
                     float radius = t.getRange() * scale;
                     float x1 = blockToViewX(t.getX() + 0.5f);
                     float y1 = blockToViewY(t.getY() + 0.5f);
@@ -389,7 +389,7 @@ public class GameView extends View {
             getViewManager().getCtrl().endGame(false);
         }
         if(key == Keyboard.KEY_TAB) {
-            tabdown = true;
+            tabdown = !tabdown;
         }
     }
 
@@ -398,9 +398,6 @@ public class GameView extends View {
         super.onKeyUp(key, c);
         if (key == Keyboard.KEY_LSHIFT) {
             shiftdown = false;
-        }
-        if(key == Keyboard.KEY_TAB){
-            tabdown = false;
         }
     }
 }
