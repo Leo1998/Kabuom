@@ -194,34 +194,36 @@ public class GameView extends View {
             //Zeichnet die Info über den überfahrenden Tower an den Cursor
             batch.draw(null, blockToViewX((int)block.getCoords()[0]), blockToViewY((int)block.getCoords()[1]), scale, scale, 0, 1f, 1f, 1f, 0.45f);
 
-            Entity t = world.getBlocks()[(int) block.getCoords()[0]][(int) block.getCoords()[1]].getTower();
+            if(setTower == null) {
+                Entity t = world.getBlocks()[(int) block.getCoords()[0]][(int) block.getCoords()[1]].getTower();
 
-            if (t != null) {
+                if (t != null) {
 
-                if(t.isRanged() && !tabdown) {
-                    float radius = t.getRange() * scale;
-                    float x1 = blockToViewX(t.getX() + 0.5f);
-                    float y1 = blockToViewY(t.getY() + 0.5f);
-                    batch.circle(x1, y1, radius, 1, 1, 1, 0.0625f);
+                    if (t.isRanged() && !tabdown) {
+                        float radius = t.getRange() * scale;
+                        float x1 = blockToViewX(t.getX() + 0.5f);
+                        float y1 = blockToViewY(t.getY() + 0.5f);
+                        batch.circle(x1, y1, radius, 1, 1, 1, 0.0625f);
+                    }
+
+                    int x0 = Mouse.getX();
+                    int y0 = Math.round(originHeight) - Mouse.getY();
+
+                    String l1 = t.getName();
+                    String l2 = "Health: " + niceNumber(Math.round(t.getHp()));
+                    String l3 = "Upgrade: " + niceNumber(t.getCost()) + " Coins";
+
+                    int w = Math.max(Math.max(ViewManager.font.getWidth(l1), ViewManager.font.getWidth(l2)), ViewManager.font.getWidth(l3));
+                    int h = ViewManager.font.getLineHeight() * 3;
+
+                    x0 = Math.max(0, Math.min(Math.round(originWidth) - w, x0));
+                    y0 = Math.max(0, Math.min(Math.round(originHeight) - h, y0));
+
+                    batch.draw(ViewManager.getTexture("viewTextures/mainButton.png"), x0, y0, w, h);
+                    ViewManager.font.drawText(batch, l1, x0, y0);
+                    ViewManager.font.drawText(batch, l2, x0, y0 + (h / 3));
+                    ViewManager.font.drawText(batch, l3, x0, y0 + (h * 2 / 3));
                 }
-
-                int x0 = Mouse.getX();
-                int y0 = Math.round(originHeight) - Mouse.getY();
-
-                String l1 = t.getName();
-                String l2 = "Health: " + niceNumber(Math.round(t.getHp()));
-                String l3 = "Upgrade: " + niceNumber(t.getCost()) + " Coins";
-
-                int w = Math.max(Math.max(ViewManager.font.getWidth(l1), ViewManager.font.getWidth(l2)), ViewManager.font.getWidth(l3));
-                int h = ViewManager.font.getLineHeight() * 3;
-
-                x0 = Math.max(0,Math.min(Math.round(originWidth) - w, x0));
-                y0 = Math.max(0,Math.min(Math.round(originHeight) - h, y0));
-
-                batch.draw(ViewManager.getTexture("viewTextures/mainButton.png"), x0, y0, w, h);
-                ViewManager.font.drawText(batch, l1, x0, y0);
-                ViewManager.font.drawText(batch, l2, x0, y0 + (h / 3));
-                ViewManager.font.drawText(batch, l3, x0, y0 + (h * 2 / 3));
             }
 
             if(mousedown0){
@@ -238,6 +240,9 @@ public class GameView extends View {
 
                 mouse1 = block;
             }
+        } else if(mousedown1 && setTower != null){
+            viewManager.getPostProcessingManager().disableEffect(PostProcessingManager.Effect.RadialBlur);
+            setTower = null;
         }
 
         //Alles Was mit dem Towersetzen zu tun hat
@@ -245,8 +250,15 @@ public class GameView extends View {
             float diameter = setTower.getRadius()*2;
             float width = scale * diameter;
             float height = scale * diameter;
-            setTower.setX(Mouse.getX() - width / 2);
-            setTower.setY(originHeight - Mouse.getY() - height / 2);
+
+            if(block != null){
+                setTower.setX(blockToViewX((int)block.getCoords()[0],diameter));
+                setTower.setY(blockToViewY((int)block.getCoords()[1],diameter));
+            } else {
+                setTower.setX(Mouse.getX() - width / 2);
+                setTower.setY(originHeight - Mouse.getY() - height / 2);
+            }
+
             if(setTower.getBaseTexture() != null){
                 batch.draw(ViewManager.getTexture(setTower.getBaseTexture()), setTower.getX(), setTower.getY(), width, height);
             }
