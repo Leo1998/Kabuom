@@ -36,8 +36,8 @@ public class Controller {
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
             @Override
             public void run() {
-                //if (world != null)
-                //    World.saveWorld(world);
+                if (world != null)
+                    saveGame();
 
                 config.save();
             }

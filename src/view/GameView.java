@@ -25,12 +25,10 @@ public class GameView extends View {
     private final float tBWidth = 0.125f;
 
     private World world;
-    private TowerButton[] towerButtons;
     private Entity setTower;
     private float scale;
     private int offsetX, offsetY;
-    private ITexture blockTexture, towerButtonBackgroundTexture;
-    private Button startButton;
+    private ITexture blockTexture;
     private boolean shiftdown, mousedown0, mousedown1, tabdown;
     private Vector2 mouse0, mouse1;
 
@@ -39,11 +37,10 @@ public class GameView extends View {
         super(width, height, viewManager);
 
         blockTexture = ViewManager.getTexture("block1.png");
-        towerButtonBackgroundTexture = ViewManager.getTexture("viewTextures/mainButton.png");
 
         this.world = world;
 
-        towerButtons = new TowerButton[EntityType.mainTowerIndex];
+        Button[] towerButtons = new TowerButton[EntityType.mainTowerIndex];
         float buttonWidth = tBWidth;
         float buttonHeight = 0.8f/towerButtons.length;
         float buttonStartX = 1 - buttonWidth;
@@ -69,7 +66,7 @@ public class GameView extends View {
             });
         }
 
-        startButton = new Button(buttonStartX, 0.9f, buttonWidth, 0.1f, this, "Start");
+        Button startButton = new Button(buttonStartX, 0.9f, buttonWidth, 0.1f, this, "Start");
         startButton.setListener(() -> world.startWave());
         components.add(startButton);
     }
@@ -136,7 +133,7 @@ public class GameView extends View {
                 batch.circle(x, y, radius, r, g, b, 0.0625f);
             }
 
-            String s = Integer.toString(entity.getLevel());
+            String s = Integer.toString(entity.getLevel()+1);
             float oX = ViewManager.font.getWidth(s)/2;
             float oY = ViewManager.font.getLineHeight()/2;
             ViewManager.font.drawText(batch,s,Math.round(x-oX),Math.round(y-oY));
@@ -388,17 +385,10 @@ public class GameView extends View {
         if (key == Keyboard.KEY_LSHIFT) {
             shiftdown = true;
         }
-
         if (key == Keyboard.KEY_ESCAPE) {
             getViewManager().getCtrl().endGame(false);
         }
         if(key == Keyboard.KEY_TAB) {
-            /*
-            Vector2 block = getBlockIDOfMouse();
-            if (block != null) {
-                world.printEntities((int)block.getCoords()[0],(int) (block.getCoords()[1]));
-            }
-            */
             tabdown = true;
         }
     }
