@@ -31,7 +31,7 @@ public class GameView extends View {
     private int offsetX, offsetY;
     private ITexture blockTexture, towerButtonBackgroundTexture;
     private Button startButton;
-    private boolean shiftdown, mousedown0, mousedown1;
+    private boolean shiftdown, mousedown0, mousedown1, tabdown;
     private Vector2 mouse0, mouse1;
 
 
@@ -90,6 +90,7 @@ public class GameView extends View {
     }
 
     private void drawEntity(Entity entity, Batch batch){
+
         if(entity.getBaseTexture() != null) {
             float angle = 0;
             if (entity instanceof MoveEntity) {
@@ -116,6 +117,29 @@ public class GameView extends View {
             }
 
             drawGameObject(entity, entity.getTurretTexture(), angle, batch, 0.9f);
+        }
+
+        if(tabdown) {
+            float x = blockToViewX(entity.getX() + 0.5f);
+            float y = blockToViewY(entity.getY() + 0.5f);
+
+            if (entity.isRanged()) {
+                float r,g,b;
+                r = g = b = 0;
+                if(entity.isEnemy()){
+                    r = 1;
+                } else {
+                    b = 1;
+                }
+
+                float radius = entity.getRange() * scale;
+                batch.circle(x, y, radius, r, g, b, 0.025f);
+            }
+
+            String s = Integer.toString(entity.getLevel());
+            float oX = ViewManager.font.getWidth(s)/2;
+            float oY = ViewManager.font.getLineHeight()/2;
+            ViewManager.font.drawText(batch,s,Math.round(x-oX),Math.round(y-oY));
         }
     }
 
@@ -178,8 +202,8 @@ public class GameView extends View {
             if (t != null) {
 
                 float radius = t.getRange()*scale;
-                float x1 = blockToViewX(t.getX(),t.getRadius());
-                float y1 = blockToViewY(t.getY(),t.getRadius());
+                float x1 = blockToViewX(t.getX(),t.getRadius()*2);
+                float y1 = blockToViewY(t.getY(),t.getRadius()*2);
                 batch.circle(x1,y1,radius,1,1,1,0.1f);
 
                 int x0 = Mouse.getX();
@@ -367,10 +391,13 @@ public class GameView extends View {
             getViewManager().getCtrl().endGame(false);
         }
         if(key == Keyboard.KEY_TAB) {
+            /*
             Vector2 block = getBlockIDOfMouse();
             if (block != null) {
                 world.printEntities((int)block.getCoords()[0],(int) (block.getCoords()[1]));
             }
+            */
+            tabdown = true;
         }
     }
 
@@ -379,6 +406,9 @@ public class GameView extends View {
         super.onKeyUp(key, c);
         if (key == Keyboard.KEY_LSHIFT) {
             shiftdown = false;
+        }
+        if(key == Keyboard.KEY_TAB){
+            tabdown = false;
         }
     }
 }
