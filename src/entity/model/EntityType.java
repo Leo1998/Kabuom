@@ -17,6 +17,7 @@ public enum EntityType implements ObjectType {
     BARRICADE(  1000,   0.625f, 0,      "Barricade",    null,               "barricade2.png",   0.5f,       2,      0,          8,  false,  true,   null,                           75,     Upgrade.DEFAULTENTITY),
     MINE(       10,     0.125f, 0,      "Mine",         null,               "Base.png",         0.125f,     1,      0,          1,  false,  true,   ProjectileType.EXPLOSION,       75,     Upgrade.RANGEDENTITY),
     HEALTOWER(  20,     0.5f,   0,      "Healer",       "FlamethrowerRot.png","Base.png",       4,          3,      3.1416f*2,  64, true,   false,  ProjectileType.HEALING,         150,    Upgrade.RANGEDENTITY),
+    SPAWNER(    50,     0.5f,   0,      "Spawner",      null,               "MissileLauncherRot.png",1,     Integer.MAX_VALUE,0,1,  false,  true,   null,                           150,    Upgrade.RANGEDENTITY),
     MAINTOWER(  1000,   0.625f, 0,      "Maintower",    null,               "MainTower.png",    0,          0,      0,          0,  false,  false,  null,                           250,    Upgrade.DEFAULTENTITY),
 
     //Enemy     maxHp   radius  speed   name            turretTexture       baseTexture         frequency   range   accuracy    att aAlly   aHost   projectile                      cost    upgrade
@@ -29,18 +30,22 @@ public enum EntityType implements ObjectType {
     RANGED(     100,    0.325f, 2,      "Mobile MG",    "MgTurret.png",     "Troll.png",        0.5f,       4,      0.5f,       1,  false,  true,   ProjectileType.BULLET,          1,      Upgrade.RANGEDENTITY),
     RANGED2(    100,    0.325f, 0.5f,   "Mobile Tesla", "LaserLamp.png",    "Tank.png",         0.0625f,    4,      0.5f,       1,  false,  true,   ProjectileType.LIGHTNING,       1,      Upgrade.RANGEDENTITY),
     SUICIDE(    300,    0.25f,  2,      "Suicide",      null,               "Super.png",        0.03125f,   0.5f,   0,          1,  false,  true,   ProjectileType.EXPLOSION,       1,      Upgrade.DEFAULTENTITY),
-    //HEALER(     20,     0.5f,   2,      "Healer",       "FlamethrowerRot.png","Cheap.png",      1,          3,      1,          8,  true,   false,  ProjectileType.HEALING,         1,      Upgrade.RANGEDENTITY),
+    HEALER(     20,     0.5f,   2,      "Healer",       "FlamethrowerRot.png","Cheap.png",      1,          3,      1,          8,  true,   false,  ProjectileType.HEALING,         1,      Upgrade.RANGEDENTITY),
     ;
-    public final static int firstEnemyIndex = 12;
-    public final static int mainTowerIndex = 11;
+    public final static int firstEnemyIndex = 13;
+    public final static int mainTowerIndex = 12;
 
     public final float maxHP,radius,speed;
     public final String name,turretTexture,baseTexture;
     public final float frequency, range, accuracy;
     public final int attack, cost;
     public final boolean attacksAllies, attacksHostiles;
-    public final ObjectType projectile;
+    public ObjectType projectile;
     public final Upgrade upgrade;
+
+    static{
+        SPAWNER.projectile = EntityType.SPEED;
+    }
 
     EntityType(float maxHP, float radius, float speed, String name, String turretTexture, String baseTexture, float frequency, float range, float accuracy, int attack, boolean attacksAllies, boolean attacksHostiles, ObjectType projectile, int cost, Upgrade upgrade) {
         this.maxHP = maxHP;

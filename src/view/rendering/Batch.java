@@ -299,7 +299,7 @@ public class Batch {
      * @param rad Radius of circle
      */
     private float[][] prepareCircle(float cx, float cy, float rad){
-        int num_segments = Math.round(10 * (float)Math.sqrt(rad));//change the 10 to a smaller/bigger number as needed
+        int num_segments = Math.min(Math.round(10 * (float)Math.sqrt(rad)),128);//change the 10 to a smaller/bigger number as needed
 
         float[][] result = new float[num_segments][2];
 

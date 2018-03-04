@@ -120,7 +120,7 @@ public class GameView extends View {
             float x = blockToViewX(entity.getX() + 0.5f);
             float y = blockToViewY(entity.getY() + 0.5f);
 
-            if (entity.isRanged()) {
+            if (entity.isRanged() && !entity.isSpawner()) {
                 float r,g,b;
                 r = g = b = 0;
                 if(entity.isEnemy()){
@@ -199,7 +199,7 @@ public class GameView extends View {
 
                 if (t != null) {
 
-                    if (t.isRanged() && !tabdown) {
+                    if (t.isRanged() && !t.isSpawner() && !tabdown) {
                         float radius = t.getRange() * scale;
                         float x1 = blockToViewX(t.getX() + 0.5f);
                         float y1 = blockToViewY(t.getY() + 0.5f);
@@ -265,7 +265,7 @@ public class GameView extends View {
             if(setTower.getTurretTexture() != null){
                 batch.draw(ViewManager.getTexture(setTower.getTurretTexture()), setTower.getX(), setTower.getY(), width, height);
             }
-            if(setTower.isRanged()){
+            if(setTower.isRanged() && !setTower.isSpawner()){
                 float x = setTower.getX() + width/2;
                 float y = setTower.getY() + height/2;
                 float r = setTower.getRange()*scale;

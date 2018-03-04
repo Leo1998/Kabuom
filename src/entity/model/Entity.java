@@ -195,12 +195,24 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
         return entityType.isRanged();
     }
 
+    public boolean isSpawner(){
+        return isRanged() && entityType.projectile instanceof EntityType;
+    }
+
     public boolean isMaintower(){
         return entityType == EntityType.MAINTOWER;
     }
 
     private float getStrength(EffectType effectType) {
         return (effects[effectType.ordinal()] > 0) ? effectType.strength : 1;
+    }
+
+    public boolean attacks(Partisan partisan){
+        return (allyOf(partisan) ? entityType.attacksAllies : entityType.attacksHostiles);
+    }
+
+    public boolean sameType(Entity entity){
+        return entity.entityType == this.entityType;
     }
 
     @Override

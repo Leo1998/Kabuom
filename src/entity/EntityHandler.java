@@ -149,23 +149,26 @@ public class EntityHandler {
         if(entity.isRanged()) {
             if (entity instanceof MoveEntity) {
                 entity.setTarget(findTarget(entity, -1));
-                if (entity.getTarget() == null || entity.getTarget().getHp() <= 0) {
+                if (entity.getTarget() == null) {
                     entity.setTarget(mainTower);
                 }
             } else {
                 entity.setTarget(findTarget(entity, entity.getRange()));
-
-                if (entity.getTarget() != null && entity.getTarget().getHp() <= 0) {
-                    entity.setTarget(null);
-                }
             }
         } else {
             if(entity.getTarget() != null && entity.getTarget().getHp() <= 0){
                 entity.setTarget(null);
             }
+            if(!entity.isEnemy() && entity instanceof MoveEntity && entity.getTarget() == null){
+                entity.setTarget(findTarget(entity,-1));
+                if(entity.getTarget() == null){
+                    entity.setHp(-1);
+                }
+            }
+
         }
         //Attack target if target exists and is in range
-        if (entity.getTarget() != null && getDist(entity,entity.getTarget()) <= entity.getRange() + entity.getTarget().getRadius()) {
+        if (entity.getTarget() != null && entity.attacks(entity.getTarget()) && getDist(entity,entity.getTarget()) <= entity.getRange() + entity.getTarget().getRadius()) {
             if (entity.isRanged()) {
                 if(entity instanceof MoveEntity){
                     MoveEntity mEntity = (MoveEntity) entity;
@@ -209,14 +212,16 @@ public class EntityHandler {
         int maxDist = Math.max(Math.max(x, world.getBlocks().length-x),Math.max(y, world.getBlocks()[x].length-y));
         if(range > 0){
             maxDist = Math.min(Math.round(range),maxDist);
+        } else {
+            range = Integer.MAX_VALUE;
         }
         for(int dist = 0; closest == null && dist <= maxDist; dist++) {
             for (int i = Math.max(0, x - dist); i < Math.min(world.getBlocks().length, x + dist + 1); i++) {
                 boolean full = (i == x - dist || i == x + dist);
                 for (int j = full ? Math.max(0, y - dist) : (y - dist < 0) ? y + dist : y - dist; j < Math.min(world.getBlocks()[i].length, y + dist + 1); j += full ? 1 : 2 * dist) {
                     for(Entity entity:nodeMap[i][j].block){
-                        if(entity != source && ((source.allyOf(entity) && source.attacksAllies()) || (!source.allyOf(entity) && source.attacksHostiles())) && entity.getHp() > 0){
-                            if (closest == null || getDist(source, entity) - entity.getRadius() < getDist(source, closest) - closest.getRadius()) {
+                        if(entity != source && source.attacks(entity)){
+                            if(closest == null || getDist(source,entity) < getDist(source,closest)){
                                 closest = entity;
                             }
                         }
@@ -224,6 +229,7 @@ public class EntityHandler {
                 }
             }
         }
+
 
         if(closest != null && getDist(source,closest) > closest.getRadius() + range){
             closest = null;

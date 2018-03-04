@@ -15,6 +15,7 @@ public class Upgrade {
                                                             x -> def(x,0.001f, 1.5f),
                                                             x -> def(x,0.025f, 2f),
                                                             x -> def(x,0.1f, 4f));
+    public final static Upgrade EXPLOSIONPROJECTILE = new Upgrade(new float[]{6,1,6,1}, new float[]{0.2f,0,0.2f,0});
 
 
     private final Function<Integer, Float>[] functions;

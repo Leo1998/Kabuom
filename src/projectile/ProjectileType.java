@@ -15,9 +15,9 @@ public enum ProjectileType implements ObjectType {
     PIERCINGBULLET( 3,                  0.5f,   "PIERCINGBULLET",   27,     150,    30,     EffectType.BLEEDING,    "Piercingprojektil.png",    false,  true,   Ability.NULL,           Upgrade.DEFAULTPROJECTILE),
     FRAGGRENADE(    1,                  0.5f,   "FRAGGRENADE",      30,     25,     20,     EffectType.BURNING,     "missile.png",              false,  true,   Ability.EXPLOSION,      Upgrade.DEFAULTPROJECTILE),
     POISON(         10,                 0.5f,   "POISON",           5,      25,     10,     EffectType.POISON,      "toxicBullet.png",          false,  true,   Ability.POISONCLOUD,    Upgrade.DEFAULTPROJECTILE),
-    POISONTRAIL(    5,                  0.5f,   "POISON",           0.002f, 15,     0.01f,  EffectType.POISON,      "Giftgas.png",              false,  true,   Ability.NULL,           Upgrade.DEFAULTPROJECTILE),
-    EXPLOSION(      Integer.MAX_VALUE,  2.5f,   "EXPLOSION",        0.01f,  50,     0.002f, EffectType.BURNING,     "Explosion.png",            true,   true,   Ability.NULL,           Upgrade.DEFAULTPROJECTILE),
-    HEALING(        3,                  0.375f, "HEALING",          4,      0,      3,   EffectType.HEALING,     "Heilung.png",              true,   false,  Ability.NULL,           Upgrade.DEFAULTPROJECTILE);
+    POISONTRAIL(    5,                  0.5f,   "POISON",           0.002f, 15,     0.01f,  EffectType.POISON,      "Giftgas.png",              false,  true,   Ability.NULL,           Upgrade.EXPLOSIONPROJECTILE),
+    EXPLOSION(      Integer.MAX_VALUE,  2.5f,   "EXPLOSION",        0.01f,  50,     0.002f, EffectType.BURNING,     "Explosion.png",            true,   true,   Ability.NULL,           Upgrade.EXPLOSIONPROJECTILE),
+    HEALING(        3,                  0.375f, "HEALING",          4,      0,      3,      EffectType.HEALING,     "Heilung.png",              true,   false,  Ability.NULL,           Upgrade.DEFAULTPROJECTILE);
 
     public final int maxHP;
     public final String name;
