@@ -29,7 +29,7 @@ public class GameView extends View {
     private float scale;
     private int offsetX, offsetY;
     private ITexture blockTexture;
-    private boolean shiftdown, mousedown0, mousedown1, tabdown;
+    private boolean shiftdown, mousedown0, mousedown1, showRange, showLevel;
     private Vector2 mouse0, mouse1;
 
 
@@ -116,22 +116,25 @@ public class GameView extends View {
             drawGameObject(entity, entity.getTurretTexture(), angle, batch, 0.9f);
         }
 
-        if(tabdown) {
+        if(showRange && entity.isRanged() && !entity.isSpawner()) {
             float x = blockToViewX(entity.getX() + 0.5f);
             float y = blockToViewY(entity.getY() + 0.5f);
 
-            if (entity.isRanged() && !entity.isSpawner()) {
-                float r,g,b;
-                r = g = b = 0;
-                if(entity.isEnemy()){
-                    r = 1;
-                } else {
-                    b = 1;
-                }
-
-                float radius = entity.getRange() * scale;
-                batch.limitedCircle(x, y, radius, r, g, b, 0.0625f, offsetX, offsetY, offsetX + Math.round(scale*world.getWidth()), offsetY + Math.round(scale*world.getHeight()));
+            float r,g,b;
+            r = g = b = 0;
+            if(entity.isEnemy()){
+                r = 1;
+            } else {
+                b = 1;
             }
+
+            float radius = entity.getRange() * scale;
+            batch.limitedCircle(x, y, radius, r, g, b, 0.0625f, offsetX, offsetY, offsetX + Math.round(scale*world.getWidth()), offsetY + Math.round(scale*world.getHeight()));
+        }
+
+        if(showLevel){
+            float x = blockToViewX(entity.getX() + 0.5f);
+            float y = blockToViewY(entity.getY() + 0.5f);
 
             String s = Integer.toString(entity.getLevel()+1);
             float oX = ViewManager.font.getWidth(s)/2;
@@ -199,7 +202,7 @@ public class GameView extends View {
 
                 if (t != null) {
 
-                    if (t.isRanged() && !t.isSpawner() && !tabdown) {
+                    if (t.isRanged() && !t.isSpawner() && !showRange) {
                         float radius = t.getRange() * scale;
                         float x1 = blockToViewX(t.getX() + 0.5f);
                         float y1 = blockToViewY(t.getY() + 0.5f);
@@ -407,7 +410,10 @@ public class GameView extends View {
             getViewManager().getCtrl().endGame(false);
         }
         if(key == Keyboard.KEY_TAB) {
-            tabdown = !tabdown;
+            if(showLevel){
+                showRange = !showRange;
+            }
+            showLevel = !showLevel;
         }
         if(key == Keyboard.KEY_P){
             Vector2 block = getBlockIDOfMouse();

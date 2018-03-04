@@ -245,13 +245,13 @@ public class World {
             int y = 0;
             int entityIndex = random.nextInt(EntityType.values().length - EntityType.firstEnemyIndex) + EntityType.firstEnemyIndex;
             int level = (int)(random.nextFloat()*0.25f*amount);
-            amount -= EntityType.values()[entityIndex].cost * level;
             Entity entity;
             if (EntityType.values()[entityIndex].speed > 0) {
                 entity = new MoveEntity(EntityType.values()[entityIndex], level, x, y, wave, blocks[x][y], true);
             } else {
                 entity = new Entity(EntityType.values()[entityIndex], level, x, y, wave, blocks[x][y], true);
             }
+            amount -= entity.getReward();
             spawnEntity(entity, x, y);
         }
 

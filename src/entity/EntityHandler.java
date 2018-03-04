@@ -144,30 +144,7 @@ public class EntityHandler {
      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
      */
     private void attack(Entity entity){
-
-        if(entity.isRanged()) {
-            if (entity instanceof MoveEntity) {
-                entity.setTarget(findTarget(entity, -1));
-                if (entity.getTarget() == null) {
-                    entity.setTarget(mainTower);
-                }
-            } else {
-                entity.setTarget(findTarget(entity, entity.getRange()));
-            }
-        } else {
-            if(entity.getTarget() != null && entity.getTarget().getHp() <= 0){
-                entity.setTarget(null);
-            }
-            if(!entity.isEnemy() && entity instanceof MoveEntity && entity.getTarget() == null){
-                entity.setTarget(findTarget(entity,-1));
-                if(entity.getTarget() == null){
-                    entity.setHp(-1);
-                }
-            }
-
-        }
-        //Attack target if target exists and is in range
-        if (entity.getTarget() != null && entity.attacks(entity.getTarget()) && getDist(entity,entity.getTarget()) <= entity.getRange() + entity.getTarget().getRadius()) {
+        if (provideTarget(entity)) {
             if (entity.isRanged()) {
                 if(entity instanceof MoveEntity){
                     MoveEntity mEntity = (MoveEntity) entity;
@@ -198,6 +175,34 @@ public class EntityHandler {
             } else {
                 if(random.nextFloat() > entity.getAccuracy()) {
                     entity.getTarget().addHp(-entity.getAttack(), entity.getName());
+                }
+            }
+        }
+    }
+
+    private boolean provideTarget(Entity entity){
+        if(entity.getTarget() != null && entity.getTarget().getHp() > 0 && entity.attacks(entity.getTarget()) && getDist(entity,entity.getTarget()) <= entity.getRange()){
+            return true;
+        } else {
+            if(entity instanceof MoveEntity){
+                entity.setTarget(findTarget(entity,-1));
+                if(entity.getTarget() == null){
+                    if(entity.isEnemy()) {
+                        entity.setTarget(mainTower);
+                        return entity.attacks(mainTower) && getDist(entity, mainTower) <= entity.getRange();
+                    } else {
+                        entity.setHp(-1);
+                        return false;
+                    }
+                } else {
+                    return getDist(entity,entity.getTarget()) <= entity.getRange();
+                }
+            } else {
+                entity.setTarget(findTarget(entity, entity.getRange()+1));
+                if(entity.getTarget() == null){
+                    return false;
+                } else {
+                    return true;
                 }
             }
         }

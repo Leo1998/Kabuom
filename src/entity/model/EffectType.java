@@ -9,7 +9,7 @@ public enum EffectType {
     BLEEDING(   0.5f,   2,          false),
     BURNING(    2,      0.25f,      true),
     POISON(     5,      0.125f,     true),
-    HEALING(    1,      -0.03125f,  true);
+    HEALING(    1,      -0.125f,  true);
 
     public final float duration, strength;
     public final boolean dot;
