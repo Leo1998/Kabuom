@@ -187,7 +187,7 @@ public class World {
     public void removeEntity(Entity entity){
         entity.setHp(-1);
         if(entity.isEnemy()){
-            coins += (entity.getLevel()+1) * 1000/(Math.pow(1+wave,2)/10 + 5);
+            coins += entity.getReward() * 1000/(Math.pow(1+wave,2)/10 + 5);
         } else if(entity.isMaintower()){
             Controller.instance.endGame(true);
         }
@@ -245,7 +245,7 @@ public class World {
             int y = 0;
             int entityIndex = random.nextInt(EntityType.values().length - EntityType.firstEnemyIndex) + EntityType.firstEnemyIndex;
             int level = (int)(random.nextFloat()*0.25f*amount);
-            amount -= EntityType.values()[entityIndex].cost + level;
+            amount -= EntityType.values()[entityIndex].cost * level;
             Entity entity;
             if (EntityType.values()[entityIndex].speed > 0) {
                 entity = new MoveEntity(EntityType.values()[entityIndex], level, x, y, wave, blocks[x][y], true);

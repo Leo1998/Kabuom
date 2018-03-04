@@ -203,6 +203,10 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
         return entityType == EntityType.MAINTOWER;
     }
 
+    public int getReward(){
+        return (level+1)*entityType.cost;
+    }
+
     private float getStrength(EffectType effectType) {
         return (effects[effectType.ordinal()] > 0) ? effectType.strength : 1;
     }

@@ -7,7 +7,7 @@ public class Upgrade {
     //Projectile: Hp Speed Damage Range
 
     public final static Upgrade DEFAULTENTITY = new Upgrade(new float[]{4,4,4,4,4,4,4}, new float[]{0.1f,0.1f,0.1f,0.1f,0.1f,0.1f,0.1f});
-    public final static Upgrade DEFAULTPROJECTILE = new Upgrade(new float[]{4,4,4,4}, new float[]{0.1f,0.1f,0.1f,0.1f});
+    public final static Upgrade DEFAULTPROJECTILE = new Upgrade(new float[]{2,2,2,2}, new float[]{0.08f,0.08f,0.08f,0.08f});
     public final static Upgrade RANGEDENTITY = new Upgrade( x -> x*0.1f+1,
                                                             x -> def(x,0.1f, 4f),
                                                             x -> def(x,0.025f, 2f),
@@ -15,7 +15,7 @@ public class Upgrade {
                                                             x -> def(x,0.001f, 1.5f),
                                                             x -> def(x,0.025f, 2f),
                                                             x -> def(x,0.1f, 4f));
-    public final static Upgrade EXPLOSIONPROJECTILE = new Upgrade(new float[]{6,1,6,1}, new float[]{0.2f,0,0.2f,0});
+    public final static Upgrade EXPLOSIONPROJECTILE = new Upgrade(new float[]{3,1,3,1}, new float[]{0.1f,0,0.1f,0});
 
 
     private final Function<Integer, Float>[] functions;

@@ -67,7 +67,7 @@ public class GameView extends View {
         }
 
         Button startButton = new Button(buttonStartX, 0.9f, buttonWidth, 0.1f, this, "Start");
-        startButton.setListener(() -> world.startWave());
+        startButton.setListener(world::startWave);
         components.add(startButton);
     }
 

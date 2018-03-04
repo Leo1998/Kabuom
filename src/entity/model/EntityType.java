@@ -27,10 +27,10 @@ public enum EntityType implements ObjectType {
     DAMAGE(     150,    0.5f,   2,      "Damage",       null,               "Damage.png",       0.3125f,    0.5f,   0,          60, false,  true,   null,                           1,      Upgrade.DEFAULTENTITY),
     SUPER(      480,    0.5f,   1,      "Super",        null,               "Super.png",        1.5f,       0.5f,   0,          70, false,  true,   null,                           1,      Upgrade.DEFAULTENTITY),
     TROLL(      600,    0.75f,  0.5f,   "Troll",        null,               "Troll.png",        3,          0.75f,  0,          75, false,  true,   null,                           1,      Upgrade.DEFAULTENTITY),
-    RANGED(     100,    0.325f, 2,      "Mobile MG",    "MgTurret.png",     "Troll.png",        0.5f,       4,      0.5f,       1,  false,  true,   ProjectileType.BULLET,          1,      Upgrade.RANGEDENTITY),
-    RANGED2(    100,    0.325f, 0.5f,   "Mobile Tesla", "LaserLamp.png",    "Tank.png",         0.0625f,    4,      0.5f,       1,  false,  true,   ProjectileType.LIGHTNING,       1,      Upgrade.RANGEDENTITY),
-    SUICIDE(    300,    0.25f,  2,      "Suicide",      null,               "Super.png",        0.03125f,   0.5f,   0,          1,  false,  true,   ProjectileType.EXPLOSION,       1,      Upgrade.DEFAULTENTITY),
-    HEALER(     20,     0.5f,   2,      "Healer",       "FlamethrowerRot.png","Cheap.png",      1,          3,      1,          8,  true,   false,  ProjectileType.HEALING,         1,      Upgrade.RANGEDENTITY),
+    RANGED(     100,    0.325f, 2,      "Mobile MG",    "MgTurret.png",     "Troll.png",        0.5f,       4,      0.5f,       1,  false,  true,   ProjectileType.BULLET,          2,      Upgrade.RANGEDENTITY),
+    RANGED2(    100,    0.325f, 0.5f,   "Mobile Tesla", "LaserLamp.png",    "Tank.png",         0.0625f,    4,      0.5f,       1,  false,  true,   ProjectileType.LIGHTNING,       2,      Upgrade.RANGEDENTITY),
+    SUICIDE(    300,    0.25f,  2,      "Suicide",      null,               "Super.png",        0.03125f,   0.5f,   0,          1,  false,  true,   ProjectileType.EXPLOSION,       2,      Upgrade.DEFAULTENTITY),
+    HEALER(     200,    0.4f,   2,      "Healer",       "FlamethrowerRot.png","Cheap.png",      1,          3,      1,          8,  true,   false,  ProjectileType.HEALING,         2,      Upgrade.RANGEDENTITY),
     ;
     public final static int firstEnemyIndex = 13;
     public final static int mainTowerIndex = 12;
