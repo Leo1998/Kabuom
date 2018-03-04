@@ -44,6 +44,10 @@ public class Vector2 {
         return coords[0] == 0f && coords[1] == 0f;
     }
 
+    public float getAngle(){
+        return (float)Math.atan2(coords[0],-coords[1]);
+    }
+
     @Override
     public String toString() {
         return "Vector2{" +

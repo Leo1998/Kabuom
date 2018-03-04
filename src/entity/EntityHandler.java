@@ -62,7 +62,6 @@ public class EntityHandler {
             Iterator<Entity> iterator = entities.iterator();
             for (int i = 0; iterator.hasNext(); i++) {
                 Entity entity = iterator.next();
-
                 if (entity.getHp() <= 0) {
                     iterator.remove();
                     if (entity.getBlock().getTower() == entity) {
@@ -332,19 +331,21 @@ public class EntityHandler {
         movableDist = entity.getSpeed() * dt;
         Step step = steps.peek();
         totalDist = getDist(step, entity);
+        if(totalDist > 0) {
 
-        while (totalDist < movableDist + Math.min(steps.size()-1,3) && !steps.isEmpty() && steps.peek().stepType == Step.StepType.GoTo) {
-            steps.pop();
-            if (!steps.isEmpty() && steps.peek().stepType == Step.StepType.GoTo) {
-                step = steps.peek();
-                totalDist = getDist(step, entity);
+            while (totalDist < movableDist + Math.min(steps.size() - 1, 3) && !steps.isEmpty() && steps.peek().stepType == Step.StepType.GoTo) {
+                steps.pop();
+                if (!steps.isEmpty() && steps.peek().stepType == Step.StepType.GoTo) {
+                    step = steps.peek();
+                    totalDist = getDist(step, entity);
+                }
             }
+
+            float q = movableDist / totalDist;
+
+            Vector2 vec = new Vector2((step.getX() - entity.getX()) * q, (step.getY() - entity.getY()) * q);
+            moveByVector(entity, vec, dt);
         }
-
-        float q = movableDist / totalDist;
-
-        Vector2 vec = new Vector2((step.getX() - entity.getX()) * q,(step.getY() - entity.getY()) * q);
-        moveByVector(entity,vec,dt);
     }
 
     private void stayInRange(MoveEntity entity, float dt){
@@ -355,28 +356,31 @@ public class EntityHandler {
 
             float dist = getDist(entity,target);
 
-            float q = (entity.getSpeed()*dt) / dist;
-            Vector2 vec;
+            if(dist > 0) {
 
-            if(dist > entity.getRange() + target.getRadius()){
-                vec = new Vector2((entity.getTarget().getX() - entity.getX()) * q,(entity.getTarget().getY() - entity.getY()) * q);
-            } else if((target.getRange() < entity.getRange() && dist < target.getRange() + entity.getRadius()) || dist < entity.getRange()/2){
-                vec = new Vector2((entity.getTarget().getX() - entity.getX()) * q * -1,(entity.getTarget().getY() - entity.getY()) * q * -1);
-            } else {
-                float xCoord = (entity.getTarget().getX() - entity.getX()) * q;
-                float yCoord = (entity.getTarget().getY() - entity.getY()) * q;
+                float q = (entity.getSpeed() * dt) / dist;
+                Vector2 vec;
 
-                float dist1 = getDist(yCoord, -xCoord, entity.getMovement().getCoords()[0], entity.getMovement().getCoords()[1]);
-                float dist2 = getDist(-yCoord, xCoord, entity.getMovement().getCoords()[0], entity.getMovement().getCoords()[1]);
-
-                if(dist1 < dist2){
-                    vec = new Vector2(yCoord,-xCoord);
+                if (dist > entity.getRange() + target.getRadius()) {
+                    vec = new Vector2((entity.getTarget().getX() - entity.getX()) * q, (entity.getTarget().getY() - entity.getY()) * q);
+                } else if ((target.getRange() < entity.getRange() && dist < target.getRange() + entity.getRadius()) || dist < entity.getRange() / 2) {
+                    vec = new Vector2((entity.getTarget().getX() - entity.getX()) * q * -1, (entity.getTarget().getY() - entity.getY()) * q * -1);
                 } else {
-                    vec = new Vector2(-yCoord,xCoord);
-                }
-            }
+                    float xCoord = (entity.getTarget().getX() - entity.getX()) * q;
+                    float yCoord = (entity.getTarget().getY() - entity.getY()) * q;
 
-            moveByVector(entity,vec,dt);
+                    float dist1 = getDist(yCoord, -xCoord, entity.getMovement().getCoords()[0], entity.getMovement().getCoords()[1]);
+                    float dist2 = getDist(-yCoord, xCoord, entity.getMovement().getCoords()[0], entity.getMovement().getCoords()[1]);
+
+                    if (dist1 < dist2) {
+                        vec = new Vector2(yCoord, -xCoord);
+                    } else {
+                        vec = new Vector2(-yCoord, xCoord);
+                    }
+                }
+
+                moveByVector(entity, vec, dt);
+            }
         }
     }
 

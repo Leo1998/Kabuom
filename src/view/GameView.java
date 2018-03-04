@@ -93,7 +93,7 @@ public class GameView extends View {
             if (entity instanceof MoveEntity) {
                 MoveEntity mEntity = (MoveEntity) entity;
                 if (!mEntity.getMovement().nullVector()) {
-                    angle = Utility.calculateAngleBetweenTwoPoints(0, 0, mEntity.getMovement().getCoords()[0], mEntity.getMovement().getCoords()[1]);
+                    angle = mEntity.getMovement().getAngle();
                 }
                 float diameter = entity.getRadius() * 2;
                 float width = scale * diameter;
@@ -141,7 +141,7 @@ public class GameView extends View {
     }
 
     private void drawProjectile(Projectile projectile, Batch batch){
-        float angle = Utility.calculateAngleBetweenTwoPoints(projectile.getDir().getCoords()[0], projectile.getDir().getCoords()[1], 0, 0);
+        float angle = projectile.getDir().getAngle();
 
         drawGameObject(projectile, projectile.getTexture(), angle, batch, 1);
     }
