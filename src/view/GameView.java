@@ -409,6 +409,12 @@ public class GameView extends View {
         if(key == Keyboard.KEY_TAB) {
             tabdown = !tabdown;
         }
+        if(key == Keyboard.KEY_P){
+            Vector2 block = getBlockIDOfMouse();
+            if(block != null){
+                world.printEntities((int)block.getCoords()[0],(int)block.getCoords()[1]);
+            }
+        }
     }
 
     @Override
