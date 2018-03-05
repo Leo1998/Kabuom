@@ -94,7 +94,7 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
             } else if(effects[i] > 0){
                 effects[i] -= duration;
                 if(EffectType.values()[i].dot) {
-                    float damage = entityType.getMaxHP() * EffectType.values()[i].strength * duration;
+                    float damage = getMaxHp() * EffectType.values()[i].strength * duration;
                     addHp(-damage, "Effect");
                 }
             }
