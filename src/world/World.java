@@ -193,7 +193,7 @@ public class World {
     public void removeEntity(Entity entity){
         entity.setHp(-1);
         if(entity.isEnemy()){
-            coins += entity.getReward() * 1000/(Math.pow(1+wave,2)/10 + 5);
+            coins += entity.getReward() * 1000/getAmount(entity.getWave());
         } else if(entity.isMaintower()){
             Controller.instance.endGame(true);
         }
@@ -244,7 +244,7 @@ public class World {
 
         entityHandler.startWave();
 
-        int amount = (int)(Math.pow(1 + ((double)difficulty/50d) * (double)wave,2) + 5);
+        int amount = getAmount(wave);
 
         while (amount > 0){
             int x = random.nextInt(width);
@@ -262,6 +262,10 @@ public class World {
         }
 
         spawnWave = false;
+    }
+
+    private int getAmount(int wave){
+        return (int)(Math.pow(1 + ((double)difficulty/50d) * (double)wave,2) + 5);
     }
 
     public int getCoins() {
