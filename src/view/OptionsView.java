@@ -49,7 +49,7 @@ public class OptionsView extends BaseMenuView {
 
         widthSlider.setListener(value -> Controller.instance.getConfig().setWidth(value));
 
-        int gameHeight = Controller.instance.getConfig().getWidth();
+        int gameHeight = Controller.instance.getConfig().getHeight();
         Slider heightSlider = new Slider(0.15f, 0.7f, 0.7f, 0.1f, this, "Game Height", true, 5, 50, gameHeight);
         this.components.add(heightSlider);
 
