@@ -126,6 +126,10 @@ public class World {
         return obj;
     }
 
+    public int getRanged(){
+        return entityHandler.getRanged();
+    }
+
     public void printEntities(int x, int y){
         System.out.println(blocks[x][y]);
     }

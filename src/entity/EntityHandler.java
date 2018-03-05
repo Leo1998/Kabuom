@@ -1,10 +1,6 @@
 package entity;
 
-import entity.model.Entity;
-import entity.model.EntityType;
-import entity.model.MoveEntity;
-import entity.model.Partisan;
-import entity.model.Step;
+import entity.model.*;
 import model.Position;
 import projectile.Projectile;
 import projectile.ProjectileType;
@@ -24,6 +20,8 @@ public class EntityHandler {
     private int difficulty, index, updateIndex;
     private Entity mainTower;
     private World world;
+
+    private int ranged;
 
     /**
      * Constructor of EntityHandler
@@ -54,6 +52,7 @@ public class EntityHandler {
      */
     public int handleEntities(LinkedList<Entity> entities, float dt){
         int minWave = Integer.MAX_VALUE;
+        ranged = 0;
 
         if(entities.size() > 0) {
             updateIndex = (updateIndex + 1) % entities.size();
@@ -73,6 +72,10 @@ public class EntityHandler {
                     if (entity.isEnemy() && entity.getWave() < minWave) {
                         minWave = entity.getWave();
                     }
+                    if(entity.isRanged()){
+                        ranged++;
+                    }
+
                     entity.updateEffects(dt);
 
                     if (entity.addAttackCooldown(dt)) {
@@ -128,7 +131,7 @@ public class EntityHandler {
                 node.damage /= 2;
 
                 if(node.block.getTower() != null){
-                    node.block.getTower().addHp(node.block.getTower().getMaxHp()/10);
+                    node.block.getTower().addEffect(EffectType.HEALING);
                 }
             }
         }
@@ -136,6 +139,10 @@ public class EntityHandler {
 
     public void newTower(int x, int y){
         updateNode(x,y, nodeMap[x][y].block);
+    }
+
+    public int getRanged(){
+        return ranged;
     }
 
     /*

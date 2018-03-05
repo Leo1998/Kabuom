@@ -27,7 +27,7 @@ public class GameView extends View {
     private World world;
     private Entity setTower;
     private float scale;
-    private int offsetX, offsetY;
+    private int offsetX, offsetY, circleLimit = 64;
     private ITexture blockTexture;
     private boolean shiftdown, mousedown0, mousedown1, showRange, showLevel;
     private Vector2 mouse0, mouse1;
@@ -169,6 +169,10 @@ public class GameView extends View {
             for (int j = 0; j < world.getBlocks()[i].length; j++) {
                 batch.draw(blockTexture, blockToViewX(i), blockToViewY(j), scale, scale);
             }
+        }
+
+        if(showRange && world.getRanged() > circleLimit){
+            showRange = false;
         }
 
         for(Entity entity: world.getEntityList()){
