@@ -1,5 +1,6 @@
 package world;
 
+import controller.Config;
 import controller.Controller;
 import entity.EntityHandler;
 import entity.model.Entity;
@@ -25,10 +26,8 @@ public class World {
     private Block[][] blocks;
     private int width, height;
 
-    private int wave;
+    private int wave, coins, difficulty;
     private boolean spawnWave = false, inWave = false, ended = false;
-
-    private int coins;
 
     private EntityHandler entityHandler;
     private ProjectileHandler projectileHandler;
@@ -60,7 +59,8 @@ public class World {
         entityList.add(mainTower);
 
         projectileHandler = new ProjectileHandler(this);
-        entityHandler = new EntityHandler(this,mainTower,Controller.instance.getConfig().getDifficulty());
+        entityHandler = new EntityHandler(this,mainTower,Controller.instance.getConfig().getAiDifficulty());
+        difficulty = Controller.instance.getConfig().getDifficulty();
     }
 
     public World(JSONObject object){
@@ -105,7 +105,8 @@ public class World {
             throw new IllegalArgumentException();
         } else {
             projectileHandler = new ProjectileHandler(this);
-            entityHandler = new EntityHandler(this,mainTower,Controller.instance.getConfig().getDifficulty());
+            entityHandler = new EntityHandler(this,mainTower,Controller.instance.getConfig().getAiDifficulty());
+            difficulty = Controller.instance.getConfig().getDifficulty();
         }
     }
 
@@ -243,7 +244,8 @@ public class World {
 
         entityHandler.startWave();
 
-        int amount = (int)(Math.pow(1+wave,2)/10 + 5);
+        int amount = (int)(Math.pow(1 + (difficulty/50) * wave,2) + 5);
+        System.out.println(amount);
 
         while (amount > 0){
             int x = random.nextInt(width);

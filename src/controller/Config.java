@@ -17,6 +17,7 @@ public class Config {
     private GraphicMode graphicMode = GraphicMode.High;
     private int maxWave = 0;
     private int difficulty = 1;
+    private int aiDifficulty = 1;
     private int width = 19;
     private int height = 19;
 
@@ -32,6 +33,7 @@ public class Config {
                 this.graphicMode = GraphicMode.valueOf(obj.getString("graphicMode"));
                 this.maxWave = obj.getInt("maxWave");
                 this.difficulty = obj.getInt("difficulty");
+                this.aiDifficulty = obj.getInt("aiDifficulty");
                 this.width = obj.getInt("width");
                 this.height = obj.getInt("height");
             } catch (Exception e) {
@@ -53,6 +55,7 @@ public class Config {
             obj.put("graphicMode", this.graphicMode);
             obj.put("maxWave", this.maxWave);
             obj.put("difficulty", this.difficulty);
+            obj.put("aiDifficulty", this.aiDifficulty);
             obj.put("width", this.width);
             obj.put("height", this.height);
 
@@ -94,6 +97,14 @@ public class Config {
 
     public void setDifficulty(int difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public int getAiDifficulty() {
+        return aiDifficulty;
+    }
+
+    public void setAiDifficulty(int aiDifficulty) {
+        this.aiDifficulty = aiDifficulty;
     }
 
     public int getWidth(){

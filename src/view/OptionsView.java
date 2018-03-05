@@ -2,6 +2,7 @@ package view;
 
 import controller.Config;
 import controller.Controller;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import view.components.Button;
 import view.components.ButtonListener;
@@ -17,7 +18,7 @@ public class OptionsView extends BaseMenuView {
         backButton.setListener(() -> viewManager.setCurrentView(new MenuView(originWidth,originHeight,viewManager)));
 
         String mode = Controller.instance.getConfig().getGraphicMode().name();
-        Button graphicsButton = new Button(0.25f, 0.2f, 0.5f, 0.15f, this, "Graphics: " + mode);
+        Button graphicsButton = new Button(0.25f, 0.15f, 0.5f, 0.1f, this, "Graphics: " + mode);
         this.components.add(graphicsButton);
 
         graphicsButton.setListener(new ButtonListener() {
@@ -38,19 +39,25 @@ public class OptionsView extends BaseMenuView {
         });
 
         int difficulty = Controller.instance.getConfig().getDifficulty();
-        Slider difficultySlider = new Slider(0.15f,0.4f,0.7f,0.1f,this, "Difficulty", true, 1, 21, difficulty);
+        Slider difficultySlider = new Slider(0.15f,0.3f,0.7f,0.1f,this, "Difficulty", true, 1, 21, difficulty);
         this.components.add(difficultySlider);
 
         difficultySlider.setListener(value -> Controller.instance.getConfig().setDifficulty(value));
 
+        int aiDifficulty = Controller.instance.getConfig().getAiDifficulty();
+        Slider aiSlider = new Slider(0.15f,0.45f,0.7f,0.1f,this, "AI Difficulty", true, 1, 21, aiDifficulty);
+        this.components.add(aiSlider);
+
+        aiSlider.setListener(value -> Controller.instance.getConfig().setAiDifficulty(value));
+
         int gameWidth = Controller.instance.getConfig().getWidth();
-        Slider widthSlider = new Slider(0.15f, 0.55f, 0.7f, 0.1f, this, "Game Width", true, 5, 50, gameWidth);
+        Slider widthSlider = new Slider(0.15f, 0.6f, 0.7f, 0.1f, this, "Game Width", true, 5, 50, gameWidth);
         this.components.add(widthSlider);
 
         widthSlider.setListener(value -> Controller.instance.getConfig().setWidth(value));
 
         int gameHeight = Controller.instance.getConfig().getHeight();
-        Slider heightSlider = new Slider(0.15f, 0.7f, 0.7f, 0.1f, this, "Game Height", true, 5, 50, gameHeight);
+        Slider heightSlider = new Slider(0.15f, 0.75f, 0.7f, 0.1f, this, "Game Height", true, 5, 50, gameHeight);
         this.components.add(heightSlider);
 
         heightSlider.setListener(value -> Controller.instance.getConfig().setHeight(value));
@@ -59,5 +66,13 @@ public class OptionsView extends BaseMenuView {
     @Override
     public void layout(float width, float height) {
         super.layout(width, height);
+    }
+
+    @Override
+    public void onKeyDown(int key, char c) {
+        super.onKeyDown(key, c);
+        if(key == Keyboard.KEY_ESCAPE){
+            viewManager.setCurrentView(new MenuView(originWidth,originHeight,viewManager));
+        }
     }
 }
