@@ -403,6 +403,16 @@ public class EntityHandler {
             vector.multiply(-1);
             targetX = entity.getX() + vector.getCoords()[0];
             targetY = entity.getY() + vector.getCoords()[1];
+            if(targetX < -0.4f){
+                targetX = -0.4f;
+            } else if(targetX > nodeMap.length - 0.6f) {
+                targetX = nodeMap.length-0.6f;
+            }
+            if(targetY < -0.4f){
+                targetY = 0.4f;
+            } else if(targetY > nodeMap[Math.round(targetX)].length - 0.6f){
+                targetY = nodeMap[Math.round(targetX)].length - 0.6f;
+            }
         }
 
         if (entity.getBlock() != nodeMap[Math.round(targetX)][Math.round(targetY)].block) {
