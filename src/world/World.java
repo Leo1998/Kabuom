@@ -244,8 +244,7 @@ public class World {
 
         entityHandler.startWave();
 
-        int amount = (int)(Math.pow(1 + (difficulty/50) * wave,2) + 5);
-        System.out.println(amount);
+        int amount = (int)(Math.pow(1 + ((double)difficulty/50d) * (double)wave,2) + 5);
 
         while (amount > 0){
             int x = random.nextInt(width);
