@@ -244,7 +244,7 @@ public class World {
             int x = random.nextInt(width);
             int y = 0;
             int entityIndex = random.nextInt(EntityType.values().length - EntityType.firstEnemyIndex) + EntityType.firstEnemyIndex;
-            int level = (int)(random.nextFloat()*0.25f*amount);
+            int level = (int)(random.nextFloat()*0.25f*amount/EntityType.values()[entityIndex].cost);
             Entity entity;
             if (EntityType.values()[entityIndex].speed > 0) {
                 entity = new MoveEntity(EntityType.values()[entityIndex], level, x, y, wave, blocks[x][y], true);
