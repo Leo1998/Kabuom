@@ -16,9 +16,9 @@ public class Config {
 
     private GraphicMode graphicMode = GraphicMode.High;
     private int maxWave = 0;
-
-
     private int difficulty = 1;
+    private int width = 19;
+    private int height = 19;
 
     private File configFile;
 
@@ -32,6 +32,8 @@ public class Config {
                 this.graphicMode = GraphicMode.valueOf(obj.getString("graphicMode"));
                 this.maxWave = obj.getInt("maxWave");
                 this.difficulty = obj.getInt("difficulty");
+                this.width = obj.getInt("width");
+                this.height = obj.getInt("height");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -51,6 +53,8 @@ public class Config {
             obj.put("graphicMode", this.graphicMode);
             obj.put("maxWave", this.maxWave);
             obj.put("difficulty", this.difficulty);
+            obj.put("width", this.width);
+            obj.put("height", this.height);
 
             String json = obj.toString();
 
@@ -90,6 +94,22 @@ public class Config {
 
     public void setDifficulty(int difficulty) {
         this.difficulty = difficulty;
+    }
+
+    public int getWidth(){
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
     }
 
     @Override

@@ -9,24 +9,15 @@ import view.components.Slider;
 
 public class OptionsView extends BaseMenuView {
 
-    private Button backButton;
-    private Button graphicsButton;
-    private Slider difficultySlider;
-
     public OptionsView(float width, float height, final ViewManager viewManager) {
         super(width, height, viewManager);
-        backButton = new Button(0.05f, 0.05f, 0.15f, 0.1f, this, "Back");
+        Button backButton = new Button(0.05f, 0.05f, 0.15f, 0.1f, this, "Back");
         this.components.add(backButton);
 
-        backButton.setListener(new ButtonListener() {
-            @Override
-            public void onClick() {
-                viewManager.setCurrentView(new MenuView(originWidth, originHeight, viewManager));
-            }
-        });
+        backButton.setListener(() -> viewManager.setCurrentView(new MenuView(originWidth,originHeight,viewManager)));
 
         String mode = Controller.instance.getConfig().getGraphicMode().name();
-        graphicsButton = new Button(0.25f, 0.3f, 0.5f, 0.2f, this, "Graphics: " + mode);
+        Button graphicsButton = new Button(0.25f, 0.2f, 0.5f, 0.15f, this, "Graphics: " + mode);
         this.components.add(graphicsButton);
 
         graphicsButton.setListener(new ButtonListener() {
@@ -47,20 +38,26 @@ public class OptionsView extends BaseMenuView {
         });
 
         int difficulty = Controller.instance.getConfig().getDifficulty();
-        difficultySlider = new Slider(0.25f,0.55f,0.5f,0.2f,this, "Difficulty", true, 1, 21, difficulty);
+        Slider difficultySlider = new Slider(0.15f,0.4f,0.7f,0.1f,this, "Difficulty", true, 1, 21, difficulty);
         this.components.add(difficultySlider);
 
         difficultySlider.setListener(value -> Controller.instance.getConfig().setDifficulty(value));
 
+        int gameWidth = Controller.instance.getConfig().getWidth();
+        Slider widthSlider = new Slider(0.15f, 0.55f, 0.7f, 0.1f, this, "Game Width", true, 5, 50, gameWidth);
+        this.components.add(widthSlider);
+
+        widthSlider.setListener(value -> Controller.instance.getConfig().setWidth(value));
+
+        int gameHeight = Controller.instance.getConfig().getWidth();
+        Slider heightSlider = new Slider(0.15f, 0.7f, 0.7f, 0.1f, this, "Game Height", true, 5, 50, gameHeight);
+        this.components.add(heightSlider);
+
+        heightSlider.setListener(value -> Controller.instance.getConfig().setHeight(value));
     }
 
     @Override
     public void layout(float width, float height) {
         super.layout(width, height);
     }
-
-    public int getDifficulty(){
-        return difficultySlider.getValue();
-    }
-
 }

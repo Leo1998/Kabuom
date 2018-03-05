@@ -181,7 +181,7 @@ public class EntityHandler {
     }
 
     private boolean provideTarget(Entity entity){
-        if(entity.getTarget() != null && entity.getTarget().getHp() > 0 && entity.attacks(entity.getTarget()) && getDist(entity,entity.getTarget()) <= entity.getRange()){
+        if(entity.getTarget() != null && entity.getTarget().getHp() > 0 && entity.attacks(entity.getTarget()) && isColliding(entity,entity.getTarget()) <= entity.getRange()){
             return true;
         } else {
             if(entity instanceof MoveEntity){
@@ -189,13 +189,13 @@ public class EntityHandler {
                 if(entity.getTarget() == null){
                     if(entity.isEnemy()) {
                         entity.setTarget(mainTower);
-                        return entity.attacks(mainTower) && getDist(entity, mainTower) <= entity.getRange();
+                        return entity.attacks(mainTower) && isColliding(entity, mainTower) <= entity.getRange();
                     } else {
                         entity.setHp(-1);
                         return false;
                     }
                 } else {
-                    return getDist(entity,entity.getTarget()) <= entity.getRange();
+                    return isColliding(entity,entity.getTarget()) <= entity.getRange();
                 }
             } else {
                 entity.setTarget(findTarget(entity, entity.getRange()+1));
@@ -411,13 +411,14 @@ public class EntityHandler {
     }
 
     private Entity findCollidingEntity(Entity source){
-        float x = source.getX(), y = source.getY(), radius = source.getRadius();
+        float x = source.getX(), y = source.getY();
+        int radius = (int) source.getRadius();
         Entity closest = null;
-        for (int i = Math.max(0,(int) (Math.floor(x - 1))); i < Math.min(nodeMap.length,Math.ceil(x + 2)); i++) {
-            for (int j = Math.max(0, (int) (Math.floor(y - 1))); j < Math.min(nodeMap[i].length, Math.ceil(y + 2)); j++) {
+        for (int i = Math.max(0,(int) (Math.floor(x - radius))); i < Math.min(nodeMap.length,Math.ceil(x + radius + 1)); i++) {
+            for (int j = Math.max(0, (int) (Math.floor(y - radius))); j < Math.min(nodeMap[i].length, Math.ceil(y + radius + 1)); j++) {
                 for(Entity entity : nodeMap[i][j].block){
                     if(!source.allyOf(entity)){
-                        if (closest == null || getDist(source, entity) - entity.getRadius() < getDist(source, closest) - closest.getRadius()) {
+                        if (closest == null || isColliding(source,entity) < isColliding(source, closest)) {
                             closest = entity;
                         }
                     }
@@ -425,7 +426,7 @@ public class EntityHandler {
             }
         }
 
-        if(closest != null && getDist(source,closest) > closest.getRadius() + radius){
+        if(closest != null && isColliding(source,closest) > 0){
             closest = null;
         }
         return closest;
@@ -439,7 +440,7 @@ public class EntityHandler {
 
     private void providePaths(boolean[][] findPath){
         for(int i = 0; i < findPath.length; i++){
-            for(int j = 0; j < findPath.length; j++){
+            for(int j = 0; j < findPath[i].length; j++){
                 if(findPath[i][j]){
                     HashMap<Integer, Stack<Step>> paths = new HashMap<>();
 
@@ -580,6 +581,10 @@ public class EntityHandler {
         return (float) Math.sqrt(Math.pow(x1-x2,2) + Math.pow(y1-y2,2));
     }
 
+    private float isColliding(Entity p1, Entity p2){
+        return getDist(p1,p2) - p1.getRadius() - p2.getRadius();
+    }
+
     private float addo(float old, float add){
         if(old < 0 || add < 0){
             throw new IllegalArgumentException();
@@ -641,7 +646,7 @@ public class EntityHandler {
         }
 
         for (int i = 0; i < nodeMap.length; i++) {
-            for (int j = 0; j < nodeMap.length; j++) {
+            for (int j = 0; j < nodeMap[i].length; j++) {
                 updateNodesInRange(i, j);
             }
         }

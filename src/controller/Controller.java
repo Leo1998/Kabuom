@@ -80,7 +80,7 @@ public class Controller {
     }
 
     public void startGame() {
-        this.world = new World(19,19);
+        this.world = new World(config.getWidth(),config.getHeight());
     }
 
     public void continueGame(){

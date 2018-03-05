@@ -34,6 +34,7 @@ public class World {
     private ProjectileHandler projectileHandler;
 
     public World(int width, int height) {
+
         this.width = width;
         this.height = height;
         this.coins = 1000;

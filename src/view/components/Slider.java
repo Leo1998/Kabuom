@@ -63,10 +63,10 @@ public class Slider extends ViewComponent {
         batch.draw(backgroundTexture, x, y, width, height, 0, 1f, 1f, 1f, 1f);
 
         if(horizontal){
-            int scaling = Math.round(width/(max-min));
+            float scaling = width/(max-min);
             batch.draw(sliderTexture, x+scaling*(value-min),y,scaling,height, 1f,1f,1f,1f);
         } else {
-            int scaling = Math.round(height/(max-min));
+            float scaling = height/(max-min);
             batch.draw(sliderTexture, x,y+scaling*(value-min),width,scaling, 1f,1f,1f,1f);
         }
 
