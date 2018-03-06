@@ -14,6 +14,7 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
     private Entity target;
     private final EntityType entityType;
     private final float[] effects;
+    private final float[] buffs;
     private int wave;
     protected Block block;
     private boolean isEnemy;
@@ -28,6 +29,7 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
         super(entityType, level, x, y);
         this.entityType = entityType;
         this.effects = new float[EffectType.values().length];
+        this.buffs = new float[EffectType.BuffType.values().length];
         this.wave = wave;
         this.block = block;
         attackCooldown = 0;
@@ -41,6 +43,7 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
 
         this.entityType = EntityType.values()[object.getInt("type")];
         this.effects = new float[EffectType.values().length];
+        this.buffs = new float[EffectType.BuffType.values().length];
         this.wave = object.getInt("wave");
         this.block = blocks[Math.round(getX())][Math.round(getY())];
         this.block.addEntity(this);
@@ -79,30 +82,31 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
     }
 
     public void addEffect(EffectType effectType){
-        effects[effectType.ordinal()] = effectType.duration;
-        if(effectType == EffectType.BURNING && Constants.fireBreaksSlow){
-            effects[EffectType.SLOW.ordinal()] = 0;
-        }else if(effectType == EffectType.SLOW && Constants.fireBreaksSlow){
-            effects[EffectType.BURNING.ordinal()] = 0;
+        if(effects[effectType.ordinal()] <= 0){
+            for(int j = 0; j < effectType.buffs.length; j++){
+                buffs[j] += effectType.buffs[j];
+            }
         }
+        effects[effectType.ordinal()] = effectType.duration;
     }
 
     public void updateEffects(float duration) {
         for (int i = 0; i < effects.length; i++) {
+            EffectType effectType = EffectType.values()[i];
             if (effects[i] < 0) {
                 effects[i] = 0;
+                for(int j = 0; j < effectType.buffs.length; j++){
+                    buffs[j] -= effectType.buffs[j];
+                }
             } else if(effects[i] > 0){
                 effects[i] -= duration;
-                if(EffectType.values()[i].dot) {
-                    float damage = getMaxHp() * EffectType.values()[i].strength * duration;
-                    addHp(-damage, "Effect");
-                }
             }
         }
+        addHp(getMaxHp() * buffs[EffectType.BuffType.DOT.ordinal()] * duration);
     }
 
     public void addHp(float hp, String source) {
-        float temp = hp * getStrength(EffectType.BLEEDING);
+        float temp = hp * (1+buffs[EffectType.BuffType.DAMAGE.ordinal()]);
         super.addHp(temp);
         if(isEnemy()) {
             entityHandler.addDamage(-temp, this);
@@ -123,7 +127,8 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
 
     public boolean addAttackCooldown(float dt){
         if(getFrequency() > 0) {
-            attackCooldown += dt / getStrength(EffectType.SLOW);
+            attackCooldown += dt;
+
             if (attackCooldown > getFrequency()) {
                 attackCooldown = random.nextFloat()*getFrequency()/2 - getFrequency()/4;
                 return true;
@@ -148,7 +153,9 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
      */
 
     public float getSpeed(){
-        return entityType.speed * getUpgrade(1) / getStrength(EffectType.SLOW);
+        float temp = entityType.speed * getUpgrade(1);
+        temp += temp * buffs[EffectType.BuffType.SPEED.ordinal()];
+        return temp;
     }
 
     public String getTurretTexture(){
@@ -205,10 +212,6 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
 
     public int getReward(){
         return (level+1)*entityType.cost;
-    }
-
-    private float getStrength(EffectType effectType) {
-        return (effects[effectType.ordinal()] > 0) ? effectType.strength : 1;
     }
 
     public boolean attacks(Partisan partisan){

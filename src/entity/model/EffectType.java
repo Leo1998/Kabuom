@@ -4,19 +4,27 @@ package entity.model;
  * Created by Daniel on 30-Dec-17.
  */
 public enum EffectType {
-    //          dur     strength    dot
-    SLOW(       4,      2,          false),
-    BLEEDING(   0.5f,   2,          false),
-    BURNING(    2,      0.25f,      true),
-    POISON(     5,      0.125f,     true),
-    HEALING(    1,      -0.125f,  true);
+    //          dur     dot,        damage,     speed
+    SLOW(       4,      0,          0,          -0.5f),
+    BLEEDING(   0.5f,   0,          -1),
+    BURNING(    2,      -0.25f),
+    POISON(     5,      -0.125f),
+    HEALING(    1,      0.125f);
 
-    public final float duration, strength;
-    public final boolean dot;
+    public final float duration;
+    public final float[] buffs;
 
-    EffectType(float duration, float strength, boolean dot) {
+    EffectType(float duration, float... buffs) {
         this.duration = duration;
-        this.strength = strength;
-        this.dot = dot;
+        if(buffs.length <= BuffType.values().length) {
+            this.buffs = buffs;
+        } else {
+            this.buffs = new float[BuffType.values().length];
+            java.lang.System.arraycopy(buffs,0, this.buffs, 0, this.buffs.length);
+        }
+    }
+
+    public enum BuffType {
+        DOT,DAMAGE,SPEED,
     }
 }
