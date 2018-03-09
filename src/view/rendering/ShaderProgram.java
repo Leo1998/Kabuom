@@ -3,7 +3,7 @@ package view.rendering;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
-import utility.Matrix4;
+import view.math.Matrix4;
 
 import java.io.*;
 import java.nio.FloatBuffer;
@@ -15,7 +15,7 @@ public class ShaderProgram {
     private static String loadShader(File file) {
         try {
             return loadShader(new FileInputStream(file));
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

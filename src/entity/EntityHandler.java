@@ -5,7 +5,7 @@ import model.Position;
 import projectile.Projectile;
 import projectile.ProjectileType;
 import utility.Constants;
-import utility.Vector2;
+import view.math.Vector2;
 import world.Block;
 import world.World;
 
@@ -282,8 +282,8 @@ public class EntityHandler {
 
             MoveEntity moveTarget = (MoveEntity)target;
 
-            float tmx = moveTarget.getMovement().getCoords()[0];
-            float tmy = moveTarget.getMovement().getCoords()[1];
+            float tmx = moveTarget.getMovement().getX();
+            float tmy = moveTarget.getMovement().getY();
 
             float s = ((ProjectileType)source.getProjectile()).speed;
 
@@ -324,8 +324,8 @@ public class EntityHandler {
 
         Projectile p = new Projectile((ProjectileType)source.getProjectile(), source.getLevel(), source.getX(), source.getY(), vec, source.isEnemy(), source.getName());
 
-        p.setX(p.getX() + p.getDir().getCoords()[0] * source.getRadius());
-        p.setY(p.getY() + p.getDir().getCoords()[1] * source.getRadius());
+        p.setX(p.getX() + p.getDir().getX() * source.getRadius());
+        p.setY(p.getY() + p.getDir().getY() * source.getRadius());
 
         return p;
     }
@@ -418,8 +418,8 @@ public class EntityHandler {
                 float xCoord = (entity.getTarget().getX() - entity.getX()) * q;
                 float yCoord = (entity.getTarget().getY() - entity.getY()) * q;
 
-                float dist1 = getDist(yCoord, -xCoord, entity.getMovement().getCoords()[0], entity.getMovement().getCoords()[1]);
-                float dist2 = getDist(-yCoord, xCoord, entity.getMovement().getCoords()[0], entity.getMovement().getCoords()[1]);
+                float dist1 = getDist(yCoord, -xCoord, entity.getMovement().getX(), entity.getMovement().getY());
+                float dist2 = getDist(-yCoord, xCoord, entity.getMovement().getX(), entity.getMovement().getY());
 
                 Vector2 vec;
                 if (dist1 < dist2) {
@@ -438,12 +438,12 @@ public class EntityHandler {
     }
 
     private void moveByVector(MoveEntity entity, Vector2 vector, float dt){
-        float targetX = entity.getX() + vector.getCoords()[0], targetY = entity.getY() + vector.getCoords()[1];
+        float targetX = entity.getX() + vector.getX(), targetY = entity.getY() + vector.getY();
 
         if(targetX < -0.4f || targetX > nodeMap.length - 0.6f || targetY < -0.4f || targetY > nodeMap[Math.round(targetX)].length - 0.6f){
             vector.multiply(-1);
-            targetX = entity.getX() + vector.getCoords()[0];
-            targetY = entity.getY() + vector.getCoords()[1];
+            targetX = entity.getX() + vector.getX();
+            targetY = entity.getY() + vector.getY();
             if(targetX < -0.4f){
                 targetX = -0.4f;
             } else if(targetX > nodeMap.length - 0.6f) {

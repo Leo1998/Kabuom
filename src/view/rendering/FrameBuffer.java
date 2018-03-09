@@ -5,6 +5,8 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GLContext;
+import view.texture.ITexture;
+import view.texture.Texture;
 
 import static org.lwjgl.opengl.EXTFramebufferObject.*;
 

@@ -1,19 +1,24 @@
-package view.rendering;
+package view.effects;
 
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL13;
+import view.math.Camera;
+import view.math.Vector2;
+import view.rendering.Batch;
+import view.rendering.ShaderProgram;
+import view.rendering.VertexAttrib;
+import view.texture.ITexture;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RadialBlurEffect extends PostProcessingEffect {
+public class DrunkEffect extends PostProcessingEffect {
 
     private static ShaderProgram createShader() {
         try {
-            File vert = new File(Batch.class.getResource("/shaders/radialBlur.vert").toURI());
-            File frag = new File(Batch.class.getResource("/shaders/radialBlur.frag").toURI());
+            File vert = new File(Batch.class.getResource("/shaders/drunk.vert").toURI());
+            File frag = new File(Batch.class.getResource("/shaders/drunk.frag").toURI());
 
             VertexAttrib[] attribs = new VertexAttrib[]{
                     new VertexAttrib(0, "position", 2),
@@ -37,24 +42,25 @@ public class RadialBlurEffect extends PostProcessingEffect {
 
     private ShaderProgram shader;
 
-    public RadialBlurEffect() {
-        this.shader = createShader();
+    private Vector2 amount;
+
+    public DrunkEffect() {
+        this.amount = new Vector2(16.0f, 9.0f);
     }
 
     @Override
-    public void render(ITexture sceneTexture, Batch batch, float totalTime) {
-        batch.begin(shader);
+    public void render(ITexture sceneTexture, Camera camera, Batch batch, float totalTime) {
+        if (shader == null)
+            this.shader = createShader();
+
+        batch.begin(camera, shader);
 
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         sceneTexture.getTexture().bind();
         shader.setUniformi("sceneTexture", 0);
 
-        float x = (Mouse.getX() / (float) Display.getWidth());
-        float y = (Mouse.getY() / (float) Display.getHeight());
-
-        shader.setUniformf("radial_blur", 0.04f);
-        shader.setUniformf("radial_bright", 1.0f);
-        shader.setUniformf("radial_origin", x, y);
+        shader.setUniformf("time", totalTime);
+        shader.setUniformf("amount", amount.getX(), amount.getY());
 
         batch.draw(null, 0, 0, Display.getWidth(), Display.getHeight());
         batch.end();
@@ -62,6 +68,11 @@ public class RadialBlurEffect extends PostProcessingEffect {
 
     @Override
     public void dispose() {
-        shader.dispose();
+        if (shader != null)
+            shader.dispose();
+    }
+
+    public Vector2 getAmount() {
+        return amount;
     }
 }

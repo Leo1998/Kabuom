@@ -1,5 +1,6 @@
 package view;
 
+import controller.Config;
 import controller.Controller;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
@@ -7,7 +8,12 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.*;
 import org.lwjgl.opengl.DisplayMode;
 import utility.LwjglNativesLoader;
-import view.rendering.*;
+import view.effects.ParticleManager;
+import view.effects.PostProcessingManager;
+import view.rendering.Batch;
+import view.rendering.BitmapFont;
+import view.texture.ITexture;
+import view.texture.Texture;
 
 import java.awt.*;
 import java.io.IOException;
@@ -83,7 +89,7 @@ public class ViewManager {
     }
 
     public static ITexture getTexture(String textureID) {
-        if(textureID != null) {
+        if (textureID != null) {
             if (!textureMap.containsKey(textureID)) {
                 loadTexture(textureID);
             }
@@ -95,7 +101,6 @@ public class ViewManager {
 
     private Controller ctrl;
     private View currentView;
-    private PostProcessingManager ppManager;
     private ParticleManager particleManager;
     private boolean fullscreen = false;
 
@@ -123,10 +128,6 @@ public class ViewManager {
         load();
 
         this.batch = new Batch();
-        batch.resize(Display.getWidth(), Display.getHeight());
-
-        this.ppManager = new PostProcessingManager(batch);
-        ppManager.resize(Display.getWidth(), Display.getHeight());
 
         this.particleManager = new ParticleManager(10000);
     }
@@ -145,7 +146,7 @@ public class ViewManager {
                 DisplayMode[] modes = Display.getAvailableDisplayModes();
                 int freq = 0;
 
-                for(DisplayMode current : modes){
+                for (DisplayMode current : modes) {
                     if ((current.getWidth() == width) && (current.getHeight() == height)) {
                         if ((targetDisplayMode == null) || (current.getFrequency() >= freq)) {
                             if ((targetDisplayMode == null) || (current.getBitsPerPixel() > targetDisplayMode.getBitsPerPixel())) {
@@ -174,13 +175,13 @@ public class ViewManager {
             Display.setFullscreen(fullscreen);
             Display.setResizable(true);
             Display.setTitle("Kabuom! Tower Defense");
-            Display.setVSyncEnabled(true);
+            //Display.setVSyncEnabled(true);
         } catch (LWJGLException e) {
             System.out.println("Unable to setup mode " + width + "x" + height + " fullscreen=" + fullscreen + e);
         }
     }
 
-    public void render(float deltaTime) {
+    public void render(float deltaTime, int lastFPS) {
         if (Display.wasResized()) {
             onResize(Display.getWidth(), Display.getHeight());
         }
@@ -236,26 +237,26 @@ public class ViewManager {
             }
         }
 
-        ppManager.begin(deltaTime);
-        batch.begin();
-
         if (currentView != null) {
             currentView.render(deltaTime, batch);
         }
 
+        batch.begin(currentView.getUiCamera());
         particleManager.render(batch, deltaTime);
-
+        if (currentView != null && Controller.instance.getConfig().isShowFPS()) {
+            ViewManager.font.drawText(batch, "FPS: " + lastFPS, 5, 5);
+        }
         batch.end();
-        ppManager.end();
 
         Display.update();
-        Display.sync(60);
+
+        if (Controller.instance.getConfig().isVSync()) {
+            Display.sync(60);
+        }
     }
 
     private void onResize(int width, int height) {
         GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
-        batch.resize(Display.getWidth(), Display.getHeight());
-        ppManager.resize(Display.getWidth(), Display.getHeight());
         particleManager.clearParticles();
         if (currentView != null)
             currentView.layout(Display.getWidth(), Display.getHeight());
@@ -274,23 +275,28 @@ public class ViewManager {
         return particleManager;
     }
 
-    public PostProcessingManager getPostProcessingManager() {
-        return ppManager;
-    }
-
     public View getCurrentView() {
         return currentView;
     }
 
-    public void setCurrentView(View currentView) {
-        this.currentView = currentView;
+    public void setCurrentView(View next) {
+        if (this.currentView != null)
+            this.currentView.onStop();
+
+        this.currentView = next;
+
+        this.currentView.onStart();
         this.currentView.layout(Display.getWidth(), Display.getHeight());
 
-        this.ppManager.clearAllEffects();
         this.particleManager.clearParticles();
     }
 
     public Controller getCtrl() {
         return ctrl;
+    }
+
+    public void onGraphicsConfigurationChanged(Config.GraphicMode graphicMode) {
+        if (currentView != null)
+            currentView.layout(Display.getWidth(), Display.getHeight());
     }
 }

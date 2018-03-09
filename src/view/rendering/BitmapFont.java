@@ -1,5 +1,8 @@
 package view.rendering;
 
+import view.texture.Texture;
+import view.texture.TextureRegion;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;

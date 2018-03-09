@@ -1,7 +1,7 @@
 package entity.model;
 
 import org.json.JSONObject;
-import utility.Vector2;
+import view.math.Vector2;
 import world.Block;
 
 import java.util.Stack;
