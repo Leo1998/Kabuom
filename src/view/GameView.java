@@ -8,7 +8,6 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import projectile.Projectile;
 import utility.Utility;
-import utility.Vector2;
 import view.components.*;
 import view.math.Vector2;
 import view.components.Button;
