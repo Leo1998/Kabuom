@@ -3,6 +3,9 @@ package view;
 import org.lwjgl.input.Mouse;
 import view.components.ViewComponent;
 import view.effects.PostProcessingEffect;
+import view.effects.PostProcessingManager;
+import view.math.Camera;
+import view.math.Vector2;
 import view.rendering.Batch;
 
 import java.util.ArrayList;
@@ -11,40 +14,79 @@ import java.util.List;
 public abstract class View {
 
     protected List<ViewComponent> components;
-    protected float originWidth, originHeight;
-    protected final List<PostProcessingEffect> postProcessingEffects = new ArrayList<>();
-    protected final ViewManager viewManager;
+    protected int originWidth, originHeight;
 
-    public View(float width, float height, ViewManager viewManager) {
+    private PostProcessingManager postProcessingManager;
+    private final List<PostProcessingEffect> postProcessingEffects = new ArrayList<>();
+    final ViewManager viewManager;
+
+    private Camera uiCamera;
+    private Camera sceneCamera;
+
+    public View(int width, int height, ViewManager viewManager) {
         components = new ArrayList<>();
         originHeight = height;
         originWidth = width;
         this.viewManager = viewManager;
+
+        this.sceneCamera = new Camera(width, height);
+        this.uiCamera = new Camera(width, height);
+        layout(width, height);
     }
 
-    /**
-     * zeichnet alle ViewComponents
-     */
-    public void render(float deltaTime, Batch batch) {
+    public final void render(float deltaTime, Batch batch) {
+        if (!postProcessingEffects.isEmpty() && postProcessingManager == null) {
+            postProcessingManager = new PostProcessingManager(batch);
+            postProcessingManager.init(originWidth, originHeight, postProcessingEffects);
+        }
+
+        if (postProcessingManager != null)
+            postProcessingManager.begin(deltaTime);
+        batch.begin(sceneCamera);
+        renderScene(deltaTime, batch);
+        batch.end();
+        if (postProcessingManager != null)
+            postProcessingManager.end(sceneCamera);
+
+        batch.begin(uiCamera);
+        renderUI(batch);
+        batch.end();
+    }
+
+    public void renderUI(Batch batch) {
         for (ViewComponent v : components) {
             v.draw(batch, originWidth, originHeight);
         }
     }
 
+    public void renderScene(float deltaTime, Batch batch) {
+    }
 
-    public void layout(float width, float height) {
+    public void layout(int width, int height) {
         originHeight = height;
         originWidth = width;
+
+        this.sceneCamera.resize(width, height);
+        this.sceneCamera.setTranslation(new Vector2(width / 2, height / 2));
+        this.uiCamera.resize(width, height);
+        this.uiCamera.setTranslation(new Vector2(width / 2, height / 2));
+
+        if (postProcessingManager != null)
+            postProcessingManager.init(width, height, postProcessingEffects);
     }
 
     public void addEffect(PostProcessingEffect effect) {
         postProcessingEffects.add(effect);
-        viewManager.postProcessingManager.addEffect(effect);
+
+        if (postProcessingManager != null)
+            postProcessingManager.init(originWidth, originHeight, postProcessingEffects);
     }
 
     public void removeEffect(PostProcessingEffect effect) {
         postProcessingEffects.remove(effect);
-        viewManager.postProcessingManager.removeEffect(effect);
+
+        if (postProcessingManager != null)
+            postProcessingManager.init(originWidth, originHeight, postProcessingEffects);
     }
 
     public void onStart() {
@@ -52,10 +94,13 @@ public abstract class View {
     }
 
     public void onStop() {
-        for (PostProcessingEffect e : postProcessingEffects) {
-            viewManager.postProcessingManager.removeEffect(e);
+        for(PostProcessingEffect e : postProcessingEffects) {
+            e.dispose();
         }
         postProcessingEffects.clear();
+
+        if (postProcessingManager != null)
+            postProcessingManager.init(originWidth, originHeight, postProcessingEffects);
     }
 
     public List<ViewComponent> getComponents() {
@@ -64,6 +109,14 @@ public abstract class View {
 
     public ViewManager getViewManager() {
         return viewManager;
+    }
+
+    public Camera getUiCamera() {
+        return uiCamera;
+    }
+
+    public Camera getSceneCamera() {
+        return sceneCamera;
     }
 
     public void onKeyDown(int key, char c) {
@@ -91,10 +144,10 @@ public abstract class View {
     }
 
     public float getMouseX() {
-        return Mouse.getX() / originWidth;
+        return Mouse.getX() / (float)originWidth;
     }
 
     public float getMouseY() {
-        return 1 - Mouse.getY() / originHeight;
+        return 1 - Mouse.getY() / (float)originHeight;
     }
 }

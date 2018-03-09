@@ -10,7 +10,7 @@ import view.components.Slider;
 
 public class OptionsView extends BaseMenuView {
 
-    public OptionsView(float width, float height, final ViewManager viewManager) {
+    public OptionsView(int width, int height, final ViewManager viewManager) {
         super(width, height, viewManager);
         Button backButton = new Button(0.05f, 0.05f, 0.15f, 0.1f, this, "Back");
         this.components.add(backButton);
@@ -64,7 +64,7 @@ public class OptionsView extends BaseMenuView {
     }
 
     @Override
-    public void layout(float width, float height) {
+    public void layout(int width, int height) {
         super.layout(width, height);
     }
 

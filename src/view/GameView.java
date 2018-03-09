@@ -8,13 +8,11 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import projectile.Projectile;
 import utility.Utility;
-import utility.Vector2;
+import view.math.Vector2;
 import view.components.Button;
-import view.components.ButtonListener;
 import view.components.TowerButton;
 import view.components.ViewComponent;
 import view.effects.DrunkEffect;
-import view.effects.PostProcessingManager;
 import view.effects.RadialBlurEffect;
 import view.rendering.Batch;
 import view.texture.ITexture;
@@ -37,7 +35,7 @@ public class GameView extends View {
     private RadialBlurEffect radialBlurEffect;
     private DrunkEffect drunkEffect;
 
-    public GameView(float width, float height, final ViewManager viewManager, final World world) {
+    public GameView(int width, int height, final ViewManager viewManager, final World world) {
         super(width, height, viewManager);
 
         this.blockTexture = ViewManager.getTexture("block1.png");
@@ -167,9 +165,7 @@ public class GameView extends View {
     }
 
     @Override
-    public void render(float deltaTime, Batch batch) {
-        super.render(deltaTime, batch);
-
+    public void renderScene(float deltaTime, Batch batch) {
         calcultateOffset(originWidth, originHeight, world.getWidth(), world.getHeight());
 
 
@@ -206,10 +202,10 @@ public class GameView extends View {
         if (block != null) {
 
             //Zeichnet die Info über den überfahrenden Tower an den Cursor
-            batch.draw(null, blockToViewX((int) block.getCoords()[0]), blockToViewY((int) block.getCoords()[1]), scale, scale, 0, 1f, 1f, 1f, 0.45f);
+            batch.draw(null, blockToViewX((int) block.getX()), blockToViewY((int) block.getY()), scale, scale, 0, 1f, 1f, 1f, 0.45f);
 
             if (setTower == null) {
-                Entity t = world.getBlocks()[(int) block.getCoords()[0]][(int) block.getCoords()[1]].getTower();
+                Entity t = world.getBlocks()[(int) block.getX()][(int) block.getY()].getTower();
 
                 if (t != null) {
 
@@ -241,15 +237,15 @@ public class GameView extends View {
             }
 
             if (mousedown0) {
-                if (mouse0 == null || (int) mouse0.getCoords()[0] != (int) block.getCoords()[0] || (int) mouse0.getCoords()[1] != (int) block.getCoords()[1]) {
-                    leftClick((int) block.getCoords()[0], (int) block.getCoords()[1]);
+                if (mouse0 == null || (int) mouse0.getX() != (int) block.getX() || (int) mouse0.getY() != (int) block.getY()) {
+                    leftClick((int) block.getX(), (int) block.getY());
                 }
 
                 mouse0 = block;
             }
             if (mousedown1) {
-                if (mouse1 == null || (int) mouse1.getCoords()[0] != (int) block.getCoords()[0] || (int) mouse1.getCoords()[1] != (int) block.getCoords()[1]) {
-                    rightClick((int) block.getCoords()[0], (int) block.getCoords()[1]);
+                if (mouse1 == null || (int) mouse1.getX() != (int) block.getX() || (int) mouse1.getY() != (int) block.getY()) {
+                    rightClick((int) block.getX(), (int) block.getY());
                 }
 
                 mouse1 = block;
@@ -266,8 +262,8 @@ public class GameView extends View {
             float height = scale * diameter;
 
             if (block != null) {
-                setTower.setX(blockToViewX((int) block.getCoords()[0], diameter));
-                setTower.setY(blockToViewY((int) block.getCoords()[1], diameter));
+                setTower.setX(blockToViewX((int) block.getX(), diameter));
+                setTower.setY(blockToViewY((int) block.getY(), diameter));
             } else {
                 setTower.setX(Mouse.getX() - width / 2);
                 setTower.setY(originHeight - Mouse.getY() - height / 2);
@@ -290,7 +286,7 @@ public class GameView extends View {
 
 
     @Override
-    public void layout(float width, float height) {
+    public void layout(int width, int height) {
         super.layout(width, height);
     }
 
@@ -425,7 +421,7 @@ public class GameView extends View {
         if (key == Keyboard.KEY_P) {
             Vector2 block = getBlockIDOfMouse();
             if (block != null) {
-                world.printEntities((int) block.getCoords()[0], (int) block.getCoords()[1]);
+                world.printEntities((int) block.getX(), (int) block.getY());
             }
         }
     }

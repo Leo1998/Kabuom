@@ -10,14 +10,12 @@ public abstract class BaseMenuView extends View {
 
     private float timer = 0f;
 
-    public BaseMenuView(float width, float height, ViewManager viewManager) {
+    public BaseMenuView(int width, int height, ViewManager viewManager) {
         super(width, height, viewManager);
     }
 
     @Override
-    public void render(float deltaTime, Batch batch) {
-        super.render(deltaTime, batch);
-
+    public void renderScene(float deltaTime, Batch batch) {
         timer += deltaTime;
 
         while (timer > 0.1f) {

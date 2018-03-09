@@ -1,9 +1,7 @@
 package projectile;
 
 import entity.model.Entity;
-import entity.model.EntityType;
-import utility.Constants;
-import utility.Vector2;
+import view.math.Vector2;
 import world.World;
 
 import java.util.Iterator;
@@ -39,8 +37,8 @@ public class ProjectileHandler {
                     total += moveBy;
                 }
 
-                projectile.setX(projectile.getX() + projectile.getDir().getCoords()[0] * moveBy);
-                projectile.setY(projectile.getY() + projectile.getDir().getCoords()[1] * moveBy);
+                projectile.setX(projectile.getX() + projectile.getDir().getX() * moveBy);
+                projectile.setY(projectile.getY() + projectile.getDir().getY() * moveBy);
 
                 for (Entity entity : findCollidingEnemies(projectile)) {
                     if (!projectile.addToHitEntities(entity)) {

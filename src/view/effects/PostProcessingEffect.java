@@ -1,5 +1,6 @@
 package view.effects;
 
+import view.math.Camera;
 import view.rendering.Batch;
 import view.texture.ITexture;
 
@@ -19,7 +20,7 @@ public abstract class PostProcessingEffect {
         this.enabled = !this.enabled;
     }
 
-    public abstract void render(ITexture sceneTexture, Batch batch, float totalTime);
+    public abstract void render(ITexture sceneTexture, Camera camera, Batch batch, float totalTime);
 
     public abstract void dispose();
 

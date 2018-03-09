@@ -2,14 +2,11 @@ package projectile;
 
 import entity.model.EffectType;
 import entity.model.Entity;
-import entity.model.EntityType;
 import entity.model.Partisan;
 import model.BinarySearchTree;
 import model.GameObject;
 import model.ObjectType;
-import utility.Vector2;
-
-import java.util.ArrayList;
+import view.math.Vector2;
 
 public class Projectile extends GameObject implements Partisan {
     private final ProjectileType projectileType;

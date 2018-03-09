@@ -2,8 +2,8 @@ package view.rendering;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import utility.Matrix4;
-import utility.OrthographicCamera;
+import view.math.Camera;
+import view.math.Matrix4;
 import view.texture.ITexture;
 import view.texture.Texture;
 
@@ -35,10 +35,15 @@ public class Batch {
 
     private static final int VERTICES_PER_SPRITE = 6;
 
+    public static final VertexAttrib[] VERTEX_ATTRIBS = new VertexAttrib[]{
+            new VertexAttrib(0, "position", 2),
+            new VertexAttrib(1, "tid", 1),
+            new VertexAttrib(2, "color", 4),
+            new VertexAttrib(3, "texCoords", 2)
+    };
+
     private ShaderProgram shader;
     private VertexData buffer;
-
-    private Matrix4 projectionMatrix = new Matrix4();
 
     private int texIdx = 0;
     private final int maxTextureIdx = Math.min(16, GL11.glGetInteger(GL13.GL_MAX_TEXTURE_UNITS));
@@ -53,34 +58,20 @@ public class Batch {
     }
 
     public Batch(int size) {
-        VertexAttrib[] attribs = new VertexAttrib[]{
-                new VertexAttrib(0, "position", 2),
-                new VertexAttrib(1, "tid", 1),
-                new VertexAttrib(2, "color", 4),
-                new VertexAttrib(3, "texCoords", 2)
-        };
-        this.buffer = new VertexBuffer(size * VERTICES_PER_SPRITE, attribs);
+        this.buffer = new VertexBuffer(size * VERTICES_PER_SPRITE, VERTEX_ATTRIBS);
 
-        this.shader = createShader(attribs);
+        this.shader = createShader(VERTEX_ATTRIBS);
 
         maxIdx = buffer.getVertexCount();
 
         System.out.println("Batch created with " + size + " sprites and " + maxTextureIdx + " textures!");
     }
 
-    public void resize(int w, int h) {
-        float left = 0;
-        float right = w;
-        float bottom = h;
-        float top = 0;
-        this.projectionMatrix = OrthographicCamera.getOrtho(left, right, bottom, top, 0, 1);
+    public void begin(Camera camera) {
+        begin(camera, this.shader);
     }
 
-    public void begin() {
-        begin(this.shader);
-    }
-
-    public void begin(ShaderProgram shader) {
+    public void begin(Camera camera, ShaderProgram shader) {
         drawing = true;
 
         idx = 0;
@@ -89,7 +80,7 @@ public class Batch {
         renderCalls = 0;
 
         shader.use();
-        shader.setUniformMatrix(shader.getUniformLocation("projectionMatrix"), false, this.projectionMatrix);
+        shader.setUniformMatrix(shader.getUniformLocation("projectionMatrix"), false, camera.getCombined());
     }
 
     public void flush() {

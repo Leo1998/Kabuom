@@ -18,7 +18,7 @@ public class TestView extends View {
 
     private float testX1, testY1, testX2, testY2;
 
-    public TestView(float width, float height, ViewManager viewManager) {
+    public TestView(int width, int height, ViewManager viewManager) {
         super(width, height, viewManager);
 
 
@@ -48,7 +48,7 @@ public class TestView extends View {
 
 
     @Override
-    public void render(float deltaTime, Batch batch) {
+    public void renderScene(float deltaTime, Batch batch) {
         float h2, w2;
         if (originHeight < originWidth * 7 / 8) {
             h2 = originHeight;
@@ -86,7 +86,7 @@ public class TestView extends View {
     }
 
     @Override
-    public void layout(float width, float height) {
+    public void layout(int width, int height) {
         super.layout(width, height);
     }
 

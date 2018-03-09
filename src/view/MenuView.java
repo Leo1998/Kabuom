@@ -23,7 +23,7 @@ public class MenuView extends BaseMenuView {
     private Label[] labels;
     private Button[] buttons;
 
-    public MenuView(float width, float height, final ViewManager viewManager) {
+    public MenuView(int width, int height, final ViewManager viewManager) {
         super(width, height, viewManager);
 
         labels = new Label[2];
@@ -99,7 +99,7 @@ public class MenuView extends BaseMenuView {
     }
 
     @Override
-    public void layout(float width, float height) {
+    public void layout(int width, int height) {
         super.layout(width, height);
     }
 

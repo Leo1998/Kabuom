@@ -6,10 +6,12 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
+import view.math.Camera;
 import view.rendering.Batch;
 import view.rendering.FrameBuffer;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PostProcessingManager {
 
@@ -22,27 +24,17 @@ public class PostProcessingManager {
     private float totalTime = 0;
 
     private FrameBuffer sceneFB;
-    private ArrayList<PostProcessingEffect> effects = new ArrayList<>();
-    private ArrayList<FrameBuffer> passThroughFrameBuffers = new ArrayList<>();
+    private List<PostProcessingEffect> effects = new ArrayList<>();
+    private List<FrameBuffer> passThroughFrameBuffers = new ArrayList<>();
 
     public PostProcessingManager(Batch batch) {
         this.batch = batch;
     }
 
-    public void addEffect(PostProcessingEffect effect) {
-        effects.add(effect);
+    public void init(int width, int height, List<PostProcessingEffect> effects) {
+        this.effects.clear();
+        this.effects.addAll(effects);
 
-        resize(Display.getWidth(), Display.getHeight());
-    }
-
-    public void removeEffect(PostProcessingEffect effect) {
-        effects.remove(effect);
-        effect.dispose();
-
-        resize(Display.getWidth(), Display.getHeight());
-    }
-
-    public void resize(int width, int height) {
         if (isEnabled()) {
             try {
                 if (sceneFB != null) {
@@ -76,7 +68,7 @@ public class PostProcessingManager {
         }
     }
 
-    public void end() {
+    public void end(Camera camera) {
         if (isEnabled()) {
             sceneFB.end();
 
@@ -93,7 +85,7 @@ public class PostProcessingManager {
                             fb.begin();
                         }
 
-                        e.render(inFrameBuffer, batch, totalTime);
+                        e.render(inFrameBuffer, camera, batch, totalTime);
 
                         if (fb != null) {
                             fb.end();
@@ -101,14 +93,14 @@ public class PostProcessingManager {
                         }
                     } else {
                         if (i == effects.size() - 1) {
-                            batch.begin();
+                            batch.begin(camera);
                             batch.draw(inFrameBuffer, 0, 0, Display.getWidth(), Display.getHeight());
                             batch.end();
                         }
                     }
                 }
             } else {
-                batch.begin();
+                batch.begin(camera);
                 batch.draw(sceneFB, 0, 0, Display.getWidth(), Display.getHeight());
                 batch.end();
             }

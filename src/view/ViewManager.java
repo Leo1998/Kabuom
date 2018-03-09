@@ -101,7 +101,6 @@ public class ViewManager {
 
     private Controller ctrl;
     private View currentView;
-    PostProcessingManager postProcessingManager;
     private ParticleManager particleManager;
     private boolean fullscreen = false;
 
@@ -129,10 +128,6 @@ public class ViewManager {
         load();
 
         this.batch = new Batch();
-        batch.resize(Display.getWidth(), Display.getHeight());
-
-        this.postProcessingManager = new PostProcessingManager(batch);
-        postProcessingManager.resize(Display.getWidth(), Display.getHeight());
 
         this.particleManager = new ParticleManager(10000);
     }
@@ -242,21 +237,16 @@ public class ViewManager {
             }
         }
 
-        postProcessingManager.begin(deltaTime);
-        batch.begin();
-
         if (currentView != null) {
             currentView.render(deltaTime, batch);
         }
 
+        batch.begin(currentView.getUiCamera());
         particleManager.render(batch, deltaTime);
-
-        if (Controller.instance.getConfig().isShowFPS()) {
+        if (currentView != null && Controller.instance.getConfig().isShowFPS()) {
             ViewManager.font.drawText(batch, "FPS: " + lastFPS, 5, 5);
         }
-
         batch.end();
-        postProcessingManager.end();
 
         Display.update();
 
@@ -267,8 +257,6 @@ public class ViewManager {
 
     private void onResize(int width, int height) {
         GL11.glViewport(0, 0, Display.getWidth(), Display.getHeight());
-        batch.resize(Display.getWidth(), Display.getHeight());
-        postProcessingManager.resize(Display.getWidth(), Display.getHeight());
         particleManager.clearParticles();
         if (currentView != null)
             currentView.layout(Display.getWidth(), Display.getHeight());
@@ -308,6 +296,7 @@ public class ViewManager {
     }
 
     public void onGraphicsConfigurationChanged(Config.GraphicMode graphicMode) {
-        postProcessingManager.resize(Display.getWidth(), Display.getHeight());
+        if (currentView != null)
+            currentView.layout(Display.getWidth(), Display.getHeight());
     }
 }

@@ -3,6 +3,7 @@ package view.effects;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL13;
+import view.math.Camera;
 import view.rendering.Batch;
 import view.rendering.ShaderProgram;
 import view.rendering.VertexAttrib;
@@ -54,11 +55,11 @@ public class RadialBlurEffect extends PostProcessingEffect {
     }
 
     @Override
-    public void render(ITexture sceneTexture, Batch batch, float totalTime) {
+    public void render(ITexture sceneTexture, Camera camera, Batch batch, float totalTime) {
         if (shader == null)
             this.shader = createShader();
 
-        batch.begin(shader);
+        batch.begin(camera, shader);
 
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
         sceneTexture.getTexture().bind();
