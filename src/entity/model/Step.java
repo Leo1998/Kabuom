@@ -35,6 +35,6 @@ public class Step implements Position{
     public enum StepType{
         GoTo,
         StayInRange,
-        Kite,
+        MoveInRange,
     }
 }

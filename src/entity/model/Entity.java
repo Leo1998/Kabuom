@@ -107,6 +107,7 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
 
     public void addHp(float hp, String source) {
         float temp = hp * (1+buffs[EffectType.BuffType.DAMAGE.ordinal()]);
+        System.out.println(temp);
         super.addHp(temp);
         if(isEnemy()) {
             entityHandler.addDamage(-temp, this);

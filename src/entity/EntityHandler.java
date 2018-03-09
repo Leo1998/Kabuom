@@ -137,10 +137,19 @@ public class EntityHandler {
         }
     }
 
+    /**
+     * Should be called when a tower is set or destroyed
+     * @param x X-Coordinate of tower
+     * @param y Y-Coordinate of tower
+     */
     public void newTower(int x, int y){
         updateNode(x,y, nodeMap[x][y].block);
     }
 
+    /**
+     * Gives the amount of ranged entities
+     * @return amount of ranged entities
+     */
     public int getRanged(){
         return ranged;
     }
@@ -150,6 +159,7 @@ public class EntityHandler {
      *                      Attacking
      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
      */
+
     private void attack(Entity entity){
         if (provideTarget(entity)) {
             if (entity.isRanged()) {
@@ -325,8 +335,8 @@ public class EntityHandler {
                 case GoTo:
                     goTo(entity,dt);
                 break;
-                case Kite:
-
+                case MoveInRange:
+                    moveInRange(entity,dt);
                     break;
                 case StayInRange:
                     stayInRange(entity,dt);
@@ -360,6 +370,25 @@ public class EntityHandler {
         }
     }
 
+    private void moveInRange(MoveEntity entity, float dt){
+        if(entity.getTarget() == null){
+            entity.getSteps().pop();
+        } else {
+            Entity target = entity.getTarget();
+
+            float dist = getDist(entity,target);
+
+            if(dist > entity.getRange()/4 && dist < entity.getRange() + entity.getRadius() + target.getRadius()){
+                float q = (entity.getSpeed()*dt)/dist;
+                Vector2 vec = new Vector2((entity.getTarget().getX() - entity.getX()) * q, (entity.getTarget().getY() - entity.getY()) * q);
+
+                moveByVector(entity,vec,dt);
+            } else {
+                entity.getSteps().pop();
+            }
+        }
+    }
+
     private void stayInRange(MoveEntity entity, float dt){
         if(entity.getTarget() == null){
             entity.getSteps().pop();
@@ -368,30 +397,27 @@ public class EntityHandler {
 
             float dist = getDist(entity,target);
 
-            if(dist > 0) {
-
+            if(dist > 0 && dist < 3* entity.getRange()/4){
                 float q = (entity.getSpeed() * dt) / dist;
+
+                float xCoord = (entity.getTarget().getX() - entity.getX()) * q;
+                float yCoord = (entity.getTarget().getY() - entity.getY()) * q;
+
+                float dist1 = getDist(yCoord, -xCoord, entity.getMovement().getCoords()[0], entity.getMovement().getCoords()[1]);
+                float dist2 = getDist(-yCoord, xCoord, entity.getMovement().getCoords()[0], entity.getMovement().getCoords()[1]);
+
                 Vector2 vec;
-
-                if (dist > entity.getRange() + target.getRadius()) {
-                    vec = new Vector2((entity.getTarget().getX() - entity.getX()) * q, (entity.getTarget().getY() - entity.getY()) * q);
-                } else if ((target.getRange() < entity.getRange() && dist < target.getRange() + entity.getRadius()) || dist < entity.getRange() / 2) {
-                    vec = new Vector2((entity.getTarget().getX() - entity.getX()) * q * -1, (entity.getTarget().getY() - entity.getY()) * q * -1);
+                if (dist1 < dist2) {
+                    vec = new Vector2(yCoord, -xCoord);
                 } else {
-                    float xCoord = (entity.getTarget().getX() - entity.getX()) * q;
-                    float yCoord = (entity.getTarget().getY() - entity.getY()) * q;
-
-                    float dist1 = getDist(yCoord, -xCoord, entity.getMovement().getCoords()[0], entity.getMovement().getCoords()[1]);
-                    float dist2 = getDist(-yCoord, xCoord, entity.getMovement().getCoords()[0], entity.getMovement().getCoords()[1]);
-
-                    if (dist1 < dist2) {
-                        vec = new Vector2(yCoord, -xCoord);
-                    } else {
-                        vec = new Vector2(-yCoord, xCoord);
-                    }
+                    vec = new Vector2(-yCoord, xCoord);
                 }
 
-                moveByVector(entity, vec, dt);
+                moveByVector(entity,vec,dt);
+            } else if(dist < entity.getRange() + entity.getRadius() + target.getRadius()) {
+                entity.getSteps().push(new Step(Step.StepType.MoveInRange,0,0));
+            } else {
+                entity.getSteps().pop();
             }
         }
     }
@@ -459,11 +485,11 @@ public class EntityHandler {
         for(int i = 0; i < findPath.length; i++){
             for(int j = 0; j < findPath[i].length; j++){
                 if(findPath[i][j]){
-                    HashMap<Integer, Stack<Step>> paths = new HashMap<>();
+                    HashMap<Byte, Stack<Step>> paths = new HashMap<>();
 
                     for(Entity entity : nodeMap[i][j].block){
                         if(entity instanceof MoveEntity){
-                            int key = getKey((MoveEntity)entity);
+                            byte key = ((MoveEntity)entity).getKey();
 
                             if(!paths.containsKey(key)){
                                 if(entity.getTarget() != null){
@@ -610,27 +636,6 @@ public class EntityHandler {
         }else{
             return old+add;
         }
-    }
-
-    /**
-     * Generates a Key for a MoveEntity to be used in pathfinding
-     * First two bits of key are reserved for:
-     * 1) isEnemy
-     * 2) isRanged
-     * Following bits are rounded speed of entity
-     */
-    private int getKey(MoveEntity entity){
-        int key = Math.round(entity.getSpeed());
-        //Shift 2 bits to the right
-        key *= 4;
-        //First Bit: isEnemy
-        if(entity.isEnemy())
-            key++;
-        //Second Bit: isRanged
-        if(entity.isRanged())
-            key += 2;
-
-        return key;
     }
 
     /*

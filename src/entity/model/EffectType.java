@@ -6,7 +6,7 @@ package entity.model;
 public enum EffectType {
     //          dur     dot,        damage,     speed
     SLOW(       4,      0,          0,          -0.5f),
-    BLEEDING(   0.5f,   0,          -1),
+    BLEEDING(   0.5f,   0,          1),
     BURNING(    2,      -0.25f),
     POISON(     5,      -0.125f),
     HEALING(    1,      0.125f);

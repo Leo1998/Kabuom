@@ -39,6 +39,17 @@ public class MoveEntity extends Entity {
         this.steps = steps;
     }
 
+    public byte getKey(){
+        byte key = 0x00;
+        if(isEnemy())
+            key |= 0x01;
+        if(isRanged())
+            key |= 0x02;
+        if(getTarget() != null && getTarget().isEnemy())
+            key |= 0x04;
+        return key;
+    }
+
     @Override
     public String toString() {
         return super.toString() + ", MoveEntity{" +
