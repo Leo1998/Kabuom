@@ -41,6 +41,18 @@ public class RadialBlurEffect extends PostProcessingEffect {
 
     private ShaderProgram shader;
 
+    private float blur;
+    private float bright;
+
+    public RadialBlurEffect() {
+        this(0.04f, 1.0f);
+    }
+
+    public RadialBlurEffect(float blur, float bright) {
+        this.blur = blur;
+        this.bright = bright;
+    }
+
     @Override
     public void render(ITexture sceneTexture, Batch batch, float totalTime) {
         if (shader == null)
@@ -55,8 +67,8 @@ public class RadialBlurEffect extends PostProcessingEffect {
         float x = (Mouse.getX() / (float) Display.getWidth());
         float y = (Mouse.getY() / (float) Display.getHeight());
 
-        shader.setUniformf("radial_blur", 0.04f);
-        shader.setUniformf("radial_bright", 1.0f);
+        shader.setUniformf("radial_blur", this.blur);
+        shader.setUniformf("radial_bright", this.bright);
         shader.setUniformf("radial_origin", x, y);
 
         batch.draw(null, 0, 0, Display.getWidth(), Display.getHeight());
@@ -67,5 +79,21 @@ public class RadialBlurEffect extends PostProcessingEffect {
     public void dispose() {
         if (shader != null)
             shader.dispose();
+    }
+
+    public float getBlur() {
+        return blur;
+    }
+
+    public void setBlur(float blur) {
+        this.blur = blur;
+    }
+
+    public float getBright() {
+        return bright;
+    }
+
+    public void setBright(float bright) {
+        this.bright = bright;
     }
 }

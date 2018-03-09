@@ -2,6 +2,7 @@ package view.effects;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL13;
+import utility.Vector2;
 import view.rendering.Batch;
 import view.rendering.ShaderProgram;
 import view.rendering.VertexAttrib;
@@ -40,12 +41,17 @@ public class DrunkEffect extends PostProcessingEffect {
 
     private ShaderProgram shader;
 
+    private Vector2 amount;
+
     public DrunkEffect() {
-        this.shader = createShader();
+        this.amount = new Vector2(16.0f, 9.0f);
     }
 
     @Override
     public void render(ITexture sceneTexture, Batch batch, float totalTime) {
+        if (shader == null)
+            this.shader = createShader();
+
         batch.begin(shader);
 
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
@@ -53,6 +59,7 @@ public class DrunkEffect extends PostProcessingEffect {
         shader.setUniformi("sceneTexture", 0);
 
         shader.setUniformf("time", totalTime);
+        shader.setUniformf("amount", amount.getCoords()[0], amount.getCoords()[1]);
 
         batch.draw(null, 0, 0, Display.getWidth(), Display.getHeight());
         batch.end();
@@ -60,6 +67,11 @@ public class DrunkEffect extends PostProcessingEffect {
 
     @Override
     public void dispose() {
-        shader.dispose();
+        if (shader != null)
+            shader.dispose();
+    }
+
+    public Vector2 getAmount() {
+        return amount;
     }
 }
