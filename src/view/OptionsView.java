@@ -15,7 +15,7 @@ public class OptionsView extends BaseMenuView {
         Button backButton = new Button(0.05f, 0.05f, 0.15f, 0.1f, this, "Back");
         this.components.add(backButton);
 
-        backButton.setListener(() -> viewManager.setCurrentView(new MenuView(originWidth,originHeight,viewManager)));
+        backButton.setListener(() -> viewManager.setCurrentView(new MenuView(originWidth, originHeight, viewManager)));
 
         String mode = Controller.instance.getConfig().getGraphicMode().name();
         Button graphicsButton = new Button(0.25f, 0.15f, 0.5f, 0.1f, this, "Graphics: " + mode);
@@ -34,18 +34,18 @@ public class OptionsView extends BaseMenuView {
                 String mode = config.getGraphicMode().name();
                 graphicsButton.setButtontext("Graphics: " + mode);
 
-                Controller.instance.getViewManager().getPostProcessingManager().resize(Display.getWidth(), Display.getHeight());
+                Controller.instance.getViewManager().onGraphicsConfigurationChanged(config.getGraphicMode());
             }
         });
 
         int difficulty = Controller.instance.getConfig().getDifficulty();
-        Slider difficultySlider = new Slider(0.15f,0.3f,0.7f,0.1f,this, "Difficulty", true, 1, 33, difficulty);
+        Slider difficultySlider = new Slider(0.15f, 0.3f, 0.7f, 0.1f, this, "Difficulty", true, 1, 33, difficulty);
         this.components.add(difficultySlider);
 
         difficultySlider.setListener(value -> Controller.instance.getConfig().setDifficulty(value));
 
         int aiDifficulty = Controller.instance.getConfig().getAiDifficulty();
-        Slider aiSlider = new Slider(0.15f,0.45f,0.7f,0.1f,this, "AI Difficulty", true, 1, 33, aiDifficulty);
+        Slider aiSlider = new Slider(0.15f, 0.45f, 0.7f, 0.1f, this, "AI Difficulty", true, 1, 33, aiDifficulty);
         this.components.add(aiSlider);
 
         aiSlider.setListener(value -> Controller.instance.getConfig().setAiDifficulty(value));
@@ -71,8 +71,8 @@ public class OptionsView extends BaseMenuView {
     @Override
     public void onKeyDown(int key, char c) {
         super.onKeyDown(key, c);
-        if(key == Keyboard.KEY_ESCAPE){
-            viewManager.setCurrentView(new MenuView(originWidth,originHeight,viewManager));
+        if (key == Keyboard.KEY_ESCAPE) {
+            viewManager.setCurrentView(new MenuView(originWidth, originHeight, viewManager));
         }
     }
 }

@@ -1,4 +1,4 @@
-package view.rendering;
+package view.texture;
 
 public interface ITexture {
 

@@ -1,10 +1,10 @@
 package view;
 
 import utility.Utility;
+import view.effects.Particle;
+import view.effects.ParticleEffect;
+import view.effects.ParticleManager;
 import view.rendering.Batch;
-import view.rendering.Particle;
-import view.rendering.ParticleEffect;
-import view.rendering.ParticleManager;
 
 public abstract class BaseMenuView extends View {
 

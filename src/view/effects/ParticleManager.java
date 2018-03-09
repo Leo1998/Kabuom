@@ -1,4 +1,6 @@
-package view.rendering;
+package view.effects;
+
+import view.rendering.Batch;
 
 import java.util.ArrayList;
 

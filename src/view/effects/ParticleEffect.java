@@ -1,4 +1,4 @@
-package view.rendering;
+package view.effects;
 
 public class ParticleEffect {
 

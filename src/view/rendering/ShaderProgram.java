@@ -15,7 +15,7 @@ public class ShaderProgram {
     private static String loadShader(File file) {
         try {
             return loadShader(new FileInputStream(file));
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

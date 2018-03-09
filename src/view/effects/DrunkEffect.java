@@ -1,7 +1,11 @@
-package view.rendering;
+package view.effects;
 
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL13;
+import view.rendering.Batch;
+import view.rendering.ShaderProgram;
+import view.rendering.VertexAttrib;
+import view.texture.ITexture;
 
 import java.io.File;
 import java.util.HashMap;

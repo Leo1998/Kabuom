@@ -2,6 +2,7 @@ package view;
 
 import org.lwjgl.input.Mouse;
 import view.components.ViewComponent;
+import view.effects.PostProcessingEffect;
 import view.rendering.Batch;
 
 import java.util.ArrayList;
@@ -11,10 +12,11 @@ public abstract class View {
 
     protected List<ViewComponent> components;
     protected float originWidth, originHeight;
+    protected final List<PostProcessingEffect> postProcessingEffects = new ArrayList<>();
     protected final ViewManager viewManager;
 
     public View(float width, float height, ViewManager viewManager) {
-        components = new ArrayList<ViewComponent>();
+        components = new ArrayList<>();
         originHeight = height;
         originWidth = width;
         this.viewManager = viewManager;
@@ -24,7 +26,7 @@ public abstract class View {
      * zeichnet alle ViewComponents
      */
     public void render(float deltaTime, Batch batch) {
-        for(ViewComponent v : components){
+        for (ViewComponent v : components) {
             v.draw(batch, originWidth, originHeight);
         }
     }
@@ -35,6 +37,26 @@ public abstract class View {
         originWidth = width;
     }
 
+    public void addEffect(PostProcessingEffect effect) {
+        postProcessingEffects.add(effect);
+        viewManager.postProcessingManager.addEffect(effect);
+    }
+
+    public void removeEffect(PostProcessingEffect effect) {
+        postProcessingEffects.remove(effect);
+        viewManager.postProcessingManager.removeEffect(effect);
+    }
+
+    public void onStart() {
+
+    }
+
+    public void onStop() {
+        for (PostProcessingEffect e : postProcessingEffects) {
+            viewManager.postProcessingManager.removeEffect(e);
+        }
+        postProcessingEffects.clear();
+    }
 
     public List<ViewComponent> getComponents() {
         return components;
@@ -68,11 +90,11 @@ public abstract class View {
         }
     }
 
-    public float getMouseX(){
-        return Mouse.getX()/originWidth;
+    public float getMouseX() {
+        return Mouse.getX() / originWidth;
     }
 
-    public float getMouseY(){
-        return 1 - Mouse.getY()/originHeight;
+    public float getMouseY() {
+        return 1 - Mouse.getY() / originHeight;
     }
 }

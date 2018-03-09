@@ -4,7 +4,7 @@ import entity.model.EntityType;
 import view.View;
 import view.ViewManager;
 import view.rendering.Batch;
-import view.rendering.ITexture;
+import view.texture.ITexture;
 
 public class TowerButton extends Button {
 
@@ -23,19 +23,19 @@ public class TowerButton extends Button {
     @Override
     public void draw(Batch batch, float originWidth, float originHeight) {
 
-        float x = getX()*originWidth;
-        float width = getWidth()*originWidth;
-        float y = getY()*originHeight;
-        float height = getHeight()*originHeight;
+        float x = getX() * originWidth;
+        float width = getWidth() * originWidth;
+        float y = getY() * originHeight;
+        float height = getHeight() * originHeight;
 
         batch.draw(getTexture(), x, y, width, height, 0, 1f, 1f, 1f, 1f);
 
         float iconSize = height - ViewManager.font.getLineHeight();
 
-        if(icon1 != null) {
+        if (icon1 != null) {
             batch.draw(icon1, (x + (width / 2) - (iconSize / 2)), y, iconSize, iconSize, 0, 1f, 1f, 1f, 1f);
         }
-        if(icon2 != null) {
+        if (icon2 != null) {
             batch.draw(icon2, (x + (width / 2) - (iconSize / 2)), y, iconSize, iconSize, 0, 1f, 1f, 1f, 1f);
         }
 

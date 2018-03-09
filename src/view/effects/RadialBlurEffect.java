@@ -1,8 +1,12 @@
-package view.rendering;
+package view.effects;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL13;
+import view.rendering.Batch;
+import view.rendering.ShaderProgram;
+import view.rendering.VertexAttrib;
+import view.texture.ITexture;
 
 import java.io.File;
 import java.util.HashMap;
@@ -37,12 +41,11 @@ public class RadialBlurEffect extends PostProcessingEffect {
 
     private ShaderProgram shader;
 
-    public RadialBlurEffect() {
-        this.shader = createShader();
-    }
-
     @Override
     public void render(ITexture sceneTexture, Batch batch, float totalTime) {
+        if (shader == null)
+            this.shader = createShader();
+
         batch.begin(shader);
 
         GL13.glActiveTexture(GL13.GL_TEXTURE0);
@@ -62,6 +65,7 @@ public class RadialBlurEffect extends PostProcessingEffect {
 
     @Override
     public void dispose() {
-        shader.dispose();
+        if (shader != null)
+            shader.dispose();
     }
 }

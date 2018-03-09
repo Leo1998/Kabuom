@@ -4,7 +4,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import utility.Matrix4;
 import utility.OrthographicCamera;
-import utility.Vector2;
+import view.texture.ITexture;
+import view.texture.Texture;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -151,11 +152,11 @@ public class Batch {
     }
 
     public void draw(ITexture tex, float x, float y, float width, float height) {
-        draw(tex, x, y, width, height,0, 1f, 1f, 1f, 1f);
+        draw(tex, x, y, width, height, 0, 1f, 1f, 1f, 1f);
     }
 
     public void draw(ITexture tex, float x, float y, float width, float height, float r, float g, float b, float a) {
-        draw(tex, x, y, width, height,0, r, g, b, a);
+        draw(tex, x, y, width, height, 0, r, g, b, a);
     }
 
     public void draw(ITexture tex, float x, float y, float width, float height, float rotationRadians, float r, float g, float b, float a) {
@@ -179,8 +180,8 @@ public class Batch {
         if (rotationRadians != 0) {
             //Vector Rotation
 
-            float halfWidth = width/2;
-            float halfHeight = height/2;
+            float halfWidth = width / 2;
+            float halfHeight = height / 2;
 
             float centerX = x + halfWidth;
             float centerY = y + halfHeight;
@@ -189,20 +190,20 @@ public class Batch {
             float cos = (float) Math.cos(rotationRadians);
 
             //Point 1: -Width, -Height
-            x1 = centerX - cos*halfWidth + sin*halfHeight; // centerX + cos*(-halfWidth) - sin*(-halfHeight)
-            y1 = centerY - sin*halfWidth - cos*halfHeight; // centerX + sin*(-halfWidth) + cos*(-halfHeight)
+            x1 = centerX - cos * halfWidth + sin * halfHeight; // centerX + cos*(-halfWidth) - sin*(-halfHeight)
+            y1 = centerY - sin * halfWidth - cos * halfHeight; // centerX + sin*(-halfWidth) + cos*(-halfHeight)
 
             //Point 2: +Width, -Height
-            x2 = centerX + cos*halfWidth + sin*halfHeight; // centerX + cos*(halfWidth) - sin*(-halfHeight)
-            y2 = centerY + sin*halfWidth - cos*halfHeight; // centerX + sin*(halfWidth) + cos*(-halfHeight)
+            x2 = centerX + cos * halfWidth + sin * halfHeight; // centerX + cos*(halfWidth) - sin*(-halfHeight)
+            y2 = centerY + sin * halfWidth - cos * halfHeight; // centerX + sin*(halfWidth) + cos*(-halfHeight)
 
             //Point 3: +Width, +Height
-            x3 = centerX + cos*halfWidth - sin*halfHeight; // centerX + cos*(halfWidth) - sin*(halfHeight)
-            y3 = centerY + sin*halfWidth + cos*halfHeight; // centerX + sin*(halfWidth) + cos*(halfHeight)
+            x3 = centerX + cos * halfWidth - sin * halfHeight; // centerX + cos*(halfWidth) - sin*(halfHeight)
+            y3 = centerY + sin * halfWidth + cos * halfHeight; // centerX + sin*(halfWidth) + cos*(halfHeight)
 
             //Point 4: -Width, +Height
-            x4 = centerX - cos*halfWidth - sin*halfHeight; // centerX + cos*(-halfWidth) - sin*(halfHeight)
-            y4 = centerY - sin*halfWidth + cos*halfHeight; // centerX + sin*(-halfWidth) + cos*(halfHeight)
+            x4 = centerX - cos * halfWidth - sin * halfHeight; // centerX + cos*(-halfWidth) - sin*(halfHeight)
+            y4 = centerY - sin * halfWidth + cos * halfHeight; // centerX + sin*(-halfWidth) + cos*(halfHeight)
         } else {
             x1 = x;
             y1 = y;
@@ -230,63 +231,66 @@ public class Batch {
 
     /**
      * Draws a Circle
-     * @param cx X-Coordinate of center
-     * @param cy Y-Coordinate of center
+     *
+     * @param cx  X-Coordinate of center
+     * @param cy  Y-Coordinate of center
      * @param rad Radius of circle
-     * @param r Color Red
-     * @param g Color Green
-     * @param b Color Blue
-     * @param a Color Alpha
+     * @param r   Color Red
+     * @param g   Color Green
+     * @param b   Color Blue
+     * @param a   Color Alpha
      */
-    public void circle(float cx, float cy, float rad, float r, float g, float b, float a){
-        float[][] points = prepareCircle(cx,cy,rad);
+    public void circle(float cx, float cy, float rad, float r, float g, float b, float a) {
+        float[][] points = prepareCircle(cx, cy, rad);
 
         float u = 0f;
         float v = 1f;
         float u2 = 1f;
         float v2 = 0f;
 
-        for(int i = 0; i < points.length; i++){
+        for (int i = 0; i < points.length; i++) {
             vertex(cx, cy, -1, r, g, b, a, u, v);
             vertex(points[i][0], points[i][1], -1, r, g, b, a, u2, v);
-            vertex(points[(i+1)%points.length][0], points[(i+1)%points.length][1], -1, r, g, b, a, u, v2);
+            vertex(points[(i + 1) % points.length][0], points[(i + 1) % points.length][1], -1, r, g, b, a, u, v2);
         }
     }
+
     /**
      * Draws a Circle within a rectangle
-     * @param cx X-Coordinate of center
-     * @param cy Y-Coordinate of center
+     *
+     * @param cx  X-Coordinate of center
+     * @param cy  Y-Coordinate of center
      * @param rad Radius of circle
-     * @param r Color Red
-     * @param g Color Green
-     * @param b Color Blue
-     * @param a Color Alpha
+     * @param r   Color Red
+     * @param g   Color Green
+     * @param b   Color Blue
+     * @param a   Color Alpha
      * @param bx1 X-Coordinate of top-left corner of rectangle
      * @param by1 Y-Coordinate of top-left corner of rectangle
      * @param bx2 X-Coordinate of bottom-right corner of rectangle
      * @param by2 Y-Coordinate of bottom-right corner of rectangle
      */
-    public void limitedCircle(float cx, float cy, float rad, float r, float g, float b, float a, int bx1, int by1, int bx2, int by2){
-        float[][] points = prepareCircle(cx,cy,rad);
+    public void limitedCircle(float cx, float cy, float rad, float r, float g, float b, float a, int bx1, int by1, int bx2, int by2) {
+        float[][] points = prepareCircle(cx, cy, rad);
 
         float u = 0f;
         float v = 1f;
         float u2 = 1f;
         float v2 = 0f;
 
-        cx = Math.max(bx1,Math.min(bx2,cx));
-        cy = Math.max(by1,Math.min(by2,cy));
+        cx = Math.max(bx1, Math.min(bx2, cx));
+        cy = Math.max(by1, Math.min(by2, cy));
 
-        points[0][0] = Math.max(bx1,Math.min(bx2,points[0][0]));
-        points[0][1] = Math.max(by1,Math.min(by2,points[0][1]));
+        points[0][0] = Math.max(bx1, Math.min(bx2, points[0][0]));
+        points[0][1] = Math.max(by1, Math.min(by2, points[0][1]));
 
-        for(int i = 0; i < points.length; i++){
-            points[(i+1)%points.length][0] = Math.max(bx1,Math.min(bx2,points[(i+1)%points.length][0]));
-            points[(i+1)%points.length][1] = Math.max(by1,Math.min(by2,points[(i+1)%points.length][1]));
+        for (int i = 0; i < points.length; i++) {
+            points[(i + 1) % points.length][0] = Math.max(bx1, Math.min(bx2, points[(i + 1) % points.length][0]));
+            points[(i + 1) % points.length][1] = Math.max(by1, Math.min(by2, points[(i + 1) % points.length][1]));
 
             vertex(cx, cy, -1, r, g, b, a, u, v);
             vertex(points[i][0], points[i][1], -1, r, g, b, a, u2, v);
-            vertex(points[(i+1)%points.length][0], points[(i+1)%points.length][1], -1, r, g, b, a, u, v2);
+            vertex(points[(i + 1) % points.length][0], points[(i + 1) % points.length][1], -1, r, g, b, a, u, v2);
         }
     }
 
@@ -294,26 +298,26 @@ public class Batch {
      * Calculates points along the outline of a circle
      * Source: http://slabode.exofire.net/circle_draw.shtml
      * Edited to return points within array
-     * @param cx X-Coordinate of center
-     * @param cy Y-Coordinate of center
+     *
+     * @param cx  X-Coordinate of center
+     * @param cy  Y-Coordinate of center
      * @param rad Radius of circle
      */
-    private float[][] prepareCircle(float cx, float cy, float rad){
-        int num_segments = Math.min(Math.round(10 * (float)Math.sqrt(rad)),128);//change the 10 to a smaller/bigger number as needed
+    private float[][] prepareCircle(float cx, float cy, float rad) {
+        int num_segments = Math.min(Math.round(10 * (float) Math.sqrt(rad)), 128);//change the 10 to a smaller/bigger number as needed
 
         float[][] result = new float[num_segments][2];
 
-        float theta = 2 * 3.1415926f / (float)(num_segments);
-        float tangetial_factor = (float)Math.tan(theta);//calculate the tangential factor
+        float theta = 2 * 3.1415926f / (float) (num_segments);
+        float tangetial_factor = (float) Math.tan(theta);//calculate the tangential factor
 
-        float radial_factor = (float)Math.cos(theta);//calculate the radial factor
+        float radial_factor = (float) Math.cos(theta);//calculate the radial factor
 
         float x = rad;//we start at angle = 0
 
         float y = 0;
 
-        for(int i = 0; i < num_segments; i++)
-        {
+        for (int i = 0; i < num_segments; i++) {
             //output vertex
             result[i][0] = x + cx;
             result[i][1] = y + cy;

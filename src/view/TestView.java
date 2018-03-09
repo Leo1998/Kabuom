@@ -4,9 +4,9 @@ package view;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import view.components.Button;
+import view.effects.Particle;
+import view.effects.ParticleEffect;
 import view.rendering.Batch;
-import view.rendering.Particle;
-import view.rendering.ParticleEffect;
 
 import java.util.Random;
 

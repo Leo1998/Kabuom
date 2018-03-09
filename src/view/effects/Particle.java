@@ -1,4 +1,4 @@
-package view.rendering;
+package view.effects;
 
 import java.util.Random;
 

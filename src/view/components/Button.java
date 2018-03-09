@@ -4,7 +4,7 @@ import utility.Utility;
 import view.View;
 import view.ViewManager;
 import view.rendering.Batch;
-import view.rendering.ITexture;
+import view.texture.ITexture;
 
 
 public class Button extends ViewComponent {
@@ -56,10 +56,10 @@ public class Button extends ViewComponent {
 
     @Override
     public void draw(Batch batch, float originWidth, float originHeight) {
-        float x = getX()*originWidth;
-        float width = getWidth()*originWidth;
-        float y = getY()*originHeight;
-        float height = getHeight()*originHeight;
+        float x = getX() * originWidth;
+        float width = getWidth() * originWidth;
+        float y = getY() * originHeight;
+        float height = getHeight() * originHeight;
 
         batch.draw(getTexture(), x, y, width, height, 0, 1f, 1f, 1f, 1f);
         if (buttontext != null)
