@@ -4,7 +4,7 @@ import utility.Utility;
 import view.View;
 import view.ViewManager;
 import view.rendering.Batch;
-import view.rendering.ITexture;
+import view.texture.ITexture;
 
 public class IndexedButton extends Button {
     private int index;
