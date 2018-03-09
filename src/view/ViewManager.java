@@ -180,13 +180,13 @@ public class ViewManager {
             Display.setFullscreen(fullscreen);
             Display.setResizable(true);
             Display.setTitle("Kabuom! Tower Defense");
-            Display.setVSyncEnabled(true);
+            //Display.setVSyncEnabled(true);
         } catch (LWJGLException e) {
             System.out.println("Unable to setup mode " + width + "x" + height + " fullscreen=" + fullscreen + e);
         }
     }
 
-    public void render(float deltaTime) {
+    public void render(float deltaTime, int lastFPS) {
         if (Display.wasResized()) {
             onResize(Display.getWidth(), Display.getHeight());
         }
@@ -251,11 +251,18 @@ public class ViewManager {
 
         particleManager.render(batch, deltaTime);
 
+        if (Controller.instance.getConfig().isShowFPS()) {
+            ViewManager.font.drawText(batch, "FPS: " + lastFPS, 5, 5);
+        }
+
         batch.end();
         postProcessingManager.end();
 
         Display.update();
-        Display.sync(60);
+
+        if (Controller.instance.getConfig().isVSync()) {
+            Display.sync(60);
+        }
     }
 
     private void onResize(int width, int height) {

@@ -15,6 +15,9 @@ public class Config {
     }
 
     private GraphicMode graphicMode = GraphicMode.High;
+    private boolean vSync = true;
+    private boolean showFPS = false;
+
     private int maxWave = 0;
     private int difficulty = 1;
     private int aiDifficulty = 1;
@@ -31,6 +34,9 @@ public class Config {
                 JSONObject obj = new JSONObject(new JSONTokener(new FileInputStream(configFile)));
 
                 this.graphicMode = GraphicMode.valueOf(obj.getString("graphicMode"));
+                this.vSync = obj.getBoolean("vSync");
+                this.showFPS = obj.getBoolean("showFPS");
+
                 this.maxWave = obj.getInt("maxWave");
                 this.difficulty = obj.getInt("difficulty");
                 this.aiDifficulty = obj.getInt("aiDifficulty");
@@ -53,6 +59,9 @@ public class Config {
             JSONObject obj = new JSONObject();
 
             obj.put("graphicMode", this.graphicMode);
+            obj.put("vSync", this.vSync);
+            obj.put("showFPS", this.showFPS);
+
             obj.put("maxWave", this.maxWave);
             obj.put("difficulty", this.difficulty);
             obj.put("aiDifficulty", this.aiDifficulty);
@@ -77,6 +86,22 @@ public class Config {
 
     public void setGraphicMode(GraphicMode graphicMode) {
         this.graphicMode = graphicMode;
+    }
+
+    public boolean isVSync() {
+        return vSync;
+    }
+
+    public void setVSync(boolean vSync) {
+        this.vSync = vSync;
+    }
+
+    public boolean isShowFPS() {
+        return showFPS;
+    }
+
+    public void setShowFPS(boolean showFPS) {
+        this.showFPS = showFPS;
     }
 
     public int getFboSamples() {
@@ -127,7 +152,13 @@ public class Config {
     public String toString() {
         return "Config{" +
                 "graphicMode=" + graphicMode +
+                ", vSync=" + vSync +
+                ", showFPS=" + showFPS +
                 ", maxWave=" + maxWave +
+                ", difficulty=" + difficulty +
+                ", aiDifficulty=" + aiDifficulty +
+                ", width=" + width +
+                ", height=" + height +
                 '}';
     }
 }

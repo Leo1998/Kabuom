@@ -52,6 +52,7 @@ public class Controller {
         long startTime = System.nanoTime();
         long totalTime = startTime;
         int frames = 0;
+        int lastFPS = 0;
         while (!viewManager.isCloseRequested()) {
             long currentTime = System.nanoTime();
             deltaTime = (float) ((currentTime - startTime) / 1000000000D);
@@ -63,9 +64,8 @@ public class Controller {
                 } else {
                     System.out.println("fps: " + frames);
                 }
-
+                lastFPS = frames;
                 frames = 0;
-
                 totalTime = currentTime;
             }
 
@@ -73,7 +73,7 @@ public class Controller {
                 world.update(deltaTime);
             }
 
-            viewManager.render(deltaTime);
+            viewManager.render(deltaTime, lastFPS);
         }
 
         viewManager.dispose();
