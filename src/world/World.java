@@ -1,6 +1,5 @@
 package world;
 
-import controller.Config;
 import controller.Controller;
 import entity.EntityHandler;
 import entity.model.Entity;
@@ -94,7 +93,7 @@ public class World {
                 entity = new Entity(entityObj, blocks);
             }
 
-            if(entity.isMaintower()){
+            if(entity.isType(EntityType.MAINTOWER)){
                 mainTower = entity;
             }
 
@@ -173,7 +172,7 @@ public class World {
             newEntities.add(tower);
             entityHandler.newTower(xPos,yPos);
 
-            if(!tower.isMaintower()) {
+            if(!tower.isType(EntityType.MAINTOWER)) {
                 coins -= tower.getCost();
             }
 
@@ -184,7 +183,7 @@ public class World {
 
     public void sellTower(int x, int y){
         Entity entity = blocks[x][y].getTower();
-        if (entity != null && !entity.isMaintower()) {
+        if (entity != null && !entity.isType(EntityType.MAINTOWER)) {
             coins += entity.getCost() * (entity.getHp() / entity.getMaxHp());
             removeEntity(entity);
         }
@@ -193,8 +192,8 @@ public class World {
     public void removeEntity(Entity entity){
         entity.setHp(-1);
         if(entity.isEnemy()){
-            coins += entity.getReward() * 1000/getAmount(entity.getWave());
-        } else if(entity.isMaintower()){
+            coins += entity.getReward() * 1000/ getAmount(entity.getWave());
+        } else if(entity.isType(EntityType.MAINTOWER)){
             Controller.instance.endGame(true);
         }
     }
@@ -266,6 +265,10 @@ public class World {
 
     private int getAmount(int wave){
         return (int)(Math.pow(1 + ((double)difficulty/50d) * (double)wave,2) + 5);
+    }
+
+    public int getStrength(){
+        return getAmount(wave+1);
     }
 
     public int getCoins() {

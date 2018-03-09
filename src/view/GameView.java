@@ -9,10 +9,7 @@ import org.lwjgl.input.Mouse;
 import projectile.Projectile;
 import utility.Utility;
 import utility.Vector2;
-import view.components.Button;
-import view.components.ButtonListener;
-import view.components.TowerButton;
-import view.components.ViewComponent;
+import view.components.*;
 import view.rendering.Batch;
 import view.rendering.ITexture;
 import view.rendering.PostProcessingManager;
@@ -66,8 +63,11 @@ public class GameView extends View {
             });
         }
 
-        Button startButton = new Button(buttonStartX, 0.9f, buttonWidth, 0.1f, this, "Start");
-        startButton.setListener(world::startWave);
+        IndexedButton startButton = new IndexedButton(buttonStartX, 0.9f, buttonWidth, 0.1f, this, "Next Wave:", world.getStrength());
+        startButton.setListener(()->{
+            world.startWave();
+            startButton.setIndex(world.getStrength());
+        });
         components.add(startButton);
     }
 
@@ -186,7 +186,7 @@ public class GameView extends View {
 
 
         //Zeichnet die Coin & Wave Zähler an den unteren rand
-        String coinsMessage = "Coins: " + niceNumber(world.getCoins());
+        String coinsMessage = "Coins: " + Utility.niceNumber(world.getCoins());
         ViewManager.font.drawText(batch, coinsMessage, (int) (originWidth - ViewManager.font.getWidth(coinsMessage)), (int) (originHeight - ViewManager.font.getLineHeight() * 2 - (originHeight / 10)));
 
         String waveMessage = "Wave: " + world.getWave();
@@ -217,8 +217,8 @@ public class GameView extends View {
                     int y0 = Math.round(originHeight) - Mouse.getY();
 
                     String l1 = t.getName();
-                    String l2 = "Health: " + niceNumber(Math.round(t.getHp()));
-                    String l3 = "Upgrade: " + niceNumber(t.getCost()) + " Coins";
+                    String l2 = "Health: " + Utility.niceNumber(Math.round(t.getHp()));
+                    String l3 = "Upgrade: " + Utility.niceNumber(t.getCost()) + " Coins";
 
                     int w = Math.max(Math.max(ViewManager.font.getWidth(l1), ViewManager.font.getWidth(l2)), ViewManager.font.getWidth(l3));
                     int h = ViewManager.font.getLineHeight() * 3;
@@ -326,14 +326,6 @@ public class GameView extends View {
 
     private float blockToViewY(float y) {
         return (y*scale) + offsetY;
-    }
-
-    private String niceNumber(int number){
-        String result = Integer.toString(number);
-        for (int i = result.length() - 3; i > 0; i -= 3) {
-            result = result.substring(0, i) + "," + result.substring(i);
-        }
-        return result;
     }
 
     @Override

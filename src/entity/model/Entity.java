@@ -107,7 +107,6 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
 
     public void addHp(float hp, String source) {
         float temp = hp * (1+buffs[EffectType.BuffType.DAMAGE.ordinal()]);
-        System.out.println(temp);
         super.addHp(temp);
         if(isEnemy()) {
             entityHandler.addDamage(-temp, this);
@@ -207,10 +206,6 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
         return isRanged() && entityType.projectile instanceof EntityType;
     }
 
-    public boolean isMaintower(){
-        return entityType == EntityType.MAINTOWER;
-    }
-
     public int getReward(){
         return (level+1)*entityType.cost;
     }
@@ -219,8 +214,8 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
         return (allyOf(partisan) ? entityType.attacksAllies : entityType.attacksHostiles);
     }
 
-    public boolean sameType(Entity entity){
-        return entity.entityType == this.entityType;
+    public boolean isType(EntityType entityType){
+        return this.entityType == entityType;
     }
 
     @Override

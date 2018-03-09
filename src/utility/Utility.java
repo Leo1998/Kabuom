@@ -50,4 +50,12 @@ public class Utility {
         }
         return sb.toString();
     }
+
+    public static String niceNumber(int number){
+        String result = Integer.toString(number);
+        for (int i = result.length() - 3; i > 0; i -= 3) {
+            result = result.substring(0, i) + "," + result.substring(i);
+        }
+        return result;
+    }
 }

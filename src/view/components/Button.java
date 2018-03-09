@@ -10,8 +10,8 @@ import view.rendering.ITexture;
 public class Button extends ViewComponent {
 
     private ButtonListener listener;
-    private String buttontext;
-    private ITexture texture, buttonMainTexture, buttonPressedTexture;
+    protected String buttontext;
+    protected ITexture texture, buttonMainTexture, buttonPressedTexture;
     private boolean down;
 
     public Button(float x, float y, float width, float height, View v, String buttontext) {

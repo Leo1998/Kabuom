@@ -69,6 +69,9 @@ public class EntityHandler {
                     }
                     world.removeEntity(entity);
                 } else {
+                    int bX = Math.round(entity.getX());
+                    int bY = Math.round(entity.getY());
+
                     if (entity.isEnemy() && entity.getWave() < minWave) {
                         minWave = entity.getWave();
                     }
@@ -79,17 +82,19 @@ public class EntityHandler {
                     entity.updateEffects(dt);
 
                     if (entity.addAttackCooldown(dt)) {
-                        attack(entity);
+                        if(!attack(entity) && entity instanceof MoveEntity){
+                            findPath[bX][bY] = true;
+                        }
                     }
 
                     if (i == updateIndex) {
-                        findPath[Math.round(entity.getX())][Math.round(entity.getY())] = true;
+                        findPath[bX][bY] = true;
                     }
 
                     if (entity instanceof MoveEntity) {
                         MoveEntity mEntity = (MoveEntity) entity;
                         if (mEntity.getSteps().isEmpty()) {
-                            findPath[Math.round(mEntity.getX())][Math.round(mEntity.getY())] = true;
+                            findPath[bX][bY] = true;
                         } else {
                             move((MoveEntity) entity, dt);
                         }
@@ -160,7 +165,9 @@ public class EntityHandler {
      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
      */
 
-    private void attack(Entity entity){
+    //False -> Target was set to null
+    private boolean attack(Entity entity){
+        boolean noTarget = entity.getTarget() == null;
         if (provideTarget(entity)) {
             if (entity.isRanged()) {
                 if(entity instanceof MoveEntity){
@@ -194,6 +201,9 @@ public class EntityHandler {
                     entity.getTarget().addHp(-entity.getAttack(), entity.getName());
                 }
             }
+            return true;
+        } else {
+            return noTarget;
         }
     }
 
@@ -208,7 +218,6 @@ public class EntityHandler {
                         entity.setTarget(mainTower);
                         return entity.attacks(mainTower) && isColliding(entity, mainTower) <= entity.getRange();
                     } else {
-                        entity.setHp(-1);
                         return false;
                     }
                 } else {
@@ -229,6 +238,7 @@ public class EntityHandler {
         int x = Math.round(source.getX()), y = Math.round(source.getY());
 
         Entity closest = null;
+        float cDist = Float.POSITIVE_INFINITY;
 
         int maxDist = Math.max(Math.max(x, world.getBlocks().length-x),Math.max(y, world.getBlocks()[x].length-y));
         if(range > 0){
@@ -241,9 +251,11 @@ public class EntityHandler {
                 boolean full = (i == x - dist || i == x + dist);
                 for (int j = full ? Math.max(0, y - dist) : (y - dist < 0) ? y + dist : y - dist; j < Math.min(world.getBlocks()[i].length, y + dist + 1); j += full ? 1 : 2 * dist) {
                     for(Entity entity:nodeMap[i][j].block){
-                        if(entity != source && source.attacks(entity)){
-                            if(closest == null || getDist(source,entity) < getDist(source,closest)){
+                        if(entity.getHp() > 0 && entity != source && source.attacks(entity)){
+                            float eDist = isColliding(source,entity);
+                            if(eDist < cDist){
                                 closest = entity;
+                                cDist = eDist;
                             }
                         }
                     }
@@ -252,7 +264,7 @@ public class EntityHandler {
         }
 
 
-        if(closest != null && getDist(source,closest) > closest.getRadius() + range){
+        if(cDist > range){
             closest = null;
         }
 
@@ -331,15 +343,19 @@ public class EntityHandler {
     private void move(MoveEntity entity, float dt){
         Entity collidingEntity = findCollidingEntity(entity);
         if(collidingEntity == null || collidingEntity.getHp() <= 0) {
+            float speed = entity.getSpeed();
+            if(!entity.isEnemy() && entity.getBlock().getTower() != null){
+                speed /= 4;
+            }
             switch (entity.getSteps().peek().stepType) {
                 case GoTo:
-                    goTo(entity,dt);
+                    goTo(entity, dt, speed);
                 break;
                 case MoveInRange:
-                    moveInRange(entity,dt);
+                    moveInRange(entity, dt, speed);
                     break;
                 case StayInRange:
-                    stayInRange(entity,dt);
+                    stayInRange(entity, dt, speed);
                     break;
             }
         } else {
@@ -347,15 +363,14 @@ public class EntityHandler {
         }
     }
 
-    private void goTo(MoveEntity entity, float dt){
-        float totalDist, movableDist;
+    private void goTo(MoveEntity entity, float dt, float speed){
         Stack<Step> steps = entity.getSteps();
-        movableDist = entity.getSpeed() * dt;
         Step step = steps.peek();
-        totalDist = getDist(step, entity);
+        float totalDist = getDist(step, entity);
+        float moveableDist = speed*dt;
         if(totalDist > 0) {
 
-            while (totalDist < movableDist + Math.min(steps.size() - 1, 3) && !steps.isEmpty() && steps.peek().stepType == Step.StepType.GoTo) {
+            while (totalDist < moveableDist && !steps.isEmpty() && steps.peek().stepType == Step.StepType.GoTo) {
                 steps.pop();
                 if (!steps.isEmpty() && steps.peek().stepType == Step.StepType.GoTo) {
                     step = steps.peek();
@@ -363,14 +378,14 @@ public class EntityHandler {
                 }
             }
 
-            float q = movableDist / totalDist;
+            float q = moveableDist / totalDist;
 
             Vector2 vec = new Vector2((step.getX() - entity.getX()) * q, (step.getY() - entity.getY()) * q);
             moveByVector(entity, vec, dt);
         }
     }
 
-    private void moveInRange(MoveEntity entity, float dt){
+    private void moveInRange(MoveEntity entity, float dt, float speed){
         if(entity.getTarget() == null){
             entity.getSteps().pop();
         } else {
@@ -379,7 +394,7 @@ public class EntityHandler {
             float dist = getDist(entity,target);
 
             if(dist > entity.getRange()/4 && dist < entity.getRange() + entity.getRadius() + target.getRadius()){
-                float q = (entity.getSpeed()*dt)/dist;
+                float q = (speed*dt)/dist;
                 Vector2 vec = new Vector2((entity.getTarget().getX() - entity.getX()) * q, (entity.getTarget().getY() - entity.getY()) * q);
 
                 moveByVector(entity,vec,dt);
@@ -389,7 +404,7 @@ public class EntityHandler {
         }
     }
 
-    private void stayInRange(MoveEntity entity, float dt){
+    private void stayInRange(MoveEntity entity, float dt, float speed){
         if(entity.getTarget() == null){
             entity.getSteps().pop();
         } else {
@@ -398,7 +413,7 @@ public class EntityHandler {
             float dist = getDist(entity,target);
 
             if(dist > 0 && dist < 3* entity.getRange()/4){
-                float q = (entity.getSpeed() * dt) / dist;
+                float q = (speed * dt) / dist;
 
                 float xCoord = (entity.getTarget().getX() - entity.getX()) * q;
                 float yCoord = (entity.getTarget().getY() - entity.getY()) * q;
@@ -456,22 +471,28 @@ public class EntityHandler {
     private Entity findCollidingEntity(Entity source){
         float x = source.getX(), y = source.getY();
         int radius = (int) source.getRadius();
+
         Entity closest = null;
+        float cDist = Float.POSITIVE_INFINITY;
+
         for (int i = Math.max(0,(int) (Math.floor(x - radius))); i < Math.min(nodeMap.length,Math.ceil(x + radius + 1)); i++) {
             for (int j = Math.max(0, (int) (Math.floor(y - radius))); j < Math.min(nodeMap[i].length, Math.ceil(y + radius + 1)); j++) {
                 for(Entity entity : nodeMap[i][j].block){
-                    if(!source.allyOf(entity)){
-                        if (closest == null || isColliding(source,entity) < isColliding(source, closest)) {
+                    if(!source.allyOf(entity)) {
+                        float eDist = isColliding(source,entity);
+                        if (eDist < cDist) {
                             closest = entity;
+                            cDist = eDist;
                         }
                     }
                 }
             }
         }
 
-        if(closest != null && isColliding(source,closest) > 0){
+        if(cDist > 0){
             closest = null;
         }
+
         return closest;
     }
 
@@ -486,16 +507,29 @@ public class EntityHandler {
             for(int j = 0; j < findPath[i].length; j++){
                 if(findPath[i][j]){
                     HashMap<Byte, Stack<Step>> paths = new HashMap<>();
+                    Entity healTower = null;
+                    boolean search = true;
 
                     for(Entity entity : nodeMap[i][j].block){
                         if(entity instanceof MoveEntity){
                             byte key = ((MoveEntity)entity).getKey();
 
                             if(!paths.containsKey(key)){
-                                if(entity.getTarget() != null){
+                                if(entity.getTarget() != null && entity.getTarget().getHp() > 0){
                                     paths.put(key,findPath(entity,entity.getTarget()));
                                 } else if(entity.isEnemy()){
                                     paths.put(key,findPath(entity,mainTower));
+                                } else {
+                                    if(search){
+                                        healTower = findClosestTower(entity, EntityType.HEALTOWER);
+                                        search = false;
+                                    }
+                                    if(healTower != null && getDist(entity,healTower) > healTower.getRange()){
+                                        paths.put(key,findPath(entity,healTower));
+                                    } else {
+                                        paths.put(key,new Stack<>());
+                                    }
+
                                 }
                             }
 
@@ -515,17 +549,14 @@ public class EntityHandler {
     }
 
     private Stack<Step> findPath(Partisan source, Position target){
-        boolean evade = source.isEnemy();
-        boolean collision = !evade;
-
-        if(aStar(source,target,evade,collision) || (collision && aStar(source,target,evade,false))){
+        if(aStar(source,target,source.isEnemy())){
             return backtracking(target,source);
         } else {
             return new Stack<>();
         }
     }
 
-    private boolean aStar(Position start, Position target, boolean evade, boolean collision){
+    private boolean aStar(Position start, Position target, boolean isEnemy){
         int startX = Math.round(start.getX()), startY = Math.round(start.getY()), targetX = Math.round(target.getX()), targetY = Math.round(target.getY());
 
         if (startX < 0 || startY < 0 || targetX < 0 || targetY < 0) return false;
@@ -548,7 +579,7 @@ public class EntityHandler {
         Node curr = nodeMap[startX][startY];
 
         while (curr != null && !(curr.block.x == targetX && curr.block.y == targetY)) {
-            updateNeighbours(curr, evade, collision, queue);
+            updateNeighbours(curr, isEnemy, queue);
             if(!queue.isEmpty()){
                 curr = queue.remove();
             } else {
@@ -573,29 +604,30 @@ public class EntityHandler {
         return result;
     }
 
-    private void updateNeighbours(Node source, boolean evade, boolean collision, PriorityQueue<Node> queue) {
+    private void updateNeighbours(Node source, boolean isEnemy, PriorityQueue<Node> queue) {
         int x = source.block.x, y = source.block.y;
         for (int i = Math.max(0, x - 1); i < Math.min(x + 2, nodeMap.length); i++) {
             for (int j = Math.max(0, y - 1); j < Math.min(y + 2, nodeMap[i].length); j++) {
                 Node current = nodeMap[i][j];
 
-                if(!collision || current.block.getTower() != null) {
-                    float addDist = (x == i || y == j) ? 1 : (float) Math.sqrt(2);
-                    if(evade) {
-                        addDist = addo(addDist, ((current.dpsInRange + source.dpsInRange) / 2) * Constants.dpsMultiplier);
-                        addDist = addo(addDist, (current.damage + source.damage) / 2);
-                    }
-                    addDist = addo(addDist, source.fromStart);
+                float addDist = (x == i || y == j) ? 1 : (float) Math.sqrt(2);
+                if(isEnemy) {
+                    addDist = addo(addDist, ((current.dpsInRange + source.dpsInRange) / 2) * Constants.dpsMultiplier);
+                    addDist = addo(addDist, (current.damage + source.damage) / 2);
+                } else {
+                    addDist = addDist * 4;
+                }
 
-                    if (index != current.index || current.fromStart > addDist) {
-                        if(current.index != index){
-                            current.index = index;
-                            queue.add(current);
-                        }
-                        current.fromStart = addDist;
-                        current.preX = x;
-                        current.preY = y;
+                addDist = addo(addDist, source.fromStart);
+
+                if (index != current.index || current.fromStart > addDist) {
+                    if(current.index != index){
+                        current.index = index;
+                        queue.add(current);
                     }
+                    current.fromStart = addDist;
+                    current.preX = x;
+                    current.preY = y;
                 }
             }
         }
@@ -628,14 +660,43 @@ public class EntityHandler {
         return getDist(p1,p2) - p1.getRadius() - p2.getRadius();
     }
 
-    private float addo(float old, float add){
-        if(old < 0 || add < 0){
+    private float addo(float summand1, float summand2){
+        if(summand1 < 0 || summand2 < 0){
             throw new IllegalArgumentException();
-        }else if(old+add < 0){
-            return Float.MAX_VALUE;
-        }else{
-            return old+add;
+        } else {
+            float sum = summand1+summand2;
+            if(sum < 0){
+                return Float.MAX_VALUE;
+            }else{
+                return sum;
+            }
         }
+    }
+
+    private Entity findClosestTower(Entity source, EntityType entityType){
+        int x = Math.round(source.getX()), y = Math.round(source.getY());
+
+        Entity closest = null;
+        float cDist = Float.POSITIVE_INFINITY;
+
+        int maxDist = Math.max(Math.max(x, world.getBlocks().length-x),Math.max(y, world.getBlocks()[x].length-y));
+        for(int dist = 0; closest == null && dist <= maxDist; dist++) {
+            for (int i = Math.max(0, x - dist); i < Math.min(world.getBlocks().length, x + dist + 1); i++) {
+                boolean full = (i == x - dist || i == x + dist);
+                for (int j = full ? Math.max(0, y - dist) : (y - dist < 0) ? y + dist : y - dist; j < Math.min(world.getBlocks()[i].length, y + dist + 1); j += full ? 1 : 2 * dist) {
+                    Entity tower = nodeMap[i][j].block.getTower();
+                    if(tower != null && tower != source && tower.isType(entityType)){
+                        float tDist = getDist(source,tower);
+                        if(tDist < cDist){
+                            closest = tower;
+                            cDist = tDist;
+                        }
+                    }
+                }
+            }
+        }
+
+        return closest;
     }
 
     /*
