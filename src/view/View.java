@@ -42,9 +42,11 @@ public abstract class View {
 
         if (postProcessingManager != null)
             postProcessingManager.begin(deltaTime);
+
         batch.begin(sceneCamera);
         renderScene(deltaTime, batch);
         batch.end();
+
         if (postProcessingManager != null)
             postProcessingManager.end(sceneCamera);
 
