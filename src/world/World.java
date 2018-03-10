@@ -87,14 +87,15 @@ public class World {
 
         for(int i = 0; i < entities.length(); i++){
             JSONObject entityObj = entities.getJSONObject(i);
-            Entity entity = null;
+            Entity entity;
             if(entityObj.getBoolean("isMove")){
                 if(entityObj.getBoolean("isMinion")){
                     int sX = entityObj.getInt("sX"), sY = entityObj.getInt("sY");
-                    Entity source = blocks[sX][sY].getTower();
-                    if(source != null) {
-                        entity = new Minion(entityObj, blocks, source);
+                    Entity source = null;
+                    if(sX != -1 && sY != -1) {
+                        source = blocks[sX][sY].getTower();
                     }
+                    entity = new Minion(entityObj, blocks, source);
                 } else {
                     entity = new MoveEntity(entityObj, blocks);
                 }
@@ -102,13 +103,11 @@ public class World {
                 entity = new Entity(entityObj, blocks);
             }
 
-            if(entity != null) {
-                if (entity.isType(EntityType.MAINTOWER)) {
-                    mainTower = entity;
-                }
-
-                entityList.add(entity);
+            if (entity.isType(EntityType.MAINTOWER)) {
+                mainTower = entity;
             }
+
+            entityList.add(entity);
         }
 
         if(mainTower == null){

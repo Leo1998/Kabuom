@@ -19,8 +19,13 @@ public class Minion extends MoveEntity {
     @Override
     public JSONObject toJSON() {
         JSONObject object = super.toJSON();
-        object.put("sX",Math.round(source.getX()));
-        object.put("sY",Math.round(source.getY()));
+        if(source != null) {
+            object.put("sX", Math.round(source.getX()));
+            object.put("sY", Math.round(source.getY()));
+        } else {
+            object.put("sX", -1);
+            object.put("sY", -1);
+        }
         return object;
     }
 }

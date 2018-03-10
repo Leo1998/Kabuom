@@ -64,15 +64,20 @@ public class EntityHandler {
             Iterator<Entity> iterator = entities.iterator();
             for (int i = 0; iterator.hasNext(); i++) {
                 Entity entity = iterator.next();
+
                 if (entity.getHp() <= 0) {
                     iterator.remove();
                     if (entity.getBlock().getTower() == entity) {
                         entity.getBlock().removeTower();
                         updateNode(Math.round(entity.getX()), Math.round(entity.getY()), entity.getBlock());
                     } else if (entity instanceof Minion) {
-                        ((Minion)entity).source.addAmmo(-1);
+                        Minion minion = (Minion) entity;
+                        if(minion.source != null) {
+                            minion.source.addAmmo(-1);
+                        }
                     }
                     world.removeEntity(entity);
+
                 } else {
                     int bX = Math.round(entity.getX());
                     int bY = Math.round(entity.getY());
@@ -527,7 +532,7 @@ public class EntityHandler {
                                         healTower = findClosestTower(entity, EntityType.HEALTOWER);
                                         search = false;
                                     }
-                                    if(healTower != null && getDist(entity,healTower) > healTower.getRange()){
+                                    if(healTower != null){
                                         paths.put(key,findPath(entity,healTower));
                                     } else {
                                         paths.put(key,findPath(entity, mainTower));
