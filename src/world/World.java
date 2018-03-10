@@ -4,6 +4,7 @@ import controller.Controller;
 import entity.EntityHandler;
 import entity.model.Entity;
 import entity.model.EntityType;
+import entity.model.Minion;
 import entity.model.MoveEntity;
 import model.GameObject;
 import projectile.Projectile;
@@ -86,18 +87,28 @@ public class World {
 
         for(int i = 0; i < entities.length(); i++){
             JSONObject entityObj = entities.getJSONObject(i);
-            Entity entity;
+            Entity entity = null;
             if(entityObj.getBoolean("isMove")){
-                entity = new MoveEntity(entityObj,blocks);
+                if(entityObj.getBoolean("isMinion")){
+                    int sX = entityObj.getInt("sX"), sY = entityObj.getInt("sY");
+                    Entity source = blocks[sX][sY].getTower();
+                    if(source != null) {
+                        entity = new Minion(entityObj, blocks, source);
+                    }
+                } else {
+                    entity = new MoveEntity(entityObj, blocks);
+                }
             } else {
                 entity = new Entity(entityObj, blocks);
             }
 
-            if(entity.isType(EntityType.MAINTOWER)){
-                mainTower = entity;
-            }
+            if(entity != null) {
+                if (entity.isType(EntityType.MAINTOWER)) {
+                    mainTower = entity;
+                }
 
-            entityList.add(entity);
+                entityList.add(entity);
+            }
         }
 
         if(mainTower == null){

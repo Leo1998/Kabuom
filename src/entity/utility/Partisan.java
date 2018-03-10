@@ -1,4 +1,4 @@
-package entity.model;
+package entity.utility;
 import model.Position;
 
 /**

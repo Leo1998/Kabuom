@@ -1,8 +1,8 @@
 package projectile;
 
-import entity.model.EffectType;
+import entity.utility.EffectType;
 import entity.model.Entity;
-import entity.model.Partisan;
+import entity.utility.Partisan;
 import model.BinarySearchTree;
 import model.GameObject;
 import model.ObjectType;

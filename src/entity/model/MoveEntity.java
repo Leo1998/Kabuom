@@ -1,5 +1,6 @@
 package entity.model;
 
+import entity.utility.Step;
 import org.json.JSONObject;
 import view.math.Vector2;
 import world.Block;
@@ -21,6 +22,13 @@ public class MoveEntity extends Entity {
         super(object,blocks);
         movement = new Vector2(0,0);
         steps = new Stack<>();
+    }
+
+    @Override
+    public JSONObject toJSON() {
+        JSONObject object = super.toJSON();
+        object.put("isMinion", this instanceof Minion);
+        return object;
     }
 
     public Vector2 getMovement() {

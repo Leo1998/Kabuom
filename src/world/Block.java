@@ -2,6 +2,7 @@ package world;
 
 import entity.model.Entity;
 import entity.model.MoveEntity;
+import model.Position;
 
 import java.util.Iterator;
 import java.util.LinkedList;

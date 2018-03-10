@@ -1,6 +1,6 @@
 package projectile;
 
-import entity.model.EffectType;
+import entity.utility.EffectType;
 import model.ObjectType;
 import model.Upgrade;
 

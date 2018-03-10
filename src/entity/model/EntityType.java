@@ -17,7 +17,7 @@ public enum EntityType implements ObjectType {
     BARRICADE(  1000,   0.625f, 0,      "Barricade",    null,               "barricade2.png",   0.5f,       2,      0,          8,  false,  true,   null,                           75,     Upgrade.DEFAULTENTITY),
     MINE(       10,     0.125f, 0,      "Mine",         null,               "Base.png",         0.125f,     1,      0,          1,  false,  true,   ProjectileType.EXPLOSION,       75,     Upgrade.RANGEDENTITY),
     HEALTOWER(  20,     0.5f,   0,      "Healer",       "FlamethrowerRot.png","Base.png",       4,          3,      3.1416f*2,  64, true,   false,  ProjectileType.HEALING,         150,    Upgrade.RANGEDENTITY),
-    SPAWNER(    50,     0.5f,   0,      "Spawner",      null,               "MissileLauncherRot.png",1,     Integer.MAX_VALUE,0,1,  false,  true,   null,                           150,    Upgrade.RANGEDENTITY),
+    SPAWNER(    50,     0.5f,   0,      "Spawner",      null,               "MissileLauncherRot.png",1,     Integer.MAX_VALUE,0,8,  false,  true,   null,                           150,    Upgrade.RANGEDENTITY),
     MAINTOWER(  1000,   0.625f, 0,      "Maintower",    null,               "MainTower.png",    0,          0,      0,          0,  false,  false,  null,                           250,    Upgrade.DEFAULTENTITY),
 
     //Enemy     maxHp   radius  speed   name            turretTexture       baseTexture         frequency   range   accuracy    att aAlly   aHost   projectile                      cost    upgrade

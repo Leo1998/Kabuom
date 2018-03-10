@@ -1,10 +1,11 @@
 package entity.model;
 
 import entity.EntityHandler;
+import entity.utility.EffectType;
+import entity.utility.Partisan;
 import model.GameObject;
 import model.ObjectType;
 import org.json.JSONObject;
-import utility.Constants;
 import world.Block;
 
 import static utility.Utility.random;
@@ -20,6 +21,7 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
     private boolean isEnemy;
     private float attackCooldown;
     private final int i;
+    private int ammo;
 
     private static int num = Integer.MIN_VALUE;
 
@@ -34,6 +36,7 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
         this.block = block;
         attackCooldown = 0;
         this.isEnemy = isEnemy;
+        ammo = 0;
         i = num;
         num++;
     }
@@ -49,6 +52,7 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
         this.block.addEntity(this);
         attackCooldown = 0;
         this.isEnemy = object.getBoolean("isEnemy");
+        ammo = object.getInt("ammo");
         i = num;
         num++;
     }
@@ -60,6 +64,7 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
         object.put("wave",wave);
         object.put("isEnemy",isEnemy);
         object.put("isMove",this instanceof MoveEntity);
+        object.put("ammo",ammo);
 
         return object;
     }
@@ -146,6 +151,18 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
 
     public void setWave(int wave) {
         this.wave = wave;
+    }
+
+    public int getAmmo() {
+        return ammo;
+    }
+
+    public void setAmmo(int ammo){
+        this.ammo = ammo;
+    }
+
+    public void addAmmo(int ammo) {
+        this.ammo += ammo;
     }
 
     /**
@@ -238,6 +255,7 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
                 ", wave=" + wave +
                 ", block=(" + block.x + "|" + block.y + ")" +
                 ", level=" + level +
+                ", ammo=" + ammo +
                 '}';
     }
 

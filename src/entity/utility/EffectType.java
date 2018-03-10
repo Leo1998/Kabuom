@@ -1,4 +1,4 @@
-package entity.model;
+package entity.utility;
 
 /**
  * Created by Daniel on 30-Dec-17.

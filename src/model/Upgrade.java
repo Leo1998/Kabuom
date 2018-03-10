@@ -6,7 +6,13 @@ public class Upgrade {
     //Entity: Hp Speed Frequency Range Accuracy Attack Cost
     //Projectile: Hp Speed Damage Range
 
-    public final static Upgrade DEFAULTENTITY = new Upgrade(new float[]{4,4,4,4,4,4,4}, new float[]{0.1f,0.1f,0.1f,0.1f,0.1f,0.1f,0.1f});
+    public final static Upgrade DEFAULTENTITY = new Upgrade(x -> x*0.1f+1,
+                                                            x -> def(x,0.1f, 4f),
+                                                            x -> def(x,0.1f, 4f),
+                                                            x -> def(x,0.1f, 4f),
+                                                            x -> def(x,0.1f, 4f),
+                                                            x -> def(x,0.1f, 4f),
+                                                            x -> def(x,0.1f, 4f));
     public final static Upgrade DEFAULTPROJECTILE = new Upgrade(new float[]{2,2,2,2}, new float[]{0.08f,0.08f,0.08f,0.08f});
     public final static Upgrade RANGEDENTITY = new Upgrade( x -> x*0.1f+1,
                                                             x -> def(x,0.1f, 4f),

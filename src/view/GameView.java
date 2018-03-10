@@ -127,20 +127,24 @@ public class GameView extends View {
             drawGameObject(entity, entity.getTurretTexture(), angle, batch, 0.9f);
         }
 
-        if (showRange && entity.isRanged() && !entity.isSpawner()) {
-            float x = blockToViewX(entity.getX() + 0.5f);
-            float y = blockToViewY(entity.getY() + 0.5f);
+        if(showRange && world.getRanged() < circleLimit) {
+            if (entity.isRanged() && !entity.isSpawner()) {
+                float x = blockToViewX(entity.getX() + 0.5f);
+                float y = blockToViewY(entity.getY() + 0.5f);
 
-            float r, g, b;
-            r = g = b = 0;
-            if (entity.isEnemy()) {
-                r = 1;
-            } else {
-                b = 1;
+                float r, g, b;
+                r = g = b = 0;
+                if (entity.isEnemy()) {
+                    r = 1;
+                } else {
+                    b = 1;
+                }
+
+                float radius = entity.getRange() * scale;
+                batch.limitedCircle(x, y, radius, r, g, b, 0.0625f, offsetX, offsetY, offsetX + Math.round(scale * world.getWidth()), offsetY + Math.round(scale * world.getHeight()));
             }
-
-            float radius = entity.getRange() * scale;
-            batch.limitedCircle(x, y, radius, r, g, b, 0.0625f, offsetX, offsetY, offsetX + Math.round(scale * world.getWidth()), offsetY + Math.round(scale * world.getHeight()));
+        } else {
+            showRange = false;
         }
 
         if (showLevel) {
@@ -178,10 +182,6 @@ public class GameView extends View {
             for (int j = 0; j < world.getBlocks()[i].length; j++) {
                 batch.draw(blockTexture, blockToViewX(i), blockToViewY(j), scale, scale);
             }
-        }
-
-        if (showRange && world.getRanged() > circleLimit) {
-            showRange = false;
         }
 
         for (Entity entity : world.getEntityList()) {
@@ -410,7 +410,11 @@ public class GameView extends View {
         }
         if (key == Keyboard.KEY_TAB) {
             if (showLevel) {
-                showRange = !showRange;
+                if(world.getRanged() > circleLimit){
+                    showRange = false;
+                } else {
+                    showRange = !showRange;
+                }
             }
             showLevel = !showLevel;
         }

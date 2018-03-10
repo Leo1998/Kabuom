@@ -1,6 +1,9 @@
 package entity;
 
 import entity.model.*;
+import entity.utility.EffectType;
+import entity.utility.Partisan;
+import entity.utility.Step;
 import model.Position;
 import projectile.Projectile;
 import projectile.ProjectileType;
@@ -66,6 +69,8 @@ public class EntityHandler {
                     if (entity.getBlock().getTower() == entity) {
                         entity.getBlock().removeTower();
                         updateNode(Math.round(entity.getX()), Math.round(entity.getY()), entity.getBlock());
+                    } else if (entity instanceof Minion) {
+                        ((Minion)entity).source.addAmmo(-1);
                     }
                     world.removeEntity(entity);
                 } else {
@@ -82,7 +87,7 @@ public class EntityHandler {
                     entity.updateEffects(dt);
 
                     if (entity.addAttackCooldown(dt)) {
-                        if(!attack(entity) && entity instanceof MoveEntity){
+                        if(attack(entity) && entity instanceof MoveEntity){
                             findPath[bX][bY] = true;
                         }
                     }
@@ -165,72 +170,70 @@ public class EntityHandler {
      * +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
      */
 
-    //False -> Target was set to null
     private boolean attack(Entity entity){
-        boolean noTarget = entity.getTarget() == null;
-        if (provideTarget(entity)) {
-            if (entity.isRanged()) {
-                if(entity instanceof MoveEntity){
-                    MoveEntity mEntity = (MoveEntity) entity;
+        if(entity.isSpawner()) {
+            if (entity.getAmmo() < entity.getAttack()) {
+                Entity spawn = createEntity(entity);
 
-                    if(mEntity.getSteps().isEmpty() || mEntity.getSteps().peek().stepType != Step.StepType.StayInRange){
-                        mEntity.getSteps().push(new Step(Step.StepType.StayInRange, 0, 0));
-                    }
-                }
+                world.spawnEntity(spawn, Math.round(entity.getX()), Math.round(entity.getY()));
 
-
-                if(entity.getProjectile() instanceof ProjectileType){
-                    Vector2 aiming = aim(entity, entity.getTarget());
-
-                    for (int i = 0; i < entity.getAttack(); i++) {
-                        Vector2 copy = aiming.clone();
-
-                        Projectile projectile = createProjectile(entity, copy);
-
-                        world.spawnProjectile(projectile);
-                    }
-                } else {
-                    for(int i = 0; i < entity.getAttack(); i++){
-                        Entity spawn = createEntity(entity);
-
-                        world.spawnEntity(spawn, Math.round(entity.getX()), Math.round(entity.getY()));
-                    }
-                }
-            } else {
-                if(random.nextFloat() > entity.getAccuracy()) {
-                    entity.getTarget().addHp(-entity.getAttack(), entity.getName());
-                }
+                entity.addAmmo(1);
             }
-            return true;
+            return false;
         } else {
-            return noTarget;
-        }
-    }
-
-    private boolean provideTarget(Entity entity){
-        if(entity.getTarget() != null && entity.getTarget().getHp() > 0 && entity.attacks(entity.getTarget()) && isColliding(entity,entity.getTarget()) <= entity.getRange()){
-            return true;
-        } else {
-            if(entity instanceof MoveEntity){
-                entity.setTarget(findTarget(entity,-1));
-                if(entity.getTarget() == null){
-                    if(entity.isEnemy()) {
-                        entity.setTarget(mainTower);
-                        return entity.attacks(mainTower) && isColliding(entity, mainTower) <= entity.getRange();
+            boolean validTarget, changedTarget;
+            if (entity.getTarget() != null && entity.getTarget().getHp() > 0 && entity.attacks(entity.getTarget()) && isColliding(entity, entity.getTarget()) <= entity.getRange()) {
+                validTarget = true;
+                changedTarget = false;
+            } else {
+                if (entity instanceof MoveEntity) {
+                    entity.setTarget(findTarget(entity, -1));
+                    if (entity.getTarget() == null) {
+                        if (entity.isEnemy()) {
+                            entity.setTarget(mainTower);
+                            validTarget = entity.attacks(mainTower) && isColliding(entity, mainTower) <= entity.getRange();
+                        } else {
+                            validTarget = false;
+                        }
                     } else {
-                        return false;
+                        validTarget = isColliding(entity, entity.getTarget()) <= entity.getRange();
                     }
                 } else {
-                    return isColliding(entity,entity.getTarget()) <= entity.getRange();
+                    entity.setTarget(findTarget(entity, entity.getRange() + 1));
+                    validTarget = entity.getTarget() != null;
                 }
-            } else {
-                entity.setTarget(findTarget(entity, entity.getRange()+1));
-                if(entity.getTarget() == null){
-                    return false;
+                changedTarget = true;
+            }
+
+            if (validTarget) {
+                if (entity.isRanged()) {
+                    if(entity.getProjectile() instanceof ProjectileType) {
+                        if (entity instanceof MoveEntity) {
+                            MoveEntity mEntity = (MoveEntity) entity;
+
+                            if (mEntity.getSteps().isEmpty() || mEntity.getSteps().peek().stepType != Step.StepType.StayInRange) {
+                                mEntity.getSteps().push(new Step(Step.StepType.StayInRange, 0, 0));
+                            }
+                        }
+
+
+                        Vector2 aiming = aim(entity, entity.getTarget());
+
+                        for (int i = 0; i < entity.getAttack(); i++) {
+                            Vector2 copy = aiming.clone();
+
+                            Projectile projectile = createProjectile(entity, copy);
+
+                            world.spawnProjectile(projectile);
+                        }
+                    }
                 } else {
-                    return true;
+                    if (random.nextFloat() > entity.getAccuracy()) {
+                        entity.getTarget().addHp(-entity.getAttack(), entity.getName());
+                    }
                 }
             }
+            return changedTarget;
         }
     }
 
@@ -331,7 +334,7 @@ public class EntityHandler {
     }
 
     private Entity createEntity(Entity source){
-        return new MoveEntity((EntityType)source.getProjectile(),source.getLevel(),source.getX(),source.getY(),source.getWave(),source.getBlock(),source.isEnemy());
+        return new Minion((EntityType)source.getProjectile(),source.getLevel(),source.getX(),source.getY(),source.getWave(),source.getBlock(),source.isEnemy(),source);
     }
 
     /*
@@ -527,20 +530,17 @@ public class EntityHandler {
                                     if(healTower != null && getDist(entity,healTower) > healTower.getRange()){
                                         paths.put(key,findPath(entity,healTower));
                                     } else {
-                                        paths.put(key,new Stack<>());
+                                        paths.put(key,findPath(entity, mainTower));
                                     }
-
                                 }
                             }
 
-                            if(paths.get(key) != null) {
-                                MoveEntity mEntity = (MoveEntity) entity;
-                                Stack<Step> steps = (Stack<Step>) paths.get(key).clone();
-                                if(!mEntity.getSteps().isEmpty() && mEntity.getSteps().peek().stepType != Step.StepType.GoTo){
-                                    steps.push(mEntity.getSteps().peek());
-                                }
-                                mEntity.setSteps(steps);
+                            MoveEntity mEntity = (MoveEntity) entity;
+                            Stack<Step> steps = (Stack<Step>) paths.get(key).clone();
+                            if(!mEntity.getSteps().isEmpty() && mEntity.getSteps().peek().stepType != Step.StepType.GoTo){
+                                steps.push(mEntity.getSteps().peek());
                             }
+                            mEntity.setSteps(steps);
                         }
                     }
                 }
@@ -614,7 +614,7 @@ public class EntityHandler {
                 if(isEnemy) {
                     addDist = addo(addDist, ((current.dpsInRange + source.dpsInRange) / 2) * Constants.dpsMultiplier);
                     addDist = addo(addDist, (current.damage + source.damage) / 2);
-                } else {
+                } else if(current.block.getTower() != null){
                     addDist = addDist * 4;
                 }
 
