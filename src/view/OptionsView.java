@@ -3,7 +3,6 @@ package view;
 import controller.Config;
 import controller.Controller;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.Display;
 import view.components.*;
 import view.rendering.Batch;
 
@@ -62,7 +61,7 @@ public class OptionsView extends BaseMenuView {
     private final List<ViewComponent> createOptions2(){
         List<ViewComponent> result = new LinkedList<>();
 
-        Switch graphicsButton = new Switch(0.25f, 0.25f, 0.5f, 0.1f, this, "High Graphics");
+        Switch graphicsButton = new Switch(0.15f, 0.25f, 0.3f, 0.1f, this, "High Graphics");
         graphicsButton.setDown(Controller.instance.getConfig().getGraphicMode() == Config.GraphicMode.High);
         result.add(graphicsButton);
 
@@ -81,23 +80,29 @@ public class OptionsView extends BaseMenuView {
         });
 
 
-        Switch soundSwitch = new Switch(0.25f, 0.4f, 0.5f, 0.1f, this, "Sound");
+        Switch soundSwitch = new Switch(0.15f, 0.4f, 0.3f, 0.1f, this, "Sound");
         soundSwitch.setDown(Controller.instance.getConfig().isSound());
         result.add(soundSwitch);
 
         soundSwitch.setListener(()->Controller.instance.getConfig().setSound(soundSwitch.isDown()));
 
-        Switch fpsSwitch = new Switch(0.25f, 0.55f, 0.5f, 0.1f, this, "Show FPS");
+        Switch fpsSwitch = new Switch(0.15f, 0.55f, 0.3f, 0.1f, this, "Show FPS");
         fpsSwitch.setDown(Controller.instance.getConfig().isShowFPS());
         result.add(fpsSwitch);
 
         fpsSwitch.setListener(()->Controller.instance.getConfig().setShowFPS(fpsSwitch.isDown()));
 
-        Switch menuConfetti = new Switch(0.25f, 0.7f, 0.5f, 0.1f, this, "Menu Confetti");
+        Switch menuConfetti = new Switch(0.15f, 0.7f, 0.3f, 0.1f, this, "Menu Confetti");
         menuConfetti.setDown(Controller.instance.getConfig().isMenuConfetti());
         result.add(menuConfetti);
 
         menuConfetti.setListener(()->Controller.instance.getConfig().setMenuConfetti(menuConfetti.isDown()));
+
+        Switch vSyncSwitch = new Switch(0.55f, 0.25f, 0.3f, 0.1f, this, "vSync");
+        vSyncSwitch.setDown(Controller.instance.getConfig().isVSync());
+        result.add(vSyncSwitch);
+
+        vSyncSwitch.setListener(()->Controller.instance.getConfig().setVSync(vSyncSwitch.isDown()));
 
         return result;
     }
