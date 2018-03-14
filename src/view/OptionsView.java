@@ -12,8 +12,8 @@ import java.util.List;
 
 public class OptionsView extends BaseMenuView {
 
-    List<ViewComponent> options1,options2;
-    Switch typeSwitch;
+    private List<ViewComponent> options1,options2;
+    private Switch typeSwitch;
 
     public OptionsView(int width, int height, final ViewManager viewManager) {
         super(width, height, viewManager);
