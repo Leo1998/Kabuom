@@ -12,7 +12,7 @@ public class Button extends ViewComponent {
     private ButtonListener listener;
     protected String buttontext;
     protected ITexture texture, buttonMainTexture, buttonPressedTexture;
-    private boolean down;
+    protected boolean down;
 
     public Button(float x, float y, float width, float height, View v, String buttontext) {
         this(x, y, width, height, v, buttontext, ViewManager.getTexture("viewTextures/mainButton.png"), ViewManager.getTexture("viewTextures/pressedButton.png"));
@@ -48,7 +48,7 @@ public class Button extends ViewComponent {
             down = false;
 
             if (listener != null && Utility.viewComponentIsCollidingWithMouse(this, mouseX, mouseY)) {
-                ViewManager.clickSound.start();
+                ViewManager.playSound(ViewManager.SoundID.CLICK);
                 listener.onClick();
             }
         }

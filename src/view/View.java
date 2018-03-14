@@ -9,6 +9,7 @@ import view.math.Vector2;
 import view.rendering.Batch;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public abstract class View {
@@ -24,7 +25,7 @@ public abstract class View {
     private Camera sceneCamera;
 
     public View(int width, int height, ViewManager viewManager) {
-        components = new ArrayList<>();
+        components = new LinkedList<>();
         originHeight = height;
         originWidth = width;
         this.viewManager = viewManager;

@@ -9,7 +9,6 @@ import org.lwjgl.opengl.*;
 import org.lwjgl.opengl.DisplayMode;
 import utility.LwjglNativesLoader;
 import view.effects.ParticleManager;
-import view.effects.PostProcessingManager;
 import view.rendering.Batch;
 import view.rendering.BitmapFont;
 import view.texture.ITexture;
@@ -25,15 +24,14 @@ public class ViewManager {
 
     public static BitmapFont font;
 
-    public static Sound clickSound;
-
     public static final HashMap<String, ITexture> textureMap = new HashMap<>();
+    public static final HashMap<SoundID, Sound> soundMap = new HashMap<>();
 
     public static void load() {
         try {
             font = new BitmapFont(ViewManager.class.getResource("/font/font.fnt"), ViewManager.class.getResource("/font/font.png"));
 
-            clickSound = new Sound(ViewManager.class.getResourceAsStream("/sounds/click.wav"));
+            soundMap.put(SoundID.CLICK,new Sound(ViewManager.class.getResourceAsStream("/sounds/click.wav")));
 
             loadTexture("viewTextures/mainButton.png");
             loadTexture("viewTextures/pressedButton.png");
@@ -97,6 +95,20 @@ public class ViewManager {
             return textureMap.get(textureID);
         }
         return null;
+    }
+
+    public static void playSound(SoundID soundID){
+        if(Controller.instance.getConfig().isSound()) {
+            if (soundID != null) {
+                if(soundMap.containsKey(soundID)){
+                    soundMap.get(soundID).start();
+                }
+            }
+        }
+    }
+
+    public enum SoundID{
+        CLICK,
     }
 
     private Controller ctrl;

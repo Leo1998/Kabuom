@@ -17,6 +17,8 @@ public class Config {
     private GraphicMode graphicMode = GraphicMode.High;
     private boolean vSync = true;
     private boolean showFPS = false;
+    private boolean sound = true;
+    private boolean menuConfetti = true;
 
     private int maxWave = 0;
     private int difficulty = 1;
@@ -36,6 +38,8 @@ public class Config {
                 this.graphicMode = GraphicMode.valueOf(obj.getString("graphicMode"));
                 this.vSync = obj.getBoolean("vSync");
                 this.showFPS = obj.getBoolean("showFPS");
+                this.sound = obj.getBoolean("sound");
+                this.menuConfetti = obj.getBoolean("menuConfetti");
 
                 this.maxWave = obj.getInt("maxWave");
                 this.difficulty = obj.getInt("difficulty");
@@ -61,6 +65,8 @@ public class Config {
             obj.put("graphicMode", this.graphicMode);
             obj.put("vSync", this.vSync);
             obj.put("showFPS", this.showFPS);
+            obj.put("sound", this.sound);
+            obj.put("menuConfetti", this.menuConfetti);
 
             obj.put("maxWave", this.maxWave);
             obj.put("difficulty", this.difficulty);
@@ -102,6 +108,22 @@ public class Config {
 
     public void setShowFPS(boolean showFPS) {
         this.showFPS = showFPS;
+    }
+
+    public boolean isSound(){
+        return sound;
+    }
+
+    public void setSound(boolean sound){
+        this.sound = sound;
+    }
+
+    public boolean isMenuConfetti() {
+        return menuConfetti;
+    }
+
+    public void setMenuConfetti(boolean menuConfetti) {
+        this.menuConfetti = menuConfetti;
     }
 
     public int getFboSamples() {
