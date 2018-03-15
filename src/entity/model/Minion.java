@@ -21,7 +21,6 @@ public class Minion extends MoveEntity {
             Entity tower = blocks[sX][sY].getTower();
             if (tower != null){
                 source = tower;
-                tower.addAmmo(-1);
             } else {
                 source = null;
             }
