@@ -5,8 +5,9 @@ import entity.utility.EffectType;
 import entity.utility.Partisan;
 import model.GameObject;
 import model.ObjectType;
-import org.json.JSONObject;
 import world.Block;
+
+import java.nio.ByteBuffer;
 
 import static utility.Utility.random;
 
@@ -41,32 +42,61 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
         num++;
     }
 
-    public Entity(JSONObject object, Block[][] blocks){
-        super(object);
+    public Entity(ByteBuffer buf, Block[][] blocks){
+        super(buf);
 
-        this.entityType = EntityType.values()[object.getInt("type")];
+        this.entityType = EntityType.values()[buf.getInt()];
+        this.wave = buf.getInt();
+        this.ammo = buf.getInt();
+
         this.effects = new float[EffectType.values().length];
         this.buffs = new float[EffectType.BuffType.values().length];
-        this.wave = object.getInt("wave");
-        this.block = blocks[Math.round(getX())][Math.round(getY())];
+        this.block = blocks[Math.round(getY())][Math.round(getY())];
         this.block.addEntity(this);
         attackCooldown = 0;
-        this.isEnemy = object.getBoolean("isEnemy");
-        ammo = object.getInt("ammo");
+
         i = num;
         num++;
     }
 
-    public JSONObject toJSON(){
-        JSONObject object = super.toJSON();
+    @Override
+    public void write(ByteBuffer buf){
+        super.write(buf);
+        buf.putInt(entityType.ordinal());
+        buf.putInt(wave);
+        buf.putInt(ammo);
+    }
 
-        object.put("type",entityType.ordinal());
-        object.put("wave",wave);
-        object.put("isEnemy",isEnemy);
-        object.put("isMove",this instanceof MoveEntity);
-        object.put("ammo",ammo);
+    public static int byteSize(){
+        return GameObject.byteSize() + 3*4;
+    }
 
-        return object;
+    @Override
+    public byte firstByte(){
+        byte src = super.firstByte();
+        if(isEnemy){
+            return (byte)(src | byteMask.isEnemy.mask);
+        } else {
+            return src;
+        }
+    }
+
+    @Override
+    public void firstByte(byte b){
+        super.firstByte(b);
+        isEnemy = ((b & byteMask.isEnemy.mask) == byteMask.isEnemy.mask);
+    }
+
+    public enum byteMask{
+        isMove((byte)0x01),
+        isMinion((byte)0x02),
+        isEnemy((byte)0x04);
+
+        public final byte mask;
+
+        byteMask(byte mask){
+            this.mask = mask;
+        }
     }
 
     public static void setEntityHandler(EntityHandler entityHandler){

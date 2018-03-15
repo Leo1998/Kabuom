@@ -2,7 +2,6 @@ package utility;
 
 import model.Position;
 import view.components.ViewComponent;
-
 import java.util.Random;
 
 
@@ -57,5 +56,17 @@ public class Utility {
             result = result.substring(0, i) + "," + result.substring(i);
         }
         return result;
+    }
+
+    public static boolean isMask(byte mask, byte b){
+        return (b & mask) == mask;
+    }
+
+    public static byte setMask(byte mask, byte b, boolean set){
+        if(set){
+            return (byte)(b | mask);
+        } else {
+            return b;
+        }
     }
 }

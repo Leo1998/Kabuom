@@ -1,17 +1,12 @@
 package controller;
 
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.lwjgl.opengl.Display;
 import view.MenuView;
 import view.View;
 import view.ViewManager;
 import world.World;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
 
 public class Controller {
 
@@ -86,8 +81,7 @@ public class Controller {
     public void continueGame(){
         if(worldFile.exists()){
             try{
-                JSONObject object = new JSONObject(new JSONTokener(new FileInputStream(worldFile)));
-                this.world = new World(object);
+                this.world = new World(worldFile);
             } catch (Exception e){
                 e.printStackTrace();
                 startGame();
@@ -100,9 +94,7 @@ public class Controller {
     public void saveGame(){
         if(world != null) {
             try {
-                BufferedWriter writer = new BufferedWriter(new FileWriter(worldFile));
-                writer.write(world.toJSON().toString());
-                writer.close();
+                world.write(worldFile);
             } catch (Exception e) {
                 e.printStackTrace();
             }

@@ -307,7 +307,7 @@ public class ViewManager {
         return ctrl;
     }
 
-    public void onGraphicsConfigurationChanged(Config.GraphicMode graphicMode) {
+    public void onGraphicsConfigurationChanged(boolean graphicMode) {
         if (currentView != null)
             currentView.layout(Display.getWidth(), Display.getHeight());
     }

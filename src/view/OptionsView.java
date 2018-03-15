@@ -62,20 +62,16 @@ public class OptionsView extends BaseMenuView {
         List<ViewComponent> result = new LinkedList<>();
 
         Switch graphicsButton = new Switch(0.15f, 0.25f, 0.3f, 0.1f, this, "High Graphics");
-        graphicsButton.setDown(Controller.instance.getConfig().getGraphicMode() == Config.GraphicMode.High);
+        graphicsButton.setDown(Controller.instance.getConfig().getHighGraphics());
         result.add(graphicsButton);
 
         graphicsButton.setListener(new ButtonListener() {
             @Override
             public void onClick() {
                 Config config = Controller.instance.getConfig();
-                if(graphicsButton.isDown()){
-                    config.setGraphicMode(Config.GraphicMode.High);
-                } else {
-                    config.setGraphicMode(Config.GraphicMode.Low);
-                }
+                config.setHighGraphics(graphicsButton.isDown());
 
-                Controller.instance.getViewManager().onGraphicsConfigurationChanged(config.getGraphicMode());
+                Controller.instance.getViewManager().onGraphicsConfigurationChanged(config.getHighGraphics());
             }
         });
 

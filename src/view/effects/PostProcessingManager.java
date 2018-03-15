@@ -1,6 +1,5 @@
 package view.effects;
 
-import controller.Config;
 import controller.Controller;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
@@ -108,7 +107,7 @@ public class PostProcessingManager {
     }
 
     public boolean isEnabled() {
-        return Controller.instance.getConfig().getGraphicMode() == Config.GraphicMode.High && isSupported();
+        return Controller.instance.getConfig().getHighGraphics() && isSupported();
     }
 
 }

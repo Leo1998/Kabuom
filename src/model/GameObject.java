@@ -1,7 +1,8 @@
 package model;
 
-import org.json.JSONObject;
 import utility.Utility;
+
+import java.nio.ByteBuffer;
 
 public abstract class GameObject implements Position {
     protected int level;
@@ -15,22 +16,32 @@ public abstract class GameObject implements Position {
         this.hp = objectType.getMaxHP() * objectType.getUpgrade().getStrength(level,0);
     }
 
-    public GameObject(JSONObject object){
-        this.level = object.getInt("lvl");
-        this.x = object.getInt("x");
-        this.y = object.getInt("y");
-        this.hp = object.getInt("hp");
+    public GameObject(ByteBuffer buf){
+        firstByte(buf.get());
+        this.level = buf.getInt();
+        this.x = buf.getFloat();
+        this.y = buf.getFloat();
+        this.hp = buf.getFloat();
     }
 
-    public JSONObject toJSON(){
-        JSONObject object = new JSONObject();
+    public void write(ByteBuffer buf){
+        buf.put(firstByte());
+        buf.putInt(level);
+        buf.putFloat(x);
+        buf.putFloat(y);
+        buf.putFloat(hp);
+    }
 
-        object.put("lvl",level);
-        object.put("x",Math.round(x));
-        object.put("y",Math.round(y));
-        object.put("hp",Math.round(hp));
+    public static int byteSize(){
+        return 4*4 + 1;
+    }
 
-        return object;
+    public byte firstByte(){
+        return 0x00;
+    }
+
+    public void firstByte(byte b){
+
     }
 
     public float getHp() {

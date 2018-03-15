@@ -1,10 +1,10 @@
 package entity.model;
 
 import entity.utility.Step;
-import org.json.JSONObject;
 import view.math.Vector2;
 import world.Block;
 
+import java.nio.ByteBuffer;
 import java.util.Stack;
 
 public class MoveEntity extends Entity {
@@ -18,17 +18,30 @@ public class MoveEntity extends Entity {
         steps = new Stack<>();
     }
 
-    public MoveEntity(JSONObject object, Block[][] blocks){
-        super(object,blocks);
+    public MoveEntity(ByteBuffer buf, Block[][] blocks){
+        super(buf,blocks);
         movement = new Vector2(0,0);
         steps = new Stack<>();
     }
 
     @Override
-    public JSONObject toJSON() {
-        JSONObject object = super.toJSON();
-        object.put("isMinion", this instanceof Minion);
-        return object;
+    public void write(ByteBuffer buf){
+        super.write(buf);
+    }
+
+    public static int byteSize(){
+        return Entity.byteSize();
+    }
+
+    @Override
+    public byte firstByte(){
+        byte src = super.firstByte();
+        return (byte)(src | byteMask.isMove.mask);
+    }
+
+    @Override
+    public void firstByte(byte b){
+        super.firstByte(b);
     }
 
     public Vector2 getMovement() {

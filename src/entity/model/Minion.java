@@ -1,7 +1,8 @@
 package entity.model;
 
-import org.json.JSONObject;
 import world.Block;
+
+import java.nio.ByteBuffer;
 
 public class Minion extends MoveEntity {
     public final Entity source;
@@ -11,21 +12,48 @@ public class Minion extends MoveEntity {
         this.source = source;
     }
 
-    public Minion(JSONObject object, Block[][] blocks, Entity source) {
-        super(object, blocks);
-        this.source = source;
+    public Minion(ByteBuffer buf, Block[][] blocks){
+        super(buf,blocks);
+        int sX = buf.getInt();
+        int sY = buf.getInt();
+
+        if(sX >= 0 && sX < blocks.length && sY >= 0 && sY < blocks[sX].length) {
+            Entity tower = blocks[sX][sY].getTower();
+            if (tower != null){
+                source = tower;
+                tower.addAmmo(-1);
+            } else {
+                source = null;
+            }
+        } else {
+            source = null;
+        }
     }
 
     @Override
-    public JSONObject toJSON() {
-        JSONObject object = super.toJSON();
-        if(source != null) {
-            object.put("sX", Math.round(source.getX()));
-            object.put("sY", Math.round(source.getY()));
+    public void write(ByteBuffer buf){
+        super.write(buf);
+        if(source != null && source.getHp() > 0){
+            buf.putInt(Math.round(source.getX()));
+            buf.putInt(Math.round(source.getY()));
         } else {
-            object.put("sX", -1);
-            object.put("sY", -1);
+            buf.putInt(-1);
+            buf.putInt(-1);
         }
-        return object;
+    }
+
+    public static int byteSize(){
+        return MoveEntity.byteSize();
+    }
+
+    @Override
+    public byte firstByte(){
+        byte src = super.firstByte();
+        return (byte)(src | byteMask.isMinion.mask);
+    }
+
+    @Override
+    public void firstByte(byte b){
+        super.firstByte(b);
     }
 }

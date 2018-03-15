@@ -1,20 +1,13 @@
 package controller;
 
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import utility.Utility;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.*;
+import java.nio.ByteBuffer;
 
 public class Config {
 
-    public enum GraphicMode {
-        Low, High
-    }
-
-    private GraphicMode graphicMode = GraphicMode.High;
+    private boolean highGraphics = false;
     private boolean vSync = true;
     private boolean showFPS = false;
     private boolean sound = true;
@@ -33,19 +26,35 @@ public class Config {
 
         if (configFile.exists()) {
             try {
-                JSONObject obj = new JSONObject(new JSONTokener(new FileInputStream(configFile)));
+                InputStream is = new FileInputStream(configFile);
 
-                this.graphicMode = GraphicMode.valueOf(obj.getString("graphicMode"));
-                this.vSync = obj.getBoolean("vSync");
-                this.showFPS = obj.getBoolean("showFPS");
-                this.sound = obj.getBoolean("sound");
-                this.menuConfetti = obj.getBoolean("menuConfetti");
+                long length = configFile.length();
+                if(length < byteSize()){
+                    throw new IOException("File " + configFile.getName() + " is to short");
+                }
 
-                this.maxWave = obj.getInt("maxWave");
-                this.difficulty = obj.getInt("difficulty");
-                this.aiDifficulty = obj.getInt("aiDifficulty");
-                this.width = obj.getInt("width");
-                this.height = obj.getInt("height");
+                ByteBuffer buf = ByteBuffer.allocateDirect(byteSize());
+                byte[] bytes = new byte[byteSize()];
+                if(is.read(bytes,0,bytes.length) != bytes.length){
+                    throw new IOException("File " + configFile.getName() + " could not be read");
+                }
+
+                buf.put(bytes);
+                buf.flip();
+
+                byte b = buf.get();
+
+                this.highGraphics = Utility.isMask(byteMask.GRAPHIC.mask,b);
+                this.vSync = Utility.isMask(byteMask.VSYNC.mask,b);
+                this.showFPS = Utility.isMask(byteMask.FPS.mask,b);
+                this.sound = Utility.isMask(byteMask.SOUND.mask,b);
+                this.menuConfetti = Utility.isMask(byteMask.CONFETTI.mask,b);
+
+                this.maxWave = buf.getInt();
+                this.difficulty = buf.getInt();
+                this.aiDifficulty = buf.getInt();
+                this.width = buf.getInt();
+                this.height = buf.getInt();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -59,39 +68,71 @@ public class Config {
     }
 
     public void save() {
+        BufferedOutputStream bos = null;
+
         try {
-            JSONObject obj = new JSONObject();
+            FileOutputStream fos = new FileOutputStream(configFile);
+            bos = new BufferedOutputStream(fos);
 
-            obj.put("graphicMode", this.graphicMode);
-            obj.put("vSync", this.vSync);
-            obj.put("showFPS", this.showFPS);
-            obj.put("sound", this.sound);
-            obj.put("menuConfetti", this.menuConfetti);
+            byte[] bytes = new byte[byteSize()];
+            ByteBuffer buf = ByteBuffer.allocateDirect(bytes.length);
 
-            obj.put("maxWave", this.maxWave);
-            obj.put("difficulty", this.difficulty);
-            obj.put("aiDifficulty", this.aiDifficulty);
-            obj.put("width", this.width);
-            obj.put("height", this.height);
+            byte b = 0x00;
 
-            String json = obj.toString();
+            b = Utility.setMask(byteMask.GRAPHIC.mask,b,this.highGraphics);
+            b = Utility.setMask(byteMask.VSYNC.mask,b,this.vSync);
+            b = Utility.setMask(byteMask.FPS.mask,b,this.showFPS);
+            b = Utility.setMask(byteMask.SOUND.mask,b,this.sound);
+            b = Utility.setMask(byteMask.CONFETTI.mask,b,this.menuConfetti);
 
-            BufferedWriter writer = new BufferedWriter(new FileWriter(configFile));
+            buf.put(b);
 
-            writer.write(json);
+            buf.putInt(this.maxWave);
+            buf.putInt(this.difficulty);
+            buf.putInt(this.aiDifficulty);
+            buf.putInt(this.width);
+            buf.putInt(this.height);
 
-            writer.close();
+            buf.flip();
+            buf.get(bytes,0,bytes.length);
+
+            bos.write(bytes);
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if(bos != null){
+                try {
+                    bos.flush();
+                    bos.close();
+                } catch (Exception e){}
+            }
         }
     }
 
-    public GraphicMode getGraphicMode() {
-        return graphicMode;
+    public static int byteSize(){
+        return 1 + 5*4;
     }
 
-    public void setGraphicMode(GraphicMode graphicMode) {
-        this.graphicMode = graphicMode;
+    private enum byteMask{
+        GRAPHIC((byte)0x01),
+        VSYNC((byte)0x02),
+        FPS((byte)0x04),
+        SOUND((byte)0x08),
+        CONFETTI((byte)0x10),
+        ;
+        final byte mask;
+
+        byteMask(byte mask){
+            this.mask = mask;
+        }
+    }
+
+    public boolean getHighGraphics() {
+        return highGraphics;
+    }
+
+    public void setHighGraphics(boolean highGraphics) {
+        this.highGraphics = highGraphics;
     }
 
     public boolean isVSync() {
@@ -127,7 +168,7 @@ public class Config {
     }
 
     public int getFboSamples() {
-        return graphicMode == GraphicMode.High ? 4 : 1;
+        return highGraphics ? 4 : 1;
     }
 
     public int getMaxWave() {
@@ -173,7 +214,7 @@ public class Config {
     @Override
     public String toString() {
         return "Config{" +
-                "graphicMode=" + graphicMode +
+                "graphicMode=" + highGraphics +
                 ", vSync=" + vSync +
                 ", showFPS=" + showFPS +
                 ", maxWave=" + maxWave +

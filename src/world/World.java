@@ -10,8 +10,8 @@ import model.GameObject;
 import projectile.Projectile;
 import projectile.ProjectileHandler;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.io.*;
+import java.nio.ByteBuffer;
 import java.util.LinkedList;
 
 import static utility.Utility.random;
@@ -63,11 +63,26 @@ public class World {
         difficulty = Controller.instance.getConfig().getDifficulty();
     }
 
-    public World(JSONObject object){
-        this.width = object.getInt("width");
-        this.height = object.getInt("height");
-        this.coins = object.getInt("coins");
-        this.wave = object.getInt("wave");
+    public World(File file) throws IOException{
+        InputStream is = new FileInputStream(file);
+
+        long length = file.length();
+
+        if(length < byteSize()){
+            throw new IOException("File " + file.getName() + " could not be read. It was to short (" + length + " min size: " + byteSize() + ")");
+        }
+
+        ByteBuffer buf = ByteBuffer.allocateDirect(byteSize());
+        byte[] bytes = new byte[byteSize()];
+        is.read(bytes, 0, bytes.length);
+        buf.put(bytes);
+
+        buf.flip();
+
+        this.width = buf.getInt();
+        this.height = buf.getInt();
+        this.wave = buf.getInt();
+        this.coins = buf.getInt();
 
         blocks = new Block[width][height];
         for(int i = 0; i < blocks.length; i++){
@@ -83,57 +98,128 @@ public class World {
 
         Entity mainTower = null;
 
-        JSONArray entities = object.getJSONArray("entities");
+        boolean reading = true;
+        while(reading){
+            byte b = (byte)is.read();
 
-        for(int i = 0; i < entities.length(); i++){
-            JSONObject entityObj = entities.getJSONObject(i);
-            Entity entity;
-            if(entityObj.getBoolean("isMove")){
-                if(entityObj.getBoolean("isMinion")){
-                    int sX = entityObj.getInt("sX"), sY = entityObj.getInt("sY");
-                    Entity source = null;
-                    if(sX != -1 && sY != -1) {
-                        source = blocks[sX][sY].getTower();
+            if(b != -1) {
+
+                boolean isMove, isMinion;
+                isMove = (b & Entity.byteMask.isMove.mask) == Entity.byteMask.isMove.mask;
+                isMinion = (b & Entity.byteMask.isMinion.mask) == Entity.byteMask.isMinion.mask;
+
+                Entity entity = null;
+                if (isMove) {
+                    if (isMinion) {
+                        bytes = new byte[Minion.byteSize()];
+                        bytes[0] = b;
+
+                        buf = ByteBuffer.allocateDirect(bytes.length);
+
+                        if (is.read(bytes, 1, bytes.length - 1) == bytes.length - 1) {
+                            buf.put(bytes);
+                            buf.flip();
+
+                            entity = new Minion(buf, blocks);
+                        } else {
+                            reading = false;
+                        }
+                    } else {
+                        bytes = new byte[MoveEntity.byteSize()];
+                        bytes[0] = b;
+
+                        buf = ByteBuffer.allocateDirect(bytes.length);
+
+                        if (is.read(bytes, 1, bytes.length - 1) == bytes.length - 1) {
+                            buf.put(bytes);
+                            buf.flip();
+
+                            entity = new MoveEntity(buf, blocks);
+                        } else {
+                            reading = false;
+                        }
                     }
-                    entity = new Minion(entityObj, blocks, source);
                 } else {
-                    entity = new MoveEntity(entityObj, blocks);
+                    bytes = new byte[Entity.byteSize()];
+                    bytes[0] = b;
+
+                    buf = ByteBuffer.allocateDirect(bytes.length);
+
+                    if (is.read(bytes, 1, bytes.length - 1) == bytes.length - 1) {
+                        buf.put(bytes);
+                        buf.flip();
+
+                        entity = new Entity(buf, blocks);
+                    } else {
+                        reading = false;
+                    }
+                }
+                if (reading) {
+                    if (entity.isType(EntityType.MAINTOWER))
+                        mainTower = entity;
+
+                    entityList.add(entity);
+
+                    System.out.println(entity);
                 }
             } else {
-                entity = new Entity(entityObj, blocks);
+                reading = false;
             }
-
-            if (entity.isType(EntityType.MAINTOWER)) {
-                mainTower = entity;
-            }
-
-            entityList.add(entity);
         }
 
         if(mainTower == null){
-            throw new IllegalArgumentException();
+            throw new IOException("File " + file.getName() + " could not be read. No maintower was found.");
         } else {
             projectileHandler = new ProjectileHandler(this);
             entityHandler = new EntityHandler(this,mainTower,Controller.instance.getConfig().getAiDifficulty());
             difficulty = Controller.instance.getConfig().getDifficulty();
         }
+
+        is.close();
     }
 
-    public JSONObject toJSON(){
-        JSONObject obj = new JSONObject();
+    public void write(File file) throws IOException{
+        BufferedOutputStream bos = null;
 
-        obj.put("width", width);
-        obj.put("height", height);
-        obj.put("wave", wave);
-        obj.put("coins", coins);
+        try{
+            FileOutputStream fos = new FileOutputStream(file);
+            bos = new BufferedOutputStream(fos);
 
-        JSONArray entities = new JSONArray();
-        for(Entity entity : entityList){
-            entities.put(entity.toJSON());
+            byte[] bytes = new byte[byteSize()];
+            ByteBuffer buf = ByteBuffer.allocateDirect(byteSize());
+            buf.putInt(width);
+            buf.putInt(height);
+            buf.putInt(wave);
+            buf.putInt(coins);
+
+            buf.flip();
+            buf.get(bytes,0,bytes.length);
+
+            bos.write(bytes);
+
+            for(Entity entity : entityList){
+                bytes = new byte[entity.byteSize()];
+                buf = ByteBuffer.allocateDirect(bytes.length);
+
+                entity.write(buf);
+
+                buf.flip();
+                buf.get(bytes,0,bytes.length);
+
+                bos.write(bytes);
+            }
+        } finally {
+            if(bos != null){
+                try{
+                    bos.flush();
+                    bos.close();
+                } catch(Exception e){}
+            }
         }
-        obj.put("entities",entities);
+    }
 
-        return obj;
+    public static int byteSize(){
+        return 4*4;
     }
 
     public int getRanged(){
