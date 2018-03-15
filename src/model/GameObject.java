@@ -32,8 +32,10 @@ public abstract class GameObject implements Position {
         buf.putFloat(hp);
     }
 
-    public static int byteSize(){
-        return 4*4 + 1;
+    public static int size = 4*4+1;
+
+    public int getSize(){
+        return size;
     }
 
     public byte firstByte(){

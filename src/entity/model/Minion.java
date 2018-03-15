@@ -42,8 +42,10 @@ public class Minion extends MoveEntity {
         }
     }
 
-    public static int byteSize(){
-        return MoveEntity.byteSize();
+    public static int size = MoveEntity.size + 2*4;
+
+    public int getSize(){
+        return size;
     }
 
     @Override

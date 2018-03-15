@@ -29,8 +29,10 @@ public class MoveEntity extends Entity {
         super.write(buf);
     }
 
-    public static int byteSize(){
-        return Entity.byteSize();
+    public static int size = Entity.size;
+
+    public int getSize(){
+        return size;
     }
 
     @Override

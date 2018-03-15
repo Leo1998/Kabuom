@@ -111,7 +111,8 @@ public class World {
                 Entity entity = null;
                 if (isMove) {
                     if (isMinion) {
-                        bytes = new byte[Minion.byteSize()];
+
+                        bytes = new byte[Minion.size];
                         bytes[0] = b;
 
                         buf = ByteBuffer.allocateDirect(bytes.length);
@@ -125,7 +126,7 @@ public class World {
                             reading = false;
                         }
                     } else {
-                        bytes = new byte[MoveEntity.byteSize()];
+                        bytes = new byte[MoveEntity.size];
                         bytes[0] = b;
 
                         buf = ByteBuffer.allocateDirect(bytes.length);
@@ -140,7 +141,7 @@ public class World {
                         }
                     }
                 } else {
-                    bytes = new byte[Entity.byteSize()];
+                    bytes = new byte[Entity.size];
                     bytes[0] = b;
 
                     buf = ByteBuffer.allocateDirect(bytes.length);
@@ -159,8 +160,6 @@ public class World {
                         mainTower = entity;
 
                     entityList.add(entity);
-
-                    System.out.println(entity);
                 }
             } else {
                 reading = false;
@@ -198,7 +197,7 @@ public class World {
             bos.write(bytes);
 
             for(Entity entity : entityList){
-                bytes = new byte[entity.byteSize()];
+                bytes = new byte[entity.getSize()];
                 buf = ByteBuffer.allocateDirect(bytes.length);
 
                 entity.write(buf);

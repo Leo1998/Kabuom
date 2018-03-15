@@ -51,7 +51,7 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
 
         this.effects = new float[EffectType.values().length];
         this.buffs = new float[EffectType.BuffType.values().length];
-        this.block = blocks[Math.round(getY())][Math.round(getY())];
+        this.block = blocks[Math.round(getX())][Math.round(getY())];
         this.block.addEntity(this);
         attackCooldown = 0;
 
@@ -67,8 +67,10 @@ public class Entity extends GameObject implements Partisan, Comparable<Entity> {
         buf.putInt(ammo);
     }
 
-    public static int byteSize(){
-        return GameObject.byteSize() + 3*4;
+    public static int size = GameObject.size + 3*4;
+
+    public int getSize(){
+        return size;
     }
 
     @Override
