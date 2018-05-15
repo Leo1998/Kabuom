@@ -32,6 +32,7 @@ public class GameView extends View {
     private ITexture blockTexture;
     private boolean shiftdown, mousedown0, mousedown1, showRange, showLevel;
     private Vector2 mouse0, mouse1;
+    private IndexedButton startButton;
 
     private RadialBlurEffect radialBlurEffect;
     private DrunkEffect drunkEffect;
@@ -74,7 +75,7 @@ public class GameView extends View {
             });
         }
 
-        IndexedButton startButton = new IndexedButton(buttonStartX, 0.9f, buttonWidth, 0.1f, this, "Next Wave:", world.getStrength());
+        startButton = new IndexedButton(buttonStartX, 0.9f, buttonWidth, 0.1f, this, "Next Wave:", world.getStrength());
         startButton.setListener(()->{
             world.startWave();
             startButton.setIndex(world.getStrength());
@@ -101,6 +102,7 @@ public class GameView extends View {
 
         if (entity.getBaseTexture() != null) {
             float angle = 0;
+            float percentage = Math.max(0, entity.getHp() / entity.getMaxHp());
             if (entity instanceof MoveEntity) {
                 MoveEntity mEntity = (MoveEntity) entity;
                 if (!mEntity.getMovement().nullVector()) {
@@ -109,13 +111,12 @@ public class GameView extends View {
                 float diameter = entity.getRadius() * 2;
                 float width = scale * diameter;
                 float height = scale * diameter;
-                float percentage = Math.max(0, entity.getHp() / entity.getMaxHp());
 
                 batch.draw(null, blockToViewX(entity.getX(), diameter), blockToViewY(entity.getY(), diameter) + height * 1.1f, width, height * 0.1f, 0.6f, 0.6f, 0.6f, 1.0f);
                 batch.draw(null, blockToViewX(entity.getX(), diameter), blockToViewY(entity.getY(), diameter) + height * 1.1f, width * percentage, height * 0.1f, 0.0f, 1.0f, 0.0f, 1.0f);
             }
 
-            drawGameObject(entity, entity.getBaseTexture(), angle, batch, 1);
+            drawGameObject(entity, entity.getBaseTexture(), angle, batch, 1, percentage);
         }
 
         if (entity.getTurretTexture() != null) {
@@ -124,7 +125,7 @@ public class GameView extends View {
                 angle = Utility.getAngle(entity.getTarget(), entity);
             }
 
-            drawGameObject(entity, entity.getTurretTexture(), angle, batch, 0.9f);
+            drawGameObject(entity, entity.getTurretTexture(), angle, batch, 0.9f,1);
         }
 
         if(showRange && world.getRanged() < circleLimit) {
@@ -161,15 +162,15 @@ public class GameView extends View {
     private void drawProjectile(Projectile projectile, Batch batch) {
         float angle = projectile.getDir().getAngle();
 
-        drawGameObject(projectile, projectile.getTexture(), angle, batch, 1);
+        drawGameObject(projectile, projectile.getTexture(), angle, batch, 1, 1);
     }
 
-    private void drawGameObject(GameObject gameObject, String textureId, float rotation, Batch batch, float size) {
+    private void drawGameObject(GameObject gameObject, String textureId, float rotation, Batch batch, float size, float red) {
         float diameter = gameObject.getRadius() * 2 * size;
         float width = scale * diameter;
         float height = scale * diameter;
 
-        batch.draw(ViewManager.getTexture(textureId), blockToViewX(gameObject.getX(), diameter), blockToViewY(gameObject.getY(), diameter), width, height, rotation, 1, 1, 1, 1);
+        batch.draw(ViewManager.getTexture(textureId), blockToViewX(gameObject.getX(), diameter), blockToViewY(gameObject.getY(), diameter), width, height, rotation, 1, red, red, 1);
     }
 
     @Override
@@ -423,6 +424,10 @@ public class GameView extends View {
             if (block != null) {
                 world.printEntities((int) block.getX(), (int) block.getY());
             }
+        }
+        if(key == Keyboard.KEY_SPACE){
+            world.startWave();
+            startButton.setIndex(world.getStrength());
         }
     }
 
